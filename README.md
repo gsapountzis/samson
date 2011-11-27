@@ -1,5 +1,5 @@
 
-# Jersey binding module
+# Samson JAX-RS module
 
 Utility module for handling form submissions in JAX-RS resources:
 
