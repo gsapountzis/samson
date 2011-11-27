@@ -15,6 +15,7 @@
     <name>Samson :: Examples</name>
 
     <modules>
+        <module>samson-example-jsp</module>
     </modules>
 
     <dependencyManagement>
