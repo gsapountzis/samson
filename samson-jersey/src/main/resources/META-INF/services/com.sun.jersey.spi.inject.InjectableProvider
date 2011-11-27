@@ -1,0 +1,3 @@
+samson.jersey.JFormProviderInjectableProvider
+samson.jersey.QueryParamInjectableProvider
+samson.jersey.FormParamInjectableProvider
