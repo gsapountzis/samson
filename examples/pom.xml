@@ -18,6 +18,11 @@
         <module>samson-example-jsp</module>
     </modules>
 
+    <properties>
+        <jetty-version>8.0.0.M3</jetty-version>
+        <tomcat-version>6.0.29</tomcat-version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <!-- Servlet -->
@@ -51,4 +56,79 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.mortbay.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <version>${jetty-version}</version>
+                    <configuration>
+                        <scanIntervalSeconds>3</scanIntervalSeconds>
+                        <stopPort>9999</stopPort>
+                        <stopKey>key</stopKey>
+                        <webAppConfig>
+                            <contextPath>/${project.artifactId}</contextPath>
+                        </webAppConfig>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>tomcat-maven-plugin</artifactId>
+                    <version>1.1</version>
+                    <configuration>
+                        <url>http://localhost:8080/manager/html</url>
+                    </configuration>
+
+                    <dependencies>
+                        <dependency>
+                            <groupId>javax.servlet.jsp</groupId>
+                            <artifactId>jsp-api</artifactId>
+                            <version>2.2</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>javax.el</groupId>
+                            <artifactId>el-api</artifactId>
+                            <version>2.2</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.glassfish.web</groupId>
+                            <artifactId>el-impl</artifactId>
+                            <version>2.2</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.apache.tomcat</groupId>
+                            <artifactId>jasper</artifactId>
+                            <version>${tomcat-version}</version>
+                            <exclusions>
+                                <exclusion>
+                                    <groupId>org.apache.tomcat</groupId>
+                                    <artifactId>jsp-api</artifactId>
+                                </exclusion>
+                                <exclusion>
+                                    <groupId>org.apache.tomcat</groupId>
+                                    <artifactId>el-api</artifactId>
+                                </exclusion>
+                                <exclusion>
+                                    <groupId>org.apache.tomcat</groupId>
+                                    <artifactId>jasper-el</artifactId>
+                                </exclusion>
+                            </exclusions>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.googlecode.t7mp</groupId>
+                    <artifactId>maven-t7-plugin</artifactId>
+                    <version>0.9.8</version>
+                    <configuration>
+                        <tomcatVersion>7.0.16</tomcatVersion>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
