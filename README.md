@@ -1,7 +1,7 @@
 
 # Samson JAX-RS module
 
-Utility module for handling form submissions in JAX-RS resources:
+Utility module for handling form submissions and query parameters in JAX-RS resources:
 
 * binder for
   [form](http://download.oracle.com/javaee/6/api/javax/ws/rs/FormParam.html) and
@@ -13,7 +13,7 @@ Utility module for handling form submissions in JAX-RS resources:
 
 * integration with [bean validation](http://beanvalidation.org).
 
-* [facade](/gsapountzis/samson/blob/master/src/main/java/samson/JForm.java)
+* [facade](/gsapountzis/samson/blob/master/samson-core/src/main/java/samson/JForm.java)
   over the binding and validation results.
 
 ## Usage
@@ -30,10 +30,10 @@ The module has been tested on Jersey 1.10.
 
 ## Example
 
-There are some simple examples [here](/gsapountzis/samson/examples/).
+There are some simple examples [here](/gsapountzis/samson/tree/master/examples/).
 You can also check the available
-[unit](/gsapountzis/samson/samson-jersey/tree/master/src/test/java/samson/bind/) and
-[integration](/gsapountzis/samson/samson-jersey/tree/master/src/test/java/samson/jersey/) tests.
+[unit](/gsapountzis/samson/tree/master/samson-jersey/src/test/java/samson/bind/) and
+[integration](/gsapountzis/samson/tree/master/samson-jersey/src/test/java/samson/jersey/) tests.
 
 ## TODO
 
