@@ -6,7 +6,7 @@
     <!-- XXX This is supposed to make samson into a jersey module, but I don't know OSGi -->
 
     <parent>
-        <groupId>com.github.gsapountzis</groupId>
+        <groupId>com.github.gsapountzis.samson</groupId>
         <artifactId>samson</artifactId>
         <version>0.1</version>
         <relativePath>..</relativePath>
@@ -18,7 +18,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.gsapountzis</groupId>
+            <groupId>com.github.gsapountzis.samson</groupId>
             <artifactId>samson-jersey</artifactId>
         </dependency>
     </dependencies>

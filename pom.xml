@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.gsapountzis</groupId>
+    <groupId>com.github.gsapountzis.samson</groupId>
     <artifactId>samson</artifactId>
     <packaging>pom</packaging>
     <version>0.1</version>
@@ -17,8 +17,10 @@
     </modules>
 
     <properties>
+        <cdi-api-version>1.0-SP4</cdi-api-version>
         <hibernate-validator-version>4.2.0.Final</hibernate-validator-version>
         <jax-rs-api-version>1.1</jax-rs-api-version>
+        <javax.inject-version>1</javax.inject-version>
         <jersey-version>1.10</jersey-version>
         <junit-version>4.8.2</junit-version>
         <slf4j-version>1.6.1</slf4j-version>
@@ -30,13 +32,14 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Samson -->
             <dependency>
-                <groupId>com.github.gsapountzis</groupId>
+                <groupId>com.github.gsapountzis.samson</groupId>
                 <artifactId>samson-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.gsapountzis</groupId>
+                <groupId>com.github.gsapountzis.samson</groupId>
                 <artifactId>samson-jersey</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -51,6 +54,16 @@
                 <artifactId>validation-api</artifactId>
                 <version>${validation-api-version}</version>
             </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>${javax.inject-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.enterprise</groupId>
+                <artifactId>cdi-api</artifactId>
+                <version>${cdi-api-version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.sun.jersey</groupId>
@@ -64,6 +77,11 @@
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
+                <artifactId>jersey-servlet</artifactId>
+                <version>${jersey-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-client</artifactId>
                 <version>${jersey-version}</version>
             </dependency>
@@ -73,6 +91,7 @@
                 <version>${hibernate-validator-version}</version>
             </dependency>
 
+            <!-- Logging -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -80,10 +99,26 @@
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-ext</artifactId>
+                <version>${slf4j-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j-version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j-version}</version>
+            </dependency>
 
+            <!-- Testing -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -102,6 +137,29 @@
                     <configuration>
                         <source>1.6</source>
                         <target>1.6</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-eclipse-plugin</artifactId>
+                    <version>2.8</version>
+                    <configuration>
+                        <wtpversion>2.0</wtpversion>
+                        <downloadSources>true</downloadSources>
+                        <downloadJavadocs>true</downloadJavadocs>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>2.4.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>2.1.1</version>
+                    <configuration>
+                        <failOnMissingWebXml>false</failOnMissingWebXml>
                     </configuration>
                 </plugin>
                 <plugin>

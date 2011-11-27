@@ -21,7 +21,7 @@ Utility module for handling form submissions in JAX-RS resources:
 Install the module and add the following dependency to your pom.xml:
 
 	<dependency>
-		<groupId>com.github.gsapountzis</groupId>
+		<groupId>com.github.gsapountzis.samson</groupId>
 		<artifactId>samson-jersey</artifactId>
 		<version>0.1</version>
 	</dependency>
