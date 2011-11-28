@@ -65,6 +65,7 @@ public class MapTcp {
 
         return new Element.Accessor() {
 
+            @SuppressWarnings("unchecked")
             @Override
             public void set(Object value) {
                 ((Map<Object, Object>) map).put(key, value);

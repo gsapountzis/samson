@@ -59,6 +59,7 @@ public class ListTcp {
 
         return new Element.Accessor() {
 
+            @SuppressWarnings("unchecked")
             @Override
             public void set(Object value) {
                 for (int i = list.size(); i <= index; i++) { list.add(null); }
