@@ -56,18 +56,7 @@
         </dependency>
     </dependencies>
 
-    <properties>
-        <jersey-module-version></jersey-module-version>
-    </properties>
-
     <build>
-        <resources>
-            <resource>
-                <directory>${basedir}/src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -79,10 +68,17 @@
     <profiles>
         <profile>
             <id>bundle</id>
-            <properties>
-                <jersey-module-version>${jersey-version}</jersey-module-version>
-            </properties>
             <build>
+                <resources>
+                    <resource>
+                        <directory>${basedir}/src/main/resources</directory>
+                        <filtering>true</filtering>
+                    </resource>
+                    <resource>
+                        <directory>${basedir}/src/bundle/resources</directory>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.felix</groupId>
