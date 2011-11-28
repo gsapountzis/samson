@@ -56,6 +56,10 @@
         </dependency>
     </dependencies>
 
+    <properties>
+        <jersey-module-version></jersey-module-version>
+    </properties>
+
     <build>
         <resources>
             <resource>
@@ -71,4 +75,39 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>bundle</id>
+            <properties>
+                <jersey-module-version>${jersey-version}</jersey-module-version>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>maven-bundle-plugin</artifactId>
+                        <configuration>
+                            <instructions>
+                                <!-- Bundle version must match jersey version -->
+                                <Bundle-Version>${jersey-version}</Bundle-Version>
+                                <!-- Bundle name must start with "com.sun.jersey" -->
+                                <Bundle-SymbolicName>com.sun.jersey.contribs.samson</Bundle-SymbolicName>
+                                <Export-Package>samson.*;version=${project.version}</Export-Package>
+                            </instructions>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>osgi-bundle</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>bundle</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

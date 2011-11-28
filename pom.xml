@@ -12,7 +12,6 @@
     <modules>
         <module>samson-core</module>
         <module>samson-jersey</module>
-        <module>samson-jersey-bundle</module>
         <module>examples</module>
     </modules>
 
