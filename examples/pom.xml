@@ -16,6 +16,7 @@
 
     <modules>
         <module>samson-example-jsp</module>
+        <module>samson-example-scalate</module>
     </modules>
 
     <properties>
