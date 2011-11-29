@@ -16,4 +16,6 @@ Reuse some basic annotations from JAXB/JSON frameworks.
 
 ### Integration with multipart/form-data
 
+### Port to RESTEasy
+
 ### Use resource method parameter name as default request parameter name
