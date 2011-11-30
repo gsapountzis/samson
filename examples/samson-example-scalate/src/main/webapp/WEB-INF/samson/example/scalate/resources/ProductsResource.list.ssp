@@ -1,0 +1,26 @@
+
+<%@ val it: ProductsResource %>
+<% val products = it.products %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Name</th>
+      <th>Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    #for(product <- products)
+      <tr>
+        <td><a href='${ uri("/products/" + product.id) }'>${ product.code }</a></td>
+        <td>${ product.name }</td>
+        <td>${ product.price }</td>
+      </tr>
+    #end
+  </tbody>
+</table>
+
+<div>
+  <a href='${ uri("/products/new") }' class="btn">Create new</a>
+</div>

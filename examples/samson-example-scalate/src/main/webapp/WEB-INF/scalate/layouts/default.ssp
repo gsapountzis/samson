@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<%@ var body: String %>
+<%@ var title: String = "Samson Scalate Example" %>
+
+<html>
+  <head>
+    <title>${ title }</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href='${ uri("/resources/css/bootstrap.min.css") }' />
+    <link rel="stylesheet" type="text/css" href='${ uri("/resources/css/bootstrap-container-app.css") }' />
+    <script type="text/javascript" src='${ uri("/resources/js/jquery-1.6.2.min.js") }'></script>
+  </head>
+
+  <body>
+
+    <div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <a class="brand" href='${ uri("/") }'>Samson Scalate</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="content">
+
+        ${ unescape(body) }
+        
+      </div>
+
+    </div>
+
+  </body>
+</html>

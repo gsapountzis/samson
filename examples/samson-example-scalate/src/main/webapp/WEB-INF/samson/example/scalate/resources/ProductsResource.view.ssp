@@ -1,0 +1,36 @@
+
+<%@ val it: ProductsResource %>
+<% val id = it.id %>
+<% val product = it.product %>
+
+<form>
+  <fieldset>
+
+    <div class="clearfix">
+      <label>Code</label>
+      <div class="input">
+        <span class="uneditable-input">${ product.code }</span>
+      </div>
+    </div>
+
+    <div class="clearfix">
+      <label>Name</label>
+      <div class="input">
+        <span class="uneditable-input">${ product.name }</span>
+      </div>
+    </div>
+
+    <div class="clearfix">
+      <label>Price</label>
+      <div class="input">
+        <span class="uneditable-input">${ product.price }</span>
+      </div>
+    </div>
+
+  </fieldset>
+
+  <div class="actions">
+    <a href='${ uri("/products/" + id + "/edit") }' class="btn">Edit</a>&nbsp;
+    <a href='${ uri("/products") }' class="btn">View list</a>
+  </div>
+</form>
