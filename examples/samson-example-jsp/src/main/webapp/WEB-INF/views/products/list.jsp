@@ -9,49 +9,52 @@
 <c:set var="products" value="${ it }" />
 
 <html>
-<head>
-  <title>Samson JSP Example</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/bootstrap.min.css" />" />
-  <script type="text/javascript" src="<c:url value="/resources/js/jquery-1.6.2.min.js" />"></script>
-</head>
-<body>
+  <head>
+    <title>Samson JSP Example</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/bootstrap.min.css" />" />
+    <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/bootstrap-container-app.css" />" />
+    <script type="text/javascript" src="<c:url value="/resources/js/jquery-1.6.2.min.js" />"></script>
+  </head>
 
-  <header>
-    <div class="inner">
-      <div class="container">
-        <h2>Samson JSP</h2>
+  <body>
+
+    <div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <a class="brand" href="<c:url value="/" />">Samson JSP</a>
+        </div>
       </div>
     </div>
-  </header>
 
-  <section>
     <div class="container">
 
-      <table>
-        <thead>
-          <tr>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          <c:forEach var="product" items="${ products }">
+      <div class="content">
+        <table>
+          <thead>
             <tr>
-              <td><a href="<c:url value="/products/${ product.id }" />"><c:out value="${ product.code }" /></a></td>
-              <td><c:out value="${ product.name }" /></td>
-              <td><c:out value="${ product.price }" /></td>
+              <th>Code</th>
+              <th>Name</th>
+              <th>Price</th>
             </tr>
-          </c:forEach>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <c:forEach var="product" items="${ products }">
+              <tr>
+                <td><a href="<c:url value="/products/${ product.id }" />"><c:out value="${ product.code }" /></a></td>
+                <td><c:out value="${ product.name }" /></td>
+                <td><c:out value="${ product.price }" /></td>
+              </tr>
+            </c:forEach>
+          </tbody>
+        </table>
 
-      <div class="actions">
-        <a href="<c:url value="/products/new" />" class="btn">Create new</a>
-      </div>
+        <div>
+          <a href="<c:url value="/products/new" />" class="btn">Create new</a>
+        </div>
     </div>
-  </section>
 
-</body>
+  </div>
+
+  </body>
 </html>

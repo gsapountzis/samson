@@ -10,57 +10,61 @@
 <c:set var="product" value="${ it.product }" />
 
 <html>
-<head>
-  <title>Samson JSP Example</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/bootstrap.min.css" />" />
-  <script type="text/javascript" src="<c:url value="/resources/js/jquery-1.6.2.min.js" />"></script>
-</head>
-<body>
+  <head>
+    <title>Samson JSP Example</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/bootstrap.min.css" />" />
+    <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/bootstrap-container-app.css" />" />
+    <script type="text/javascript" src="<c:url value="/resources/js/jquery-1.6.2.min.js" />"></script>
+  </head>
 
-  <header>
-    <div class="inner">
-      <div class="container">
-        <h2>Samson JSP</h2>
+  <body>
+
+    <div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <a class="brand" href="<c:url value="/" />">Samson JSP</a>
+        </div>
       </div>
     </div>
-  </header>
 
-  <section>
     <div class="container">
-      <form>
-        <fieldset>
 
-          <div class="clearfix">
-            <label>Code</label>
-            <div class="input">
-              <span class="uneditable-input"><c:out value="${ product.code }" /></span>
+      <div class="content">
+        <form>
+          <fieldset>
+
+            <div class="clearfix">
+              <label>Code</label>
+              <div class="input">
+                <span class="uneditable-input"><c:out value="${ product.code }" /></span>
+              </div>
             </div>
-          </div>
 
-          <div class="clearfix">
-            <label>Name</label>
-            <div class="input">
-              <span class="uneditable-input"><c:out value="${ product.name }" /></span>
+            <div class="clearfix">
+              <label>Name</label>
+              <div class="input">
+                <span class="uneditable-input"><c:out value="${ product.name }" /></span>
+              </div>
             </div>
-          </div>
 
-          <div class="clearfix">
-            <label>Price</label>
-            <div class="input">
-              <span class="uneditable-input"><c:out value="${ product.price }" /></span>
+            <div class="clearfix">
+              <label>Price</label>
+              <div class="input">
+                <span class="uneditable-input"><c:out value="${ product.price }" /></span>
+              </div>
             </div>
+
+          </fieldset>
+
+          <div class="actions">
+            <a href="<c:url value="/products/${ id }/edit" />" class="btn">Edit</a>&nbsp;
+            <a href="<c:url value="/products" />" class="btn">View list</a>
           </div>
+        </form>
+      </div>
 
-        </fieldset>
-
-        <div class="actions">
-          <a href="<c:url value="/products/${ id }/edit" />" class="btn">Edit</a>&nbsp;
-          <a href="<c:url value="/products" />" class="btn">View list</a>
-        </div>
-      </form>
     </div>
-  </section>
 
-</body>
+  </body>
 </html>
