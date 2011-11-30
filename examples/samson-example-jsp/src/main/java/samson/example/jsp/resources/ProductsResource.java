@@ -4,6 +4,7 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 
 import javax.ws.rs.FormParam;
@@ -29,16 +30,14 @@ public class ProductsResource {
     @GET
     public Response list() {
         Collection<Product> products = Repository.get().getProducts();
-
-        Viewable view = Views.products.list(products);
-        return Response.ok(view).build();
+        return Response.ok(Views.list(products)).build();
     }
 
     @Path("new")
     @GET
     public Response create() {
-        Viewable view = Views.products.create(jForm.wrap(Product.class));
-        return Response.ok(view).build();
+        JForm<Product> productForm = jForm.wrap(Product.class);
+        return Response.ok(Views.create(productForm)).build();
     }
 
     /**
@@ -48,15 +47,13 @@ public class ProductsResource {
     public Response save(@FormParam("product") JForm<Product> productForm) {
 
         if (productForm.hasErrors()) {
-            Viewable view = Views.products.create(productForm);
-            return Response.status(BAD_REQUEST).entity(view).build();
+            return Response.status(BAD_REQUEST).entity(Views.create(productForm)).build();
         }
 
         Product product = productForm.get();
         Long id = Repository.get().createProduct(product);
 
-        URI path = Paths.products.view(id);
-        return Response.seeOther(path).build();
+        return Response.seeOther(Paths.view(id)).build();
     }
 
     @Path("{id}")
@@ -67,8 +64,7 @@ public class ProductsResource {
             return Response.status(NOT_FOUND).build();
         }
 
-        Viewable view = Views.products.view(id, product);
-        return Response.ok(view).build();
+        return Response.ok(Views.view(id, product)).build();
     }
 
     @Path("{id}/edit")
@@ -79,8 +75,8 @@ public class ProductsResource {
             return Response.status(NOT_FOUND).build();
         }
 
-        Viewable view = Views.products.edit(id, jForm.wrap(Product.class, product));
-        return Response.ok(view).build();
+        JForm<Product> productForm = jForm.wrap(Product.class, product);
+        return Response.ok(Views.edit(id, productForm)).build();
     }
 
     /**
@@ -93,15 +89,88 @@ public class ProductsResource {
         JForm<Product> productForm = jForm.bind(Product.class).form("product");
 
         if (productForm.hasErrors()) {
-            Viewable view = Views.products.edit(id, productForm);
-            return Response.status(BAD_REQUEST).entity(view).build();
+            return Response.status(BAD_REQUEST).entity(Views.edit(id, productForm)).build();
         }
 
         Product product = productForm.get();
         Repository.get().updateProduct(id, product);
 
-        URI path = Paths.products.view(id);
-        return Response.seeOther(path).build();
+        return Response.seeOther(Paths.view(id)).build();
+    }
+
+    public static class Paths  {
+
+        public static URI list() {
+            try {
+                return new URI("/products");
+            } catch (URISyntaxException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        public static URI view(Long id) {
+            try {
+                return new URI(String.format("/products/%d", id));
+            } catch (URISyntaxException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+    }
+
+    public static class Views {
+
+        public static Viewable list(Collection<Product> products) {
+            Model model = new Model(products, null, null, null);
+            return new Viewable("/WEB-INF/views/products/list", model);
+        }
+
+        public static Viewable create(JForm<Product> productForm) {
+            Model model = new Model(null, productForm, null, null);
+            return new Viewable("/WEB-INF/views/products/create", model);
+        }
+
+        public static Viewable view(Long id, Product product) {
+            Model model = new Model(null, null, id, product);
+            return new Viewable("/WEB-INF/views/products/view", model);
+        }
+
+        public static Viewable edit(Long id, JForm<Product> productForm) {
+            Model model = new Model(null, productForm, id, null);
+            return new Viewable("/WEB-INF/views/products/edit", model);
+        }
+
+    }
+
+    /** Tuple */
+    public static class Model {
+        public final Collection<Product> products;
+        public final JForm<Product> productForm;
+        public final Long id;
+        public final Product product;
+
+        Model(Collection<Product> products, JForm<Product> productForm, Long id, Product product) {
+            this.products = products;
+            this.productForm = productForm;
+            this.id = id;
+            this.product = product;
+        }
+
+        public Collection<Product> getProducts() {
+            return products;
+        }
+
+        public JForm<Product> getProductForm() {
+            return productForm;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public Product getProduct() {
+            return product;
+        }
     }
 
 }

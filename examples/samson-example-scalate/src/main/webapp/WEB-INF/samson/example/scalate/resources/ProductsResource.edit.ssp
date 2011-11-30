@@ -1,6 +1,6 @@
 <%@ val it: ProductsResource %>
-<% val id = it.id %>
-<% val product = it.productForm.getFields %>
+<% val id = it.model.id %>
+<% val product = it.model.productForm.getFields %>
 
 <form action='${ uri("/products/" + id) }' method="post">
   <fieldset>

@@ -1,6 +1,5 @@
-
 <%@ val it: ProductsResource %>
-<% val products = it.products %>
+<% val products = it.model.products %>
 
 <table>
   <thead>

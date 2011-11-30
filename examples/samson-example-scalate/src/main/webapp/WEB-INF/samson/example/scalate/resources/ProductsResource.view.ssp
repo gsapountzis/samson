@@ -1,7 +1,6 @@
-
 <%@ val it: ProductsResource %>
-<% val id = it.id %>
-<% val product = it.product %>
+<% val id = it.model.id %>
+<% val product = it.model.product %>
 
 <form>
   <fieldset>

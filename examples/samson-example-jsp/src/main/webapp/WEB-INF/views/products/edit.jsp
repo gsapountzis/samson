@@ -7,7 +7,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <c:set var="id" value="${ it.id }" />
-<c:set var="product" value="${ it.form.fields }" />
+<c:set var="product" value="${ it.productForm.fields }" />
 
 <html>
   <head>
