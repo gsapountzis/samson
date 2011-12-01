@@ -109,6 +109,8 @@ public interface JForm<T> {
      */
     public static interface Field {
 
+        String getName();
+
         Object getObjectValue();
 
         String getValue();

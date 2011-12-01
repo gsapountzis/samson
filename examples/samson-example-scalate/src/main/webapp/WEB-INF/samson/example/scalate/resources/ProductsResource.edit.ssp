@@ -7,19 +7,9 @@
 
     <div class='clearfix ${ if(product("code").isError) "error" }'>
       <label for="code">Code</label>
-      <div class="input">
+      <% layout("div.input.ssp", Map("field" -> product("code"))) { %>
         <input class="xlarge" id="code" name="product.code" size="30" type="text" value='${ product("code").getValue }' />
-
-        <span class="help-inline">
-          ${ product("code").getConversionMessage }
-
-          #if(product("code").getConversionMessage == null)
-            #for(message <- product("code").getValidationMessages)
-              ${ message }
-            #end
-          #end
-        </span>
-      </div>
+      <% } %>
     </div>
 
     <div class='clearfix ${ if(product("name").isError) "error" }'>

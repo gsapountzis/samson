@@ -142,6 +142,11 @@ abstract class AbstractForm<T> implements JForm<T> {
                 private final String param = (String) key;
 
                 @Override
+                public String getName() {
+                    return param;
+                }
+
+                @Override
                 public Object getObjectValue() {
                     return form.getObjectValue(param);
                 }
