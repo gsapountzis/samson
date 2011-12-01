@@ -27,7 +27,7 @@
       <div class="content">
 
         ${ unescape(body) }
-        
+
       </div>
 
     </div>
