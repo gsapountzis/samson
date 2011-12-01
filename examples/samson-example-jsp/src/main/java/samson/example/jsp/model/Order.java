@@ -1,4 +1,4 @@
-package samson.example.jsp.domain;
+package samson.example.jsp.model;
 
 import java.util.ArrayList;
 import java.util.Date;

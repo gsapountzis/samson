@@ -1,13 +1,10 @@
-package samson.example.jsp.resources;
+package samson.example.jsp.model;
 
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-
-import samson.example.jsp.domain.Order;
-import samson.example.jsp.domain.Product;
 
 public class Repository {
 

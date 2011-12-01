@@ -1,4 +1,4 @@
-package samson.example.scalate.domain;
+package samson.example.jsp.model;
 
 import java.math.BigDecimal;
 
@@ -19,5 +19,21 @@ public class Product {
     @NotNull
     @DecimalMin("0.01")
     public BigDecimal price;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
 
 }

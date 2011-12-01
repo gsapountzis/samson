@@ -1,12 +1,10 @@
-package samson.example.scalate.resources;
+package samson.example.scalate.model;
 
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-
-import samson.example.scalate.domain.Product;
 
 public class Repository {
 

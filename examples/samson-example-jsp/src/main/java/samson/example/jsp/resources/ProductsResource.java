@@ -17,7 +17,8 @@ import javax.ws.rs.core.Response;
 
 import samson.JForm;
 import samson.JFormProvider;
-import samson.example.jsp.domain.Product;
+import samson.example.jsp.model.Product;
+import samson.example.jsp.model.Repository;
 
 import com.sun.jersey.api.view.Viewable;
 
