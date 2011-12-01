@@ -33,16 +33,18 @@
         <form action="<c:url value="/products" />" method="post">
           <fieldset>
 
-            <div class="clearfix <c:if test="${ product['code'].error }">error</c:if>" >
+            <c:set var="field" value="${ product['code'] }" />
+
+            <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
               <label for="code">Code</label>
               <div class="input">
-                <input class="xlarge" id="code" name="product.code" size="30" type="text" value="${fn:escapeXml( product['code'].value )}" />
+                <input class="xlarge" id="code" name="product.code" size="30" type="text" value="${fn:escapeXml( field.value )}" />
 
                 <span class="help-inline">
-                  <c:out value="${ product['code'].conversionMessage }" />
+                  <c:out value="${ field.conversionMessage }" />
 
-                  <c:if test="${ empty product['code'].conversionMessage }">
-                    <c:forEach var="message" items="${ product['code'].validationMessages }">
+                  <c:if test="${ empty field.conversionMessage }">
+                    <c:forEach var="message" items="${ field.validationMessages }">
                       <c:out value="${ message }" />
                     </c:forEach>
                   </c:if>
@@ -50,16 +52,18 @@
               </div>
             </div>
 
-            <div class="clearfix <c:if test="${ product['name'].error }">error</c:if>" >
+            <c:set var="field" value="${ product['name'] }" />
+
+            <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
               <label for="name">Name</label>
               <div class="input">
-                <input class="xlarge" id="name" name="product.name" size="30" type="text" value="${fn:escapeXml( product['name'].value )}" />
+                <input class="xlarge" id="name" name="product.name" size="30" type="text" value="${fn:escapeXml( field.value )}" />
 
                 <span class="help-inline">
-                  <c:out value="${ product['name'].conversionMessage }" />
+                  <c:out value="${ field.conversionMessage }" />
 
-                  <c:if test="${ empty product['name'].conversionMessage }">
-                    <c:forEach var="message" items="${ product['name'].validationMessages }">
+                  <c:if test="${ empty field.conversionMessage }">
+                    <c:forEach var="message" items="${ field.validationMessages }">
                       <c:out value="${ message }" />
                     </c:forEach>
                   </c:if>
@@ -67,16 +71,18 @@
               </div>
             </div>
 
-            <div class="clearfix <c:if test="${ product['price'].error }">error</c:if>" >
+            <c:set var="field" value="${ product['price'] }" />
+
+            <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
               <label for="price">Price</label>
               <div class="input">
-                <input class="xlarge" id="price" name="product.price" size="30" type="text" value="${fn:escapeXml( product['price'].value )}" />
+                <input class="xlarge" id="price" name="product.price" size="30" type="text" value="${fn:escapeXml( field.value )}" />
 
                 <span class="help-inline">
-                  <c:out value="${ product['price'].conversionMessage }" />
+                  <c:out value="${ field.conversionMessage }" />
 
-                  <c:if test="${ empty product['price'].conversionMessage }">
-                    <c:forEach var="message" items="${ product['price'].validationMessages }">
+                  <c:if test="${ empty field.conversionMessage }">
+                    <c:forEach var="message" items="${ field.validationMessages }">
                       <c:out value="${ message }" />
                     </c:forEach>
                   </c:if>
