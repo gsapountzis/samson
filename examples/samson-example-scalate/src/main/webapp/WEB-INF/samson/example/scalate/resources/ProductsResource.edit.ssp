@@ -2,26 +2,21 @@
 <% val id = it.model.id %>
 <% val product = it.model.productForm.getFields %>
 
-<form action='${ uri("/products/" + id) }' method="post">
+<form action="${ uri("/products/" + id) }" method="post">
   <fieldset>
 
-    <div class='clearfix ${ if(product("code").isError) "error" }'>
-      <label for="code">Code</label>
-      <% layout("div.input.ssp", Map("field" -> product("code"))) { %>
-        <input class="xlarge" id="code" name="product.code" size="30" type="text" value='${ product("code").getValue }' />
-      <% } %>
-    </div>
+    <% var field = product("code") %>
 
-    <div class='clearfix ${ if(product("name").isError) "error" }'>
-      <label for="name">Name</label>
+    <div class="clearfix ${ if(field.isError) "error" }">
+      <label for="code">Code</label>
       <div class="input">
-        <input class="xlarge" id="name" name="product.name" size="30" type="text" value='${ product("name").getValue }' />
+        <input class="xlarge" id="code" name="product.code" size="30" type="text" value="${ field.getValue }" />
 
         <span class="help-inline">
-          ${ product("name").getConversionMessage }
+          ${ field.getConversionMessage }
 
-          #if(product("name").getConversionMessage == null)
-            #for(message <- product("name").getValidationMessages)
+          #if(field.getConversionMessage == null)
+            #for(message <- field.getValidationMessages)
               ${ message }
             #end
           #end
@@ -29,16 +24,37 @@
       </div>
     </div>
 
-    <div class='clearfix ${ if(product("price").isError) "error" }'>
-      <label for="price">Price</label>
+    <% field = product("name") %>
+
+    <div class="clearfix ${ if(field.isError) "error" }">
+      <label for="name">Name</label>
       <div class="input">
-        <input class="xlarge" id="price" name="product.price" size="30" type="text" value='${ product("price").getValue }' />
+        <input class="xlarge" id="name" name="product.name" size="30" type="text" value="${ field.getValue }" />
 
         <span class="help-inline">
-          ${ product("price").getConversionMessage }
+          ${ field.getConversionMessage }
 
-          #if(product("price").getConversionMessage == null)
-            #for(message <- product("price").getValidationMessages)
+          #if(field.getConversionMessage == null)
+            #for(message <- field.getValidationMessages)
+              ${ message }
+            #end
+          #end
+        </span>
+      </div>
+    </div>
+
+    <% field = product("price") %>
+
+    <div class="clearfix ${ if(field.isError) "error" }">
+      <label for="price">Price</label>
+      <div class="input">
+        <input class="xlarge" id="price" name="product.price" size="30" type="text" value="${ field.getValue }" />
+
+        <span class="help-inline">
+          ${ field.getConversionMessage }
+
+          #if(field.getConversionMessage == null)
+            #for(message <- field.getValidationMessages)
               ${ message }
             #end
           #end
@@ -50,6 +66,6 @@
 
   <div class="actions">
     <input type="submit" class="btn primary" value="Update">&nbsp;
-    <a href='${ uri("/products/" + id) }' class="btn">Cancel</a>
+    <a href="${ uri("/products/" + id) }" class="btn">Cancel</a>
   </div>
 </form>

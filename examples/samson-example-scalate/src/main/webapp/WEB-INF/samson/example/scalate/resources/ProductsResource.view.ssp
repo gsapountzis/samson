@@ -29,7 +29,7 @@
   </fieldset>
 
   <div class="actions">
-    <a href='${ uri("/products/" + id + "/edit") }' class="btn">Edit</a>&nbsp;
-    <a href='${ uri("/products") }' class="btn">View list</a>
+    <a href="${ uri("/products/" + id + "/edit") }" class="btn">Edit</a>&nbsp;
+    <a href="${ uri("/products") }" class="btn">View list</a>
   </div>
 </form>

@@ -12,7 +12,7 @@
   <tbody>
     #for(product <- products)
       <tr>
-        <td><a href='${ uri("/products/" + product.id) }'>${ product.code }</a></td>
+        <td><a href="${ uri("/products/" + product.id) }">${ product.code }</a></td>
         <td>${ product.name }</td>
         <td>${ product.price }</td>
       </tr>
@@ -21,5 +21,5 @@
 </table>
 
 <div>
-  <a href='${ uri("/products/new") }' class="btn">Create new</a>
+  <a href="${ uri("/products/new") }" class="btn">Create new</a>
 </div>
