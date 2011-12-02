@@ -45,8 +45,8 @@
                   <c:out value="${ field.conversionMessage }" />
 
                   <c:if test="${ empty field.conversionMessage }">
-                    <c:forEach var="message" items="${ field.validationMessages }">
-                      <c:out value="${ message }" />
+                    <c:forEach var="message" items="${ field.validationMessages }" varStatus="status">
+                      <c:out value="${ message }" /> ${ not status.last ? ", " : "" }
                     </c:forEach>
                   </c:if>
                 </span>
@@ -64,8 +64,8 @@
                   <c:out value="${ field.conversionMessage }" />
 
                   <c:if test="${ empty field.conversionMessage }">
-                    <c:forEach var="message" items="${ field.validationMessages }">
-                      <c:out value="${ message }" />
+                    <c:forEach var="message" items="${ field.validationMessages }" varStatus="status">
+                      <c:out value="${ message }" /> ${ not status.last ? ", " : "" }
                     </c:forEach>
                   </c:if>
                 </span>
@@ -83,8 +83,8 @@
                   <c:out value="${ field.conversionMessage }" />
 
                   <c:if test="${ empty field.conversionMessage }">
-                    <c:forEach var="message" items="${ field.validationMessages }">
-                      <c:out value="${ message }" />
+                    <c:forEach var="message" items="${ field.validationMessages }" varStatus="status">
+                      <c:out value="${ message }" /> ${ not status.last ? ", " : "" }
                     </c:forEach>
                   </c:if>
                 </span>
