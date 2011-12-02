@@ -3,14 +3,13 @@
 <% val product = it.model.productForm.getFields %>
 
 <%
-  def using[A](a: A)(componentBody: A => String) = unescape(componentBody(a))
-  def using2[A, B](a: A, b: B)(componentBody: (A, B) => String) = unescape(componentBody(a, b))
+  def using[A](a: A)(body: A => Unit) = body(a)
 %>
 
 <form action="${ uri("/products/" + id) }" method="post">
   <fieldset>
 
-  <%= using(product("code")) { field => capture { %>
+  <% using(product("code")) { field => %>
     <div class="clearfix <%= if (field.isError) "error" %>">
       <label for="code">Code</label>
 
@@ -26,9 +25,9 @@
         </span>
       </div>
     </div>
-  <% } } %>
+  <% } %>
 
-  <%= using(product("name")) { field => capture { %>
+  <% using(product("name")) { field => %>
     <div class="clearfix <%= if (field.isError) "error" %>">
       <label for="name">Name</label>
 
@@ -44,9 +43,9 @@
         </span>
       </div>
     </div>
-  <% } } %>
+  <% } %>
 
-  <%= using(product("price")) { field => capture { %>
+  <% using(product("price")) { field => %>
     <div class="clearfix <%= if (field.isError) "error" %>">
       <label for="price">Price</label>
 
@@ -62,7 +61,7 @@
         </span>
       </div>
     </div>
-  <% } } %>
+  <% } %>
 
   </fieldset>
 

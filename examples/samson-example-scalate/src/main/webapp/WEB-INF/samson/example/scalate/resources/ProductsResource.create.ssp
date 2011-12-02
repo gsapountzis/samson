@@ -1,11 +1,14 @@
 <%@ val it: ProductsResource %>
 <% val product = it.model.productForm.getFields %>
 
+<%
+  def using[A](a: A)(body: A => Unit) = body(a)
+%>
+
 <form action="${ uri("/products") }" method="post">
   <fieldset>
 
-    <% var field = product("code") %>
-
+  <% using(product("code")) { field => %>
     <div class="clearfix <%= if (field.isError) "error" %>">
       <label for="code">Code</label>
 
@@ -21,9 +24,9 @@
         </span>
       </div>
     </div>
+  <% } %>
 
-    <% field = product("name") %>
-
+  <% using(product("name")) { field => %>
     <div class="clearfix <%= if (field.isError) "error" %>">
       <label for="name">Name</label>
 
@@ -39,9 +42,9 @@
         </span>
       </div>
     </div>
+  <% } %>
 
-    <% field = product("price") %>
-
+  <% using(product("price")) { field => %>
     <div class="clearfix <%= if (field.isError) "error" %>">
       <label for="price">Price</label>
 
@@ -57,6 +60,7 @@
         </span>
       </div>
     </div>
+  <% } %>
 
   </fieldset>
 
