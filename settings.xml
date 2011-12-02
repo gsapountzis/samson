@@ -1,0 +1,155 @@
+<settings>
+    <profiles>
+        <profile>
+            <id>jboss-repo</id>
+            <repositories>
+                <repository>
+                    <id>jboss-public-repository-group</id>
+                    <name>JBoss Public repository</name>
+                    <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>jboss-public-repository-group</id>
+                    <name>JBoss Public repository</name>
+                    <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>never</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+
+        <profile>
+            <id>fusesource-repo</id>
+            <repositories>
+                <repository>
+                    <id>fusesource.nexus.m2</id>
+                    <name>FuseSource Community Repository</name>
+                    <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                </repository>
+                <repository>
+                    <id>fusesource.nexus.m2-snapshot</id>
+                    <name>FuseSource Community Snapshot Repository</name>
+                    <url>http://repo.fusesource.com/nexus/content/groups/public-snapshots/</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>fusesource.nexus.m2</id>
+                    <name>FuseSource Community Repository</name>
+                    <url>http://repo.fusesource.com/nexus/content/groups/public/</url>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                </pluginRepository>
+                <pluginRepository>
+                    <id>fusesource.nexus.m2-snapshot</id>
+                    <name>FuseSource Community Snapshot Repository</name>
+                    <url>http://repo.fusesource.com/nexus/content/groups/public-snapshots/</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+
+        <profile>
+            <id>scala-repo</id>
+            <repositories>
+                <repository>
+                    <id>scala</id>
+                    <name>Scala Tools</name>
+                    <url>http://scala-tools.org/repo-releases</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>snapshots.scala-tools.org</id>
+                    <name>Scala-Tools Maven2 Snapshot Repository</name>
+                    <url>http://scala-tools.org/repo-snapshots</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </releases>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>scala</id>
+                    <name>Scala Tools</name>
+                    <url>http://scala-tools.org/repo-releases</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository>
+                <pluginRepository>
+                    <id>snapshots.scala-tools.org</id>
+                    <name>Scala-Tools Maven2 Snapshot Repository</name>
+                    <url>http://scala-tools.org/repo-snapshots</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </releases>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>jboss-repo</activeProfile>
+        <activeProfile>fusesource-repo</activeProfile>
+        <activeProfile>scala-repo</activeProfile>
+    </activeProfiles>
+</settings>
