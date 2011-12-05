@@ -23,7 +23,7 @@ Install the module and add the following dependency to your pom.xml:
 	<dependency>
 		<groupId>com.github.gsapountzis.samson</groupId>
 		<artifactId>samson-jersey</artifactId>
-		<version>0.1</version>
+		<version>0.2</version>
 	</dependency>
 
 The module has been tested on Jersey 1.10.
