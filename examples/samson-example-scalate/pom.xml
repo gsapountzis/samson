@@ -129,7 +129,8 @@
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <configuration>
-                    <scanIntervalSeconds>0</scanIntervalSeconds>
+                    <reload>automatic</reload>
+                    <scanIntervalSeconds>1</scanIntervalSeconds>
                     <webAppConfig>
                         <contextPath>/</contextPath>
                     </webAppConfig>
