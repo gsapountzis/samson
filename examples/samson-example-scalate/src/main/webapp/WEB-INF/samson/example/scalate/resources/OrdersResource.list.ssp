@@ -1,0 +1,29 @@
+<%@ val it: OrdersResource %>
+<% val orders = it.model.orders %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Customer</th>
+      <th>Order date</th>
+      <th>Ship date</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% orders.foreach(order => { %>
+      <tr>
+        <td><a href="${ uri("/orders/" + order.id) }">${ order.code }</a></td>
+        <td>${ order.customer.name }</td>
+        <td>${ order.orderDate }</td>
+        <td>${ order.shipDate }</td>
+        <td>${ order.status }</td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<!-- div>
+  <a href="${ uri("/orders/new") }" class="btn">Create new</a>
+</div -->

@@ -20,9 +20,7 @@ public class Repository {
     private Map<Long, Order> orders = new HashMap<Long, Order>();
 
     private Repository() {
-        Product product;
-
-        product = new Product();
+        Product product = new Product();
         product.code = "0596529260";
         product.name = "Restful Web Services";
         product.price = BigDecimal.valueOf(24.34);

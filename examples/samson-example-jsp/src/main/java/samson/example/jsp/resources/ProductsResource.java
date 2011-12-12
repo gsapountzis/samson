@@ -4,7 +4,6 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 
 import javax.ws.rs.FormParam;
@@ -14,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 import samson.JForm;
 import samson.JFormProvider;
@@ -102,19 +102,11 @@ public class ProductsResource {
     public static class Paths  {
 
         public static URI list() {
-            try {
-                return new URI("/products");
-            } catch (URISyntaxException ex) {
-                throw new RuntimeException(ex);
-            }
+            return UriBuilder.fromResource(ProductsResource.class).build();
         }
 
         public static URI view(Long id) {
-            try {
-                return new URI(String.format("/products/%d", id));
-            } catch (URISyntaxException ex) {
-                throw new RuntimeException(ex);
-            }
+            return UriBuilder.fromResource(ProductsResource.class).path(ProductsResource.class, "view").build(id);
         }
 
     }

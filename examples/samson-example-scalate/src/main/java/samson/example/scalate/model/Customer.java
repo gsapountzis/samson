@@ -1,4 +1,4 @@
-package samson.example.jsp.model;
+package samson.example.scalate.model;
 
 import javax.validation.constraints.Size;
 

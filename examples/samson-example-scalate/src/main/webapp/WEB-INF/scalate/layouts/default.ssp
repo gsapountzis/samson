@@ -18,6 +18,14 @@
       <div class="fill">
         <div class="container">
           <a class="brand" href="${ uri("/") }">Samson Scalate</a>
+          <ul class="nav">
+            <li class="">
+              <a href="${ uri("/products") }">Products</a>
+            </li>
+            <li class="">
+              <a href="${ uri("/orders") }">Orders</a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

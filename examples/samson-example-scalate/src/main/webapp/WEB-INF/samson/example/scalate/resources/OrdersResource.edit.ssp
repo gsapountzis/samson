@@ -1,0 +1,114 @@
+<%@ val it: OrdersResource %>
+<% val id = it.model.id %>
+<% val order = it.model.orderForm.getFields %>
+<% val customerOptions = it.getCustomerOptions %>
+
+<%
+  def using[A](a: A)(body: A => Unit) = body(a)
+%>
+
+<form action="${ uri("/orders/" + id) }" method="post">
+  <fieldset>
+    <legend>Information</legend>
+
+  <% using(order("customer.id")) { field => %>
+    <div class="clearfix <%= if (field.isError) "error" %>">
+      <label for="customer">Customer</label>
+
+      <div class="input">
+        <select id="customer" name="order.customer.id">
+          <% customerOptions.foreach(option => { %>
+            <option value="<%= option.key %>" <%= if (option.key == field.getValue) "selected" %>><%= option.value %></option>
+          <% }) %>
+        </select>
+        <span class="help-inline">
+          <%=
+            if (field.getConversionMessage != null)
+              field.getConversionMessage
+            else
+              field.getValidationMessages.mkString(", ")
+          %>
+        </span>
+      </div>
+    </div>
+  <% } %>
+
+  <% using(order("code")) { field => %>
+    <div class="clearfix <%= if (field.isError) "error" %>">
+      <label for="code">Code</label>
+
+      <div class="input">
+        <input class="xlarge" id="code" name="order.code" size="30" type="text" value="<%= field.getValue %>" />
+        <span class="help-inline">
+          <%=
+            if (field.getConversionMessage != null)
+              field.getConversionMessage
+            else
+              field.getValidationMessages.mkString(", ")
+          %>
+        </span>
+      </div>
+    </div>
+  <% } %>
+
+  <% using(order("orderDate")) { field => %>
+    <div class="clearfix <%= if (field.isError) "error" %>">
+      <label for="orderDate">Order date</label>
+
+      <div class="input">
+        <input class="xlarge" id="orderDate" name="order.orderDate" size="30" type="text" value="<%= field.getValue %>" />
+        <span class="help-inline">
+          <%=
+            if (field.getConversionMessage != null)
+              field.getConversionMessage
+            else
+              field.getValidationMessages.mkString(", ")
+          %>
+        </span>
+      </div>
+    </div>
+  <% } %>
+
+  <% using(order("shipDate")) { field => %>
+    <div class="clearfix <%= if (field.isError) "error" %>">
+      <label for="shipDate">Ship date</label>
+
+      <div class="input">
+        <input class="xlarge" id="shipDate" name="order.shipDate" size="30" type="text" value="<%= field.getValue %>" />
+        <span class="help-inline">
+          <%=
+            if (field.getConversionMessage != null)
+              field.getConversionMessage
+            else
+              field.getValidationMessages.mkString(", ")
+          %>
+        </span>
+      </div>
+    </div>
+  <% } %>
+
+  <% using(order("status")) { field => %>
+    <div class="clearfix <%= if (field.isError) "error" %>">
+      <label for="status">Status</label>
+
+      <div class="input">
+        <input class="xlarge" id="status" name="order.status" size="30" type="text" value="<%= field.getValue %>" />
+        <span class="help-inline">
+          <%=
+            if (field.getConversionMessage != null)
+              field.getConversionMessage
+            else
+              field.getValidationMessages.mkString(", ")
+          %>
+        </span>
+      </div>
+    </div>
+  <% } %>
+
+  </fieldset>
+
+  <div class="actions">
+    <input type="submit" class="btn primary" value="Update">&nbsp;
+    <a href="${ uri("/orders/" + id) }" class="btn">Cancel</a>
+  </div>
+</form>
