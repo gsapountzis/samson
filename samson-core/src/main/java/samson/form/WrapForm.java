@@ -3,7 +3,6 @@ package samson.form;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -110,14 +109,10 @@ class WrapForm<T> extends AbstractForm<T> {
 
     private ElementRef getPathElementRef(String param) {
         ElementRef ref = new ElementRef(parameter, valueAccessor);
-        Binder binder = null;
 
         Property.Path path = Property.Path.createPath(param);
-        Iterator<Property.Node> iter = path.iterator();
-        while (iter.hasNext()) {
-            binder = binderFactory.getBinder(ref, true);
-
-            Property.Node node = iter.next();
+        for (Property.Node node : path) {
+            Binder binder = binderFactory.getBinder(ref, true);
             ref = binder.getElementRef(node.getName());
             if (ref == ElementRef.NULL_REF) {
                 return ElementRef.NULL_REF;
