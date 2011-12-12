@@ -2,6 +2,9 @@ package samson.jersey;
 
 import static org.junit.Assert.assertEquals;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -23,8 +26,19 @@ public class RegisterTest {
         public boolean accept;
     }
 
+    private static ThreadLocal<SimpleDateFormat> dateFormat = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected synchronized SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("dd MMM yyyy", Locale.US);
+        }
+    };
+
     private static String string(User user) {
-        return "{" + user.getEmail() + ", " + user.getDob() + ", " + user.getGender() + "}";
+        String dob = null;
+        if (user.getDob() != null) {
+            dob = dateFormat.get().format(user.getDob());
+        }
+        return "{" + user.getEmail() + ", " + dob + ", " + user.getGender() + "}";
     }
 
     @Path("/")
@@ -101,7 +115,7 @@ public class RegisterTest {
         form.add("user.email", "foo");
         form.add("user.dob", "16 Aug 2011");
 
-        assertEquals("{{foo, Tue Aug 16 00:00:00 EEST 2011, null}, false}", r.path("bean").post(String.class, form));
+        assertEquals("{{foo, 16 Aug 2011, null}, false}", r.path("bean").post(String.class, form));
     }
 
     @Test

@@ -30,15 +30,16 @@ public class UnitTestUtils {
              * {@link JAXBStringReaderProviders.RootElementProvider} uses injection
              * and cannot be instantiated with a no-arg constructor.
              *
-             * The following list is taken from META-INF/services of jersey-server
-             * keeping the order and excluding the JAXB StringReader.
+             * The following list is taken from META-INF/services of jersey-server,
+             * excluding the JAXB StringReader. The order is changed to put specific
+             * providers (e.g. Date) before generic ones (e.g. StringConstructor).
              */
             this.readers = new LinkedHashSet<StringReaderProvider<?>>();
+            this.readers.add(new StringReaderProviders.DateProvider());
             this.readers.add(new StringReaderProviders.TypeFromStringEnum());
             this.readers.add(new StringReaderProviders.TypeValueOf());
             this.readers.add(new StringReaderProviders.TypeFromString());
             this.readers.add(new StringReaderProviders.StringConstructor());
-            this.readers.add(new StringReaderProviders.DateProvider());
         }
 
         @SuppressWarnings("unchecked")
