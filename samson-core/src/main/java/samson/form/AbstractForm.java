@@ -1,9 +1,13 @@
 package samson.form;
 
+import java.lang.annotation.Annotation;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -19,6 +23,8 @@ import samson.convert.MultivaluedExtractor;
 import samson.convert.MultivaluedExtractorProvider;
 import samson.metadata.Element;
 import samson.metadata.Element.Accessor;
+import samson.metadata.ListTcp;
+import samson.metadata.TypeClassPair;
 
 abstract class AbstractForm<T> implements JForm<T> {
 
@@ -228,36 +234,69 @@ abstract class AbstractForm<T> implements JForm<T> {
 
     // -- Conversion: toString()
 
-    private String convertToString(Object object) {
-        // XXX use Converter toString(object)
+    /**
+     * Ad-hoc formatter.
+     *
+     * XXX Should be replaced with a parser/formatter framework provided by the
+     * JAX-RS implementation. Right now Jersey only supports the parsing part,
+     * while RESTEasy seems to have support for both.
+     */
+    private String format(Element element, Object object) {
         if (object != null) {
-            return object.toString();
+            Class<?> clazz = element.tcp.c;
+            if (clazz == Date.class) {
+                Date date = (Date) object;
+                return dateFormat.get().format(date);
+            }
+            else {
+                return object.toString();
+            }
         }
         return null;
     }
 
-    protected String toStringValue(Class<?> clazz, Object object) {
+    private static ThreadLocal<SimpleDateFormat> dateFormat = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected synchronized SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("dd MMM yyyy", Locale.US);
+        }
+    };
+
+    protected String toStringValue(Element element, Object object) {
+        Class<?> clazz = element.tcp.c;
         if (Collection.class.isAssignableFrom(clazz)) {
-            return Utils.getFirst(toStringList(clazz, object));
+            return Utils.getFirst(toStringList(element, object));
         }
         else {
-            return convertToString(object);
+            return format(element, object);
         }
     }
 
-    protected List<String> toStringList(Class<?> clazz, Object object) {
+    protected List<String> toStringList(Element element, Object object) {
         List<String> stringList = new ArrayList<String>();
 
+        Class<?> clazz = element.tcp.c;
         if (Collection.class.isAssignableFrom(clazz)) {
+            Element itemElement = getItemElement(element);
             Collection<?> collection = (Collection<?>) object;
-            for (Object element : collection) {
-                stringList.add(convertToString(element));
+            for (Object item : collection) {
+                stringList.add(format(itemElement, item));
             }
         }
         else {
-            stringList.add(convertToString(object));
+            stringList.add(format(element, object));
         }
         return stringList;
+    }
+
+    private static Element getItemElement(Element listElement) {
+        ListTcp listTcp = new ListTcp(listElement.tcp);
+        Annotation[] annotations = listElement.annotations;
+
+        TypeClassPair itemTcp = listTcp.getElementTcp();
+        Element itemElement = new Element(annotations, itemTcp, "0");
+
+        return itemElement;
     }
 
     // -- Conversion: fromString()
@@ -269,20 +308,19 @@ abstract class AbstractForm<T> implements JForm<T> {
             return null;
         }
 
-        Class<?> clazz = element.tcp.c;
         try {
             Object object = extractValue(extractor, values);
-            return Conversion.fromValue(clazz, object);
+            return Conversion.fromValue(element, object);
         }
         catch (ConverterException ex) {
             // XXX handle empty as null
             String param = Utils.getFirst(values);
             if (Utils.isEmpty(param)) {
                 Object object = extractDefaultValue(extractor);
-                return Conversion.fromValue(clazz, object);
+                return Conversion.fromValue(element, object);
             }
             else {
-                return Conversion.fromError(clazz, ex.getCause());
+                return Conversion.fromError(element, ex.getCause());
             }
         }
     }

@@ -19,7 +19,6 @@ import samson.bind.Binder;
 import samson.convert.Conversion;
 import samson.metadata.Element;
 import samson.metadata.ElementRef;
-import samson.metadata.TypeClassPair;
 
 
 /**
@@ -87,8 +86,7 @@ class WrapForm<T> extends AbstractForm<T> {
             return null;
         }
 
-        Class<?> bindingClass = binding.getTargetClass();
-        return toStringValue(bindingClass, binding.getValue());
+        return toStringValue(binding.getElement(), binding.getValue());
     }
 
     @Override
@@ -98,8 +96,7 @@ class WrapForm<T> extends AbstractForm<T> {
             return null;
         }
 
-        Class<?> bindingClass = binding.getTargetClass();
-        return toStringList(bindingClass, binding.getValue());
+        return toStringList(binding.getElement(), binding.getValue());
     }
 
     @Override
@@ -127,10 +124,10 @@ class WrapForm<T> extends AbstractForm<T> {
         ElementRef ref = getPathElementRef(param);
         if (ref != ElementRef.NULL_REF) {
 
-            TypeClassPair paramTcp = ref.element.tcp;
+            Element paramElement = ref.element;
             Object paramValue = ref.accessor.get();
 
-            return Conversion.fromValue(paramTcp.c, paramValue);
+            return Conversion.fromValue(paramElement, paramValue);
         }
         else {
             return null;
@@ -149,8 +146,7 @@ class WrapForm<T> extends AbstractForm<T> {
             return null;
         }
 
-        Class<?> bindingClass = binding.getTargetClass();
-        return bindingClass.getSimpleName();
+        return binding.getElement().tcp.c.getSimpleName();
     }
 
     @Override

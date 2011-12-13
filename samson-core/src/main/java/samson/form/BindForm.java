@@ -228,8 +228,7 @@ class BindForm<T> extends AbstractForm<T> {
             return Utils.getFirst(node.getStringValues());
         }
         else {
-            Class<?> bindingClass = binding.getTargetClass();
-            return toStringValue(bindingClass, binding.getValue());
+            return toStringValue(binding.getElement(), binding.getValue());
         }
     }
 
@@ -245,8 +244,7 @@ class BindForm<T> extends AbstractForm<T> {
             return node.getStringValues();
         }
         else {
-            Class<?> bindingClass = binding.getTargetClass();
-            return toStringList(bindingClass, binding.getValue());
+            return toStringList(binding.getElement(), binding.getValue());
         }
     }
 
@@ -282,11 +280,9 @@ class BindForm<T> extends AbstractForm<T> {
             return null;
         }
 
-        String stringValue = Utils.getFirst(node.getStringValues());
-
         if (binding.isError()) {
-            Class<?> bindingClass = binding.getTargetClass();
-            return getErrorMessage(stringValue, bindingClass);
+            String stringValue = Utils.getFirst(node.getStringValues());
+            return getErrorMessage(binding.getElement(), stringValue);
         }
         return null;
     }
@@ -308,8 +304,8 @@ class BindForm<T> extends AbstractForm<T> {
 
     private final static String ERROR_MESSAGE_TEMPLATE = "cannot convert value '%s' to '%s'";
 
-    private static String getErrorMessage(String value, Class<?> clazz) {
-        return String.format(ERROR_MESSAGE_TEMPLATE, value, clazz.getSimpleName());
+    private static String getErrorMessage(Element element, String value) {
+        return String.format(ERROR_MESSAGE_TEMPLATE, value, element.tcp.c.getSimpleName());
     }
 
 }
