@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.ws.rs.core.MultivaluedMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import samson.JForm;
 import samson.bind.Binder;
@@ -27,7 +28,7 @@ import samson.metadata.ElementRef;
  */
 class BindForm<T> extends AbstractForm<T> {
 
-    private static final Logger LOGGER = Logger.getLogger(BindForm.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(BindForm.class);
 
     private static final boolean VALIDATE = true;
 
@@ -96,7 +97,7 @@ class BindForm<T> extends AbstractForm<T> {
 
         root = unnamedRoot.getDefinedChild(Path.createPath(rootPath));
 
-        LOGGER.log(Level.FINER, printTree(root));
+        LOGGER.trace(printTree(root));
     }
 
     private static String printTree(FormNode root) {
@@ -139,10 +140,10 @@ class BindForm<T> extends AbstractForm<T> {
         convert(binder.getNode(), root);
 
         for (Conversion conversion : conversionErrors) {
-            LOGGER.log(Level.FINE, "conversion error cause " + conversion.getCause());
+            LOGGER.debug("conversion error cause {}", conversion.getCause().toString());
         }
 
-        LOGGER.log(Level.FINER, printTree(root));
+        LOGGER.trace(printTree(root));
     }
 
     private void validate() {
@@ -158,7 +159,7 @@ class BindForm<T> extends AbstractForm<T> {
         }
 
         for (ConstraintViolation<T> violation : violations) {
-            LOGGER.log(Level.FINE, violation.getPropertyPath() + ": " + violation.getMessage());
+            LOGGER.debug("{}: {}", violation.getPropertyPath(), violation.getMessage());
         }
 
         // annotate the parameter tree with violations, parses and normalizes the property path
@@ -168,7 +169,7 @@ class BindForm<T> extends AbstractForm<T> {
             getViolations(param).add(violation);
         }
 
-        LOGGER.log(Level.FINER, printTree(root));
+        LOGGER.trace(printTree(root));
     }
 
     // -- Form methods

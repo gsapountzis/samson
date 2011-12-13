@@ -1,12 +1,13 @@
 package samson.form;
 
 import java.lang.annotation.Annotation;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.validation.Validation;
 import javax.validation.ValidationException;
 import javax.validation.ValidatorFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import samson.JForm;
 import samson.JFormProvider;
@@ -19,7 +20,7 @@ import samson.metadata.TypeClassPair;
 
 public class FormFactory implements JFormProvider {
 
-    private static final Logger LOGGER = Logger.getLogger(FormFactory.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(FormFactory.class);
 
     private final ParamsProvider formParams;
     private final ParamsProvider queryParams;
@@ -43,7 +44,7 @@ public class FormFactory implements JFormProvider {
             validatorFactory = Validation.buildDefaultValidatorFactory();
         }
         catch (ValidationException ex) {
-            LOGGER.log(Level.WARNING, "Unable to find validation provider", ex);
+            LOGGER.warn("Unable to find validation provider", ex);
             validatorFactory = null;
         }
         this.validatorFactory = validatorFactory;

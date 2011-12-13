@@ -5,8 +5,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import samson.convert.Converter;
 import samson.convert.ConverterProvider;
@@ -19,7 +20,7 @@ import samson.metadata.TypeClassPair;
 
 public class BinderFactory {
 
-    private static final Logger LOGGER = Logger.getLogger(BinderFactory.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(BinderFactory.class);
 
     private final BeanTcpCache beanCache;
     private ConverterProvider converterProvider;
@@ -92,7 +93,7 @@ public class BinderFactory {
                 if (!Modifier.isAbstract(modifiers)) {
                     Constructor<?> constructor = ReflectionHelper.getNoargConstructor(clazz);
                     if (constructor == null) {
-                        LOGGER.log(Level.WARNING, "Composite type " + tcp.c + " does not have a no-arg constructor");
+                        LOGGER.warn("Composite type {} does not have a no-arg constructor", tcp.c);
                         type = BinderType.NULL;
                     }
                 }
@@ -101,7 +102,7 @@ public class BinderFactory {
         else {
             boolean isStringType = stringTypePredicate.apply(tcp.c, tcp.t, null);
             if (!isStringType) {
-                LOGGER.log(Level.WARNING, "String-based type " + tcp.c + " does not have an extractor");
+                LOGGER.warn("String-based type {} does not have an extractor", tcp.c);
                 type = BinderType.NULL;
             }
         }
