@@ -7,6 +7,14 @@
   def using[A](a: A)(body: A => Unit) = body(a)
 %>
 
+<% attributes("stylesheets") = capture { %>
+<link rel="stylesheet" type="text/css" href="${ uri("/resources/css/smoothness/jquery-ui-1.8.16.custom.css") }" />
+<% } %>
+
+<% attributes("javascripts") = capture { %>
+<script type="text/javascript" src="${ uri("/resources/js/jquery-ui-1.8.16.custom.min.js") }"></script>
+<% } %>
+
 <form action="${ uri("/orders/" + id) }" method="post">
   <fieldset>
     <legend>Information</legend>
@@ -112,3 +120,18 @@
     <a href="${ uri("/orders/" + id) }" class="btn">Cancel</a>
   </div>
 </form>
+
+<script>
+$(function() {
+	var $order = $("#orderDate"),
+	    $ship = $("#shipDate"),
+	    dateOptions = {
+			dateFormat: "dd M yy",
+			showOn: "button",
+			buttonImageOnly: true
+		};
+
+	$order.datepicker(dateOptions);
+	$ship.datepicker(dateOptions);
+});
+</script>

@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 
-<%@ var body: String %>
-<%@ var title: String = "Samson Scalate Example" %>
+<%@ val body: String %>
+<%@ val title: String = "Samson Scalate Example" %>
+<%@ val stylesheets: String = "" %>
+<%@ val javascripts: String = "" %>
 
 <html>
   <head>
@@ -9,7 +11,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" type="text/css" href="${ uri("/resources/css/bootstrap.min.css") }" />
     <link rel="stylesheet" type="text/css" href="${ uri("/resources/css/bootstrap-container-app.css") }" />
+    ${ unescape(stylesheets) }
     <script type="text/javascript" src="${ uri("/resources/js/jquery-1.6.2.min.js") }"></script>
+    ${ unescape(javascripts) }
   </head>
 
   <body>
