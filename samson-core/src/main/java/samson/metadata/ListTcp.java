@@ -1,5 +1,6 @@
 package samson.metadata;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,13 +9,13 @@ import samson.jersey.core.reflection.ReflectionHelper;
 public class ListTcp {
 
     private final TypeClassPair tcp;
-    private final TypeClassPair elementTcp;
+    private final TypeClassPair itemTcp;
 
     public ListTcp(TypeClassPair tcp) {
         this.tcp = tcp;
-        this.elementTcp = ReflectionHelper.getTypeArgumentAndClass(tcp.t);
+        this.itemTcp = ReflectionHelper.getTypeArgumentAndClass(tcp.t);
 
-        if (elementTcp == null) {
+        if (itemTcp == null) {
             throw new IllegalArgumentException("Parameterized type without type arguement");
         }
     }
@@ -23,8 +24,12 @@ public class ListTcp {
         return tcp;
     }
 
-    public TypeClassPair getElementTcp() {
-        return elementTcp;
+    public TypeClassPair getItemTcp() {
+        return itemTcp;
+    }
+
+    public Element getItemElement(Annotation[] annotations, String name) {
+        return new Element(annotations, itemTcp, name);
     }
 
     public static List<?> createInstance(TypeClassPair listTcp) {

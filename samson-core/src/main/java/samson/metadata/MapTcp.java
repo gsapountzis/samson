@@ -1,5 +1,6 @@
 package samson.metadata;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,10 @@ public class MapTcp {
 
     public TypeClassPair getValueTcp() {
         return valueTcp;
+    }
+
+    public Element getValueElement(Annotation[] annotations, String name) {
+        return new Element(annotations, valueTcp, name);
     }
 
     public static Map<?, ?> createInstance(TypeClassPair mapTcp) {

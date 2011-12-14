@@ -26,6 +26,7 @@ class BeanBinder extends Binder {
                 continue;
 
             ParamNode<?> propertyTree = beanTree.getChild(property.name);
+
             ElementRef propertyRef = getElementRef(bean, property);
 
             Binder binder = factory.getBinder(propertyRef, propertyTree.hasChildren());

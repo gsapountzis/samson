@@ -24,7 +24,6 @@ import samson.convert.MultivaluedExtractorProvider;
 import samson.metadata.Element;
 import samson.metadata.Element.Accessor;
 import samson.metadata.ListTcp;
-import samson.metadata.TypeClassPair;
 
 abstract class AbstractForm<T> implements JForm<T> {
 
@@ -290,13 +289,10 @@ abstract class AbstractForm<T> implements JForm<T> {
     }
 
     private static Element getItemElement(Element listElement) {
-        ListTcp listTcp = new ListTcp(listElement.tcp);
         Annotation[] annotations = listElement.annotations;
+        ListTcp listTcp = new ListTcp(listElement.tcp);
 
-        TypeClassPair itemTcp = listTcp.getElementTcp();
-        Element itemElement = new Element(annotations, itemTcp, "0");
-
-        return itemElement;
+        return listTcp.getItemElement(annotations, "0");
     }
 
     // -- Conversion: fromString()

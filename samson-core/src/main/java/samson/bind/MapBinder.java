@@ -24,8 +24,8 @@ class MapBinder extends Binder {
      */
     @Override
     public void read(ParamNode<?> mapTree) {
-        MapTcp mapTcp = new MapTcp(ref.element.tcp);
         Annotation[] annotations = ref.element.annotations;
+        MapTcp mapTcp = new MapTcp(ref.element.tcp);
 
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
         if (map == null) {
@@ -50,8 +50,8 @@ class MapBinder extends Binder {
 
     @Override
     public ElementRef getElementRef(String name) {
-        MapTcp mapTcp = new MapTcp(ref.element.tcp);
         Annotation[] annotations = ref.element.annotations;
+        MapTcp mapTcp = new MapTcp(ref.element.tcp);
 
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
 
@@ -61,8 +61,7 @@ class MapBinder extends Binder {
     private ElementRef getElementRef(Annotation[] annotations, MapTcp mapTcp, Map<?,?> map, String stringKey) {
         Object key = getKey(mapTcp.getKeyTcp(), stringKey);
         if (key != null) {
-            TypeClassPair valueTcp = mapTcp.getValueTcp();
-            Element valueElement = new Element(annotations, valueTcp, stringKey);
+            Element valueElement = mapTcp.getValueElement(annotations, stringKey);
             Accessor valueAccessor = MapTcp.createAccessor(map, key);
             return new ElementRef(valueElement, valueAccessor);
         }

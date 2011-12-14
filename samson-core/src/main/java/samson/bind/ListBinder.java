@@ -7,7 +7,6 @@ import samson.metadata.Element;
 import samson.metadata.Element.Accessor;
 import samson.metadata.ElementRef;
 import samson.metadata.ListTcp;
-import samson.metadata.TypeClassPair;
 
 class ListBinder extends Binder {
 
@@ -20,8 +19,8 @@ class ListBinder extends Binder {
      */
     @Override
     public void read(ParamNode<?> listTree) {
-        ListTcp listTcp = new ListTcp(ref.element.tcp);
         Annotation[] annotations = ref.element.annotations;
+        ListTcp listTcp = new ListTcp(ref.element.tcp);
 
         List<?> list = (List<?>) ref.accessor.get();
         if (list == null) {
@@ -29,16 +28,16 @@ class ListBinder extends Binder {
             ref.accessor.set(list);
         }
 
-        for (ParamNode<?> elemTree : listTree.getChildren()) {
-            String stringIndex = elemTree.getName();
+        for (ParamNode<?> itemTree : listTree.getChildren()) {
+            String stringIndex = itemTree.getName();
 
-            ElementRef elemRef = getElementRef(annotations, listTcp, list, stringIndex);
-            if (elemRef == ElementRef.NULL_REF)
+            ElementRef itemRef = getElementRef(annotations, listTcp, list, stringIndex);
+            if (itemRef == ElementRef.NULL_REF)
                 continue;
 
-            Binder binder = factory.getBinder(elemRef, elemTree.hasChildren());
+            Binder binder = factory.getBinder(itemRef, itemTree.hasChildren());
             if (binder != Binder.NULL_BINDER) {
-                binder.read(elemTree);
+                binder.read(itemTree);
                 node.addChild(binder.getNode());
             }
         }
@@ -46,8 +45,8 @@ class ListBinder extends Binder {
 
     @Override
     public ElementRef getElementRef(String name) {
-        ListTcp listTcp = new ListTcp(ref.element.tcp);
         Annotation[] annotations = ref.element.annotations;
+        ListTcp listTcp = new ListTcp(ref.element.tcp);
 
         List<?> list = (List<?>) ref.accessor.get();
 
@@ -57,10 +56,9 @@ class ListBinder extends Binder {
     private ElementRef getElementRef(Annotation[] annotations, ListTcp listTcp, List<?> list, String stringIndex) {
         int index = getIndex(stringIndex);
         if (index >= 0) {
-            TypeClassPair elemTcp = listTcp.getElementTcp();
-            Element elemElement = new Element(annotations, elemTcp, stringIndex);
-            Accessor elemAccessor = ListTcp.createAccessor(list, index);
-            return new ElementRef(elemElement, elemAccessor);
+            Element itemElement = listTcp.getItemElement(annotations, stringIndex);
+            Accessor itemAccessor = ListTcp.createAccessor(list, index);
+            return new ElementRef(itemElement, itemAccessor);
         }
         else {
             return ElementRef.NULL_REF;
