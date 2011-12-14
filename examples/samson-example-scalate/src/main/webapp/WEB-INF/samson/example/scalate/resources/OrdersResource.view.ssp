@@ -55,8 +55,8 @@
   <% order.items.foreach(item => { %>
     <div class="clearfix">
       <div class="input">
-        <input class="xlarge" value="${ item.product.name }" disabled="disabled" />&nbsp;&times;&nbsp;
-        <input class="mini" value="${ item.qty }" disabled="disabled" />
+        <input class="xlarge" readonly="readonly" value="${ item.product.name }" />&nbsp;&times;&nbsp;
+        <input class="mini" readonly="readonly" value="${ item.qty }" />
       </div>
     </div>
   <% }) %>
