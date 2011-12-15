@@ -3,6 +3,9 @@ package samson.bind;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import samson.convert.Converter;
 import samson.convert.ConverterException;
 import samson.metadata.Element;
@@ -12,6 +15,8 @@ import samson.metadata.MapTcp;
 import samson.metadata.TypeClassPair;
 
 class MapBinder extends Binder {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MapBinder.class);
 
     private Converter<?> converter;
 
@@ -66,6 +71,7 @@ class MapBinder extends Binder {
             return new ElementRef(valueElement, valueAccessor);
         }
         else {
+            LOGGER.warn("Invalid map key: {}", stringKey);
             return ElementRef.NULL_REF;
         }
     }
