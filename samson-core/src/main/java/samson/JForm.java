@@ -64,7 +64,9 @@ public interface JForm<T> {
      * Form methods (over the whole tree).
      */
 
-    /** Short for {@link #getValue()} */
+    /**
+     * Short for {@link #getValue()}
+     */
     T get();
 
     T getValue();
@@ -89,11 +91,13 @@ public interface JForm<T> {
 
     Conversion getConversion(String param);
 
-    String getConversionMessage(String param);
-
     Set<ConstraintViolation<?>> getViolations(String param);
 
-    List<String> getValidationMessages(String param);
+    void info(String path, String msg);
+
+    void error(String path, String msg);
+
+    Messages getMessages(String param);
 
     /**
      * Map of fields abstraction over the form.
@@ -121,11 +125,28 @@ public interface JForm<T> {
 
         Conversion getConversion();
 
-        String getConversionMessage();
-
         Set<ConstraintViolation<?>> getViolations();
 
-        List<String> getValidationMessages();
+        Messages getMessages();
+
+    }
+
+    /**
+     * Form field messages.
+     */
+    public static interface Messages {
+
+        String getConversionInfo();
+
+        String getConversionError();
+
+        List<String> getValidationInfos();
+
+        List<String> getValidationErrors(); /* Violations */
+
+        List<String> getInfos();
+
+        List<String> getErrors();
 
     }
 

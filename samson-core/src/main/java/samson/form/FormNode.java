@@ -116,7 +116,31 @@ public class FormNode implements ParamNode<FormNode> {
         return violations;
     }
 
+    public boolean isError() {
+        if (conversion != null && conversion.isError()) {
+            return true;
+        }
+        if (violations.size() > 0) {
+            return true;
+        }
+        return false;
+    }
+
     // -- Visitor or Functional
+
+    public boolean hasErrors() {
+        if (this.isError()) {
+            return true;
+        }
+
+        for (FormNode child : children.values()) {
+            if (child.hasErrors()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public void print(StringBuilder sb, int indent) {
 
@@ -135,30 +159,6 @@ public class FormNode implements ParamNode<FormNode> {
         for (FormNode child : children.values()) {
             child.print(sb, indent + s.length());
         }
-    }
-
-    public boolean isError() {
-        if (conversion.isError()) {
-            return true;
-        }
-        if (violations.size() > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean hasErrors() {
-        if (this.isError()) {
-            return true;
-        }
-
-        for (FormNode child : children.values()) {
-            if (child.hasErrors()) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
 }

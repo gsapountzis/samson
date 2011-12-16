@@ -39,7 +39,6 @@ class BindForm<T> extends AbstractForm<T> {
     private FormNode root;
 
     private List<Conversion> conversionErrors = Collections.emptyList();
-
     private Set<ConstraintViolation<T>> violations = Collections.emptySet();
 
     public BindForm(Element parameter) {
@@ -72,7 +71,7 @@ class BindForm<T> extends AbstractForm<T> {
     @Override
     public JForm<T> apply(MultivaluedMap<String, String> params) {
 
-        buildTree(params);
+        parse(params);
 
         bind();
 
@@ -81,7 +80,13 @@ class BindForm<T> extends AbstractForm<T> {
         return this;
     }
 
-    private void buildTree(MultivaluedMap<String, String> params) {
+    private static String printTree(FormNode root) {
+        StringBuilder sb = new StringBuilder("\n");
+        root.print(sb, 0);
+        return sb.toString();
+    }
+
+    private void parse(MultivaluedMap<String, String> params) {
 
         unnamedRoot = new FormNode(Node.createPrefix(null));
 
@@ -98,12 +103,6 @@ class BindForm<T> extends AbstractForm<T> {
         root = unnamedRoot.getDefinedChild(Path.createPath(rootPath));
 
         LOGGER.trace(printTree(root));
-    }
-
-    private static String printTree(FormNode root) {
-        StringBuilder sb = new StringBuilder("\n");
-        root.print(sb, 0);
-        return sb.toString();
     }
 
     private void convert(BinderNode binderNode, FormNode formNode) {
@@ -187,6 +186,9 @@ class BindForm<T> extends AbstractForm<T> {
         if (violations.size() > 0) {
             return true;
         }
+        if (!errors.isEmpty()) {
+            return true;
+        }
         return false;
     }
 
@@ -251,30 +253,31 @@ class BindForm<T> extends AbstractForm<T> {
 
     @Override
     public boolean isError(String param) {
-        Conversion binding = getConversion(param);
-        if (binding != null) {
-            if (binding.isError()) {
-                return true;
-            }
-        }
-
-        if (getViolations(param).size() > 0) {
+        Path path = Path.createPath(param);
+        FormNode node = root.getDefinedChild(path);
+        if (node.isError()) {
             return true;
         }
-
+        if (errors.containsKey(path)) {
+            return true;
+        }
         return false;
     }
 
     @Override
     public Conversion getConversion(String param) {
         FormNode node = getFormNode(param);
-        Conversion binding = node.getConversion();
-
-        return binding;
+        return node.getConversion();
     }
 
     @Override
-    public String getConversionMessage(String param) {
+    public Set<ConstraintViolation<?>> getViolations(String param) {
+        FormNode node = getFormNode(param);
+        return node.getViolations();
+    }
+
+    @Override
+    String getConversionError(String param) {
         FormNode node = getFormNode(param);
         Conversion binding = node.getConversion();
         if (binding == null) {
@@ -289,13 +292,7 @@ class BindForm<T> extends AbstractForm<T> {
     }
 
     @Override
-    public Set<ConstraintViolation<?>> getViolations(String param) {
-        FormNode node = getFormNode(param);
-        return node.getViolations();
-    }
-
-    @Override
-    public List<String> getValidationMessages(String param) {
+    List<String> getValidationErrors(String param) {
         List<String> messages = new ArrayList<String>();
         for (ConstraintViolation<?> violation : getViolations(param)) {
             messages.add(violation.getMessage());

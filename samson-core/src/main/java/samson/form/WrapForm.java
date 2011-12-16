@@ -1,17 +1,10 @@
 package samson.form;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-import javax.validation.metadata.BeanDescriptor;
-import javax.validation.metadata.ConstraintDescriptor;
-import javax.validation.metadata.ElementDescriptor;
-import javax.validation.metadata.PropertyDescriptor;
 import javax.ws.rs.core.MultivaluedMap;
 
 import samson.JForm;
@@ -135,53 +128,18 @@ class WrapForm<T> extends AbstractForm<T> {
     }
 
     @Override
-    public String getConversionMessage(String param) {
-        // XXX default message for demo
-        return getDefaultConversionMessage(param);
-    }
-
-    public String getDefaultConversionMessage(String param) {
-        Conversion binding = getConversion(param);
-        if (binding == null) {
-            return null;
-        }
-
-        return binding.getElement().tcp.c.getSimpleName();
-    }
-
-    @Override
     public Set<ConstraintViolation<?>> getViolations(String param) {
         return Collections.emptySet();
     }
 
     @Override
-    public List<String> getValidationMessages(String param) {
-        return Collections.emptyList();
+    String getConversionError(String param) {
+        return null;
     }
 
-    public List<String> getDefaultValidationMessages(String param) {
-        // XXX must translate parameter name to javax.validation format: e.g user[username] vs. user.username
-        ElementDescriptor element = getElement(param);
-        if (element != null) {
-            List<String> messages = new ArrayList<String>();
-            for (ConstraintDescriptor<?> constraint : element.getConstraintDescriptors()) {
-                Annotation annotation = constraint.getAnnotation();
-                String name = annotation.annotationType().getSimpleName();
-                messages.add(name);
-            }
-            return messages;
-        }
+    @Override
+    List<String> getValidationErrors(String param) {
         return Collections.emptyList();
-    }
-
-    private ElementDescriptor getElement(String param) {
-        Validator validator = validatorFactory.getValidator();
-
-        // XXX must check for root bean
-        Class<?> clazz = parameter.tcp.c;
-        BeanDescriptor bean = validator.getConstraintsForClass(clazz);
-        PropertyDescriptor property = bean.getConstraintsForProperty(param);
-        return property;
     }
 
 }

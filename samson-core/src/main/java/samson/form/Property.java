@@ -58,6 +58,36 @@ public class Property {
         }
 
         @Override
+        public int hashCode() {
+            return (nodes == null) ? 0 : nodes.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+
+            Path other = (Path) obj;
+
+            if (nodes == null) {
+                if (other.nodes != null) {
+                    return false;
+                }
+            } else if (!nodes.equals(other.nodes)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
             for (Node node : nodes) {
