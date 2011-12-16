@@ -10,62 +10,65 @@
   <fieldset>
     <legend>Information</legend>
 
-  <% using(order) { order => %>
-    <div class="clearfix">
-      <label>Customer</label>
-      <div class="input">
-        <span class="uneditable-input">${ order.customer.name }</span>
-      </div>
-    </div>
+    <% using(order) { order => %>
 
-    <div class="clearfix">
-      <label>Code</label>
-      <div class="input">
-        <span class="uneditable-input">${ order.code }</span>
+      <div class="clearfix">
+        <label>Customer</label>
+        <div class="input">
+          <span class="uneditable-input">${ order.customer.name }</span>
+        </div>
       </div>
-    </div>
 
-    <div class="clearfix">
-      <label>Order date</label>
-      <div class="input">
-        <span class="uneditable-input">${ order.orderDate }</span>
+      <div class="clearfix">
+        <label>Code</label>
+        <div class="input">
+          <span class="uneditable-input">${ order.code }</span>
+        </div>
       </div>
-    </div>
 
-    <div class="clearfix">
-      <label>Ship date</label>
-      <div class="input">
-        <span class="uneditable-input">${ order.shipDate }</span>
+      <div class="clearfix">
+        <label>Order date</label>
+        <div class="input">
+          <span class="uneditable-input">${ order.orderDate }</span>
+        </div>
       </div>
-    </div>
 
-    <div class="clearfix">
-      <label>Status</label>
-      <div class="input">
-        <span class="uneditable-input">${ order.status }</span>
+      <div class="clearfix">
+        <label>Ship date</label>
+        <div class="input">
+          <span class="uneditable-input">${ order.shipDate }</span>
+        </div>
       </div>
-    </div>
-  <% } %>
+
+      <div class="clearfix">
+        <label>Status</label>
+        <div class="input">
+          <span class="uneditable-input">${ order.status }</span>
+        </div>
+      </div>
+
+    <% } %>
 
   </fieldset>
 
   <fieldset>
     <legend>Items</legend>
 
-  <% order.items.foreach(item => { %>
-    <div class="clearfix">
-      <div class="input">
-        <input class="xlarge" readonly="readonly" value="${ item.product.name }" />&nbsp;&times;&nbsp;
-        <input class="mini" readonly="readonly" value="${ item.qty }" />
+    <% order.items.foreach(item => { %>
+
+      <div class="clearfix">
+        <div class="input">
+          <input class="xlarge" readonly="readonly" value="${ item.product.name }" />&nbsp;&times;&nbsp;
+          <input class="mini" readonly="readonly" value="${ item.qty }" />
+        </div>
       </div>
-    </div>
-  <% }) %>
+
+    <% }) %>
 
   </fieldset>
 
   <div class="actions">
     <a href="${ uri("/orders/" + id + "/edit") }" class="btn">Edit order</a>&nbsp;
-    <a href="${ uri("/orders/" + id + "/items/edit") }" class="btn">Edit order items</a>&nbsp;
     <a href="${ uri("/orders") }" class="btn">View list</a>
   </div>
 </form>

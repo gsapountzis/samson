@@ -3,64 +3,50 @@
 
 <%
   def using[A](a: A)(body: A => Unit) = body(a)
+
+  import samson.JForm.Field
+
+  def messages(field: Field) = field.getMessages.getConversionInfo
 %>
 
 <form action="${ uri("/products") }" method="post">
   <fieldset>
 
-  <% using(product("code")) { field => %>
-    <div class="clearfix <%= if (field.isError) "error" %>">
-      <label for="code">Code</label>
+    <% using(product("code")) { field => %>
 
-      <div class="input">
-        <input class="xlarge" id="code" name="product.code" size="30" type="text" value="<%= field.getValue %>" />
-        <span class="help-inline">
-          <%=
-            if (field.getConversionMessage != null)
-              field.getConversionMessage
-            else
-              field.getValidationMessages.mkString(", ")
-          %>
-        </span>
+      <div class="clearfix <%= if (field.isError) "error" %>">
+        <label for="code">Code</label>
+        <div class="input">
+          <input class="xlarge" id="code" name="product.code" size="30" type="text" value="<%= field.getValue %>" />
+          <span class="help-inline"><%= messages(field) %></span>
+        </div>
       </div>
-    </div>
-  <% } %>
 
-  <% using(product("name")) { field => %>
-    <div class="clearfix <%= if (field.isError) "error" %>">
-      <label for="name">Name</label>
+    <% } %>
 
-      <div class="input">
-        <input class="xlarge" id="name" name="product.name" size="30" type="text" value="<%= field.getValue %>" />
-        <span class="help-inline">
-          <%=
-            if (field.getConversionMessage != null)
-              field.getConversionMessage
-            else
-              field.getValidationMessages.mkString(", ")
-          %>
-        </span>
+    <% using(product("name")) { field => %>
+
+      <div class="clearfix <%= if (field.isError) "error" %>">
+        <label for="name">Name</label>
+        <div class="input">
+          <input class="xlarge" id="name" name="product.name" size="30" type="text" value="<%= field.getValue %>" />
+          <span class="help-inline"><%= messages(field) %></span>
+        </div>
       </div>
-    </div>
-  <% } %>
 
-  <% using(product("price")) { field => %>
-    <div class="clearfix <%= if (field.isError) "error" %>">
-      <label for="price">Price</label>
+    <% } %>
 
-      <div class="input">
-        <input class="xlarge" id="price" name="product.price" size="30" type="text" value="<%= field.getValue %>" />
-        <span class="help-inline">
-          <%=
-            if (field.getConversionMessage != null)
-              field.getConversionMessage
-            else
-              field.getValidationMessages.mkString(", ")
-          %>
-        </span>
+    <% using(product("price")) { field => %>
+
+      <div class="clearfix <%= if (field.isError) "error" %>">
+        <label for="price">Price</label>
+        <div class="input">
+          <input class="xlarge" id="price" name="product.price" size="30" type="text" value="<%= field.getValue %>" />
+          <span class="help-inline"><%= messages(field) %></span>
+        </div>
       </div>
-    </div>
-  <% } %>
+
+    <% } %>
 
   </fieldset>
 

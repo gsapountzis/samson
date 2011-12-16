@@ -37,18 +37,9 @@
 
             <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
               <label for="code">Code</label>
-
               <div class="input">
                 <input class="xlarge" id="code" name="product.code" size="30" type="text" value="${fn:escapeXml( field.value )}" />
-
-                <span class="help-inline">
-                  <c:out value="${ field.conversionMessage }" />
-                  <c:if test="${ empty field.conversionMessage }">
-                    <c:forEach var="message" items="${ field.validationMessages }" varStatus="status">
-                      <c:out value="${ message }" /> ${ not status.last ? ", " : "" }
-                    </c:forEach>
-                  </c:if>
-                </span>
+                <span class="help-inline"><c:out value="${ s:messages(field) }" /></span>
               </div>
             </div>
 
@@ -56,18 +47,9 @@
 
             <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
               <label for="name">Name</label>
-
               <div class="input">
                 <input class="xlarge" id="name" name="product.name" size="30" type="text" value="${fn:escapeXml( field.value )}" />
-
-                <span class="help-inline">
-                  <c:out value="${ field.conversionMessage }" />
-                  <c:if test="${ empty field.conversionMessage }">
-                    <c:forEach var="message" items="${ field.validationMessages }" varStatus="status">
-                      <c:out value="${ message }" /> ${ not status.last ? ", " : "" }
-                    </c:forEach>
-                  </c:if>
-                </span>
+                <span class="help-inline"><c:out value="${ s:messages(field) }" /></span>
               </div>
             </div>
 
@@ -75,18 +57,9 @@
 
             <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
               <label for="price">Price</label>
-
               <div class="input">
                 <input class="xlarge" id="price" name="product.price" size="30" type="text" value="${fn:escapeXml( field.value )}" />
-
-                <span class="help-inline">
-                  <c:out value="${ field.conversionMessage }" />
-                  <c:if test="${ empty field.conversionMessage }">
-                    <c:forEach var="message" items="${ field.validationMessages }" varStatus="status">
-                      <c:out value="${ message }" /> ${ not status.last ? ", " : "" }
-                    </c:forEach>
-                  </c:if>
-                </span>
+                <span class="help-inline"><c:out value="${ s:messages(field) }" /></span>
               </div>
             </div>
 
