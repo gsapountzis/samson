@@ -22,6 +22,8 @@ public class Product {
     @DecimalMin("0.01")
     public BigDecimal price;
 
+    // -- Accessors
+
     public Long getId() {
         return id;
     }

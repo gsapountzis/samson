@@ -26,6 +26,8 @@ public class Order {
 
     public List<OrderItem> items = new ArrayList<OrderItem>();
 
+    // -- Accessors
+
     public Long getId() {
         return id;
     }

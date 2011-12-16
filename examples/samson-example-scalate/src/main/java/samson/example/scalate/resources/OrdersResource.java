@@ -93,6 +93,8 @@ public class OrdersResource {
         return options;
     }
 
+    // -- Boilerplate
+
     public static class Paths  {
 
         public static URI list() {

@@ -99,6 +99,8 @@ public class ProductsResource {
         return Response.seeOther(Paths.view(id)).build();
     }
 
+    // -- Boilerplate
+
     public static class Paths  {
 
         public static URI list() {
