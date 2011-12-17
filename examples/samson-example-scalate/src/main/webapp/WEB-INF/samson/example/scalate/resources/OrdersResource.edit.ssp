@@ -23,7 +23,6 @@
 
 <form id="orderForm" action="${ uri("/orders/" + id) }" method="post">
   <fieldset>
-    <legend>Information</legend>
 
     <% using2(orderForm("customer.id"), customerOptions) { (field, options) => %>
 
@@ -89,14 +88,10 @@
 
     <% } %>
 
-  </fieldset>
-
-  <fieldset>
-    <legend>Items</legend>
-
-    <% order.items.foreach(item => { %>
+    <% var first = true; order.items.foreach(item => { %>
 
       <div class="clearfix">
+        <% if (first) { first = false; %><label>Items</label><% } %>
         <div class="input">
           <span class="uneditable-input span4">${ item.product.name }</span> &nbsp;&times;&nbsp;
           <input id="id" type="hidden" value="${ item.product.id }" />
