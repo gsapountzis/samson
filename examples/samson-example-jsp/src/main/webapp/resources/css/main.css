@@ -1,0 +1,28 @@
+body {
+  padding-top: 60px;
+}
+
+.uneditable-input.span1 {
+  display: inline-block;
+  width: 30px;
+}
+.uneditable-input.span2 {
+  display: inline-block;
+  width: 90px;
+}
+.uneditable-input.span3 {
+  display: inline-block;
+  width: 150px;
+}
+.uneditable-input.span4 {
+  display: inline-block;
+  width: 210px;
+}
+.uneditable-input.span5 {
+  display: inline-block;
+  width: 270px;
+}
+.uneditable-input.span6 {
+  display: inline-block;
+  width: 330px;
+}

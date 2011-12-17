@@ -10,7 +10,7 @@
     <title>${ title }</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" type="text/css" href="${ uri("/resources/css/bootstrap.min.css") }" />
-    <link rel="stylesheet" type="text/css" href="${ uri("/resources/css/bootstrap-container-app.css") }" />
+    <link rel="stylesheet" type="text/css" href="${ uri("/resources/css/main.css") }" />
     ${ unescape(stylesheets) }
     <script type="text/javascript" src="${ uri("/resources/js/jquery-1.6.2.min.js") }"></script>
     ${ unescape(javascripts) }
@@ -36,11 +36,7 @@
 
     <div class="container">
 
-      <div class="content">
-
-        ${ unescape(body) }
-
-      </div>
+      ${ unescape(body) }
 
     </div>
 

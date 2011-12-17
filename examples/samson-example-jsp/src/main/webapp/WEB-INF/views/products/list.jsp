@@ -13,7 +13,7 @@
     <title>Samson JSP Example</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/bootstrap.min.css" />" />
-    <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/bootstrap-container-app.css" />" />
+    <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/main.css" />" />
     <script type="text/javascript" src="<c:url value="/resources/js/jquery-1.6.2.min.js" />"></script>
   </head>
 
@@ -29,30 +29,28 @@
 
     <div class="container">
 
-      <div class="content">
-        <table>
-          <thead>
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <c:forEach var="product" items="${ products }">
             <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Price</th>
+              <td><a href="<c:url value="/products/${ product.id }" />"><c:out value="${ product.code }" /></a></td>
+              <td><c:out value="${ product.name }" /></td>
+              <td><c:out value="${ product.price }" /></td>
             </tr>
-          </thead>
-          <tbody>
-            <c:forEach var="product" items="${ products }">
-              <tr>
-                <td><a href="<c:url value="/products/${ product.id }" />"><c:out value="${ product.code }" /></a></td>
-                <td><c:out value="${ product.name }" /></td>
-                <td><c:out value="${ product.price }" /></td>
-              </tr>
-            </c:forEach>
-          </tbody>
-        </table>
+          </c:forEach>
+        </tbody>
+      </table>
 
-        <div>
-          <a href="<c:url value="/products/new" />" class="btn">Create new</a>
-        </div>
-    </div>
+      <div>
+        <a href="<c:url value="/products/new" />" class="btn">Create new</a>
+      </div>
 
   </div>
 

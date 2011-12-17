@@ -30,7 +30,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="customer">Customer</label>
         <div class="input">
-          <select id="customer" name="order.customer.id">
+          <select class="span4" id="customer" name="order.customer.id">
             <% options.foreach(option => { %>
               <option value="<%= option.key %>" <%= if (option.key == field.getValue) "selected" %>><%= option.value %></option>
             <% }) %>
@@ -46,7 +46,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="code">Code</label>
         <div class="input">
-          <input class="xlarge" id="code" name="order.code" size="30" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="code" name="order.code" size="30" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -58,7 +58,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="orderDate">Order date</label>
         <div class="input">
-          <input class="xlarge" id="orderDate" name="order.orderDate" size="30" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="orderDate" name="order.orderDate" size="30" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -70,7 +70,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="shipDate">Ship date</label>
         <div class="input">
-          <input class="xlarge" id="shipDate" name="order.shipDate" size="30" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="shipDate" name="order.shipDate" size="30" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -82,7 +82,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="status">Status</label>
         <div class="input">
-          <input class="xlarge" id="status" name="order.status" size="30" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="status" name="order.status" size="30" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -98,9 +98,9 @@
 
       <div class="clearfix">
         <div class="input">
+          <span class="uneditable-input span4">${ item.product.name }</span> &nbsp;&times;&nbsp;
           <input id="id" type="hidden" value="${ item.product.id }" />
-          <input class="xlarge" readonly="readonly" value="${ item.product.name }" />&nbsp;&times;&nbsp;
-          <input id="qty" class="mini" value="${ item.qty }" />
+          <input id="qty" class="span1" value="${ item.qty }" />
         </div>
       </div>
 

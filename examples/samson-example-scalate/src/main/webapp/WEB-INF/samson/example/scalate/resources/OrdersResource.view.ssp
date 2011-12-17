@@ -58,8 +58,8 @@
 
       <div class="clearfix">
         <div class="input">
-          <input class="xlarge" readonly="readonly" value="${ item.product.name }" />&nbsp;&times;&nbsp;
-          <input class="mini" readonly="readonly" value="${ item.qty }" />
+          <span class="uneditable-input span4">${ item.product.name }</span> &nbsp;&times;&nbsp;
+          <span class="uneditable-input span1">${ item.qty }</span>
         </div>
       </div>
 
