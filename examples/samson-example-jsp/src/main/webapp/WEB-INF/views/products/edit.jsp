@@ -5,6 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="samson" prefix="ss"%>
 
 <c:set var="id" value="${ it.id }" />
 <c:set var="product" value="${ it.productForm.fields }" />
@@ -39,7 +40,7 @@
             <label for="code">Code</label>
             <div class="input">
               <input class="span4" id="code" name="product.code" size="30" type="text" value="${fn:escapeXml( field.value )}" />
-              <span class="help-inline"><c:out value="messages" /></span>
+              <span class="help-inline"><c:out value="${ ss:messages(field) }" /></span>
             </div>
           </div>
 
@@ -49,7 +50,7 @@
             <label for="name">Name</label>
             <div class="input">
               <input class="span4" id="name" name="product.name" size="30" type="text" value="${fn:escapeXml( field.value )}" />
-              <span class="help-inline"><c:out value="messages" /></span>
+              <span class="help-inline"><c:out value="${ ss:messages(field) }" /></span>
             </div>
           </div>
 
@@ -59,7 +60,7 @@
             <label for="price">Price</label>
             <div class="input">
               <input class="span4" id="price" name="product.price" size="30" type="text" value="${fn:escapeXml( field.value )}" />
-              <span class="help-inline"><c:out value="messages" /></span>
+              <span class="help-inline"><c:out value="${ ss:messages(field) }" /></span>
             </div>
           </div>
 
