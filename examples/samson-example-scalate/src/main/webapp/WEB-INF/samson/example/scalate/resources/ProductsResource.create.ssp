@@ -1,13 +1,7 @@
 <%@ val it: ProductsResource %>
 <% val product = it.model.productForm.getFields %>
 
-<%
-  def using[A](a: A)(body: A => Unit) = body(a)
-
-  import samson.JForm.Field
-
-  def messages(field: Field) = field.getMessages.getConversionInfo
-%>
+<% import samson.example.scalate.views.Functions._ %>
 
 <form action="${ uri("/products") }" method="post">
   <fieldset>

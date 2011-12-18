@@ -2,51 +2,43 @@
 <% val id = it.model.id %>
 <% val order = it.model.order %>
 
-<%
-  def using[A](a: A)(body: A => Unit) = body(a)
-%>
-
 <form>
   <fieldset>
 
-    <% using(order) { order => %>
-
-      <div class="clearfix">
-        <label>Customer</label>
-        <div class="input">
-          <span class="uneditable-input">${ order.customer.name }</span>
-        </div>
+    <div class="clearfix">
+      <label>Customer</label>
+      <div class="input">
+        <span class="uneditable-input">${ order.customer.name }</span>
       </div>
+    </div>
 
-      <div class="clearfix">
-        <label>Code</label>
-        <div class="input">
-          <span class="uneditable-input">${ order.code }</span>
-        </div>
+    <div class="clearfix">
+      <label>Code</label>
+      <div class="input">
+        <span class="uneditable-input">${ order.code }</span>
       </div>
+    </div>
 
-      <div class="clearfix">
-        <label>Order date</label>
-        <div class="input">
-          <span class="uneditable-input">${ order.orderDate }</span>
-        </div>
+    <div class="clearfix">
+      <label>Order date</label>
+      <div class="input">
+        <span class="uneditable-input">${ order.orderDate }</span>
       </div>
+    </div>
 
-      <div class="clearfix">
-        <label>Ship date</label>
-        <div class="input">
-          <span class="uneditable-input">${ order.shipDate }</span>
-        </div>
+    <div class="clearfix">
+      <label>Ship date</label>
+      <div class="input">
+        <span class="uneditable-input">${ order.shipDate }</span>
       </div>
+    </div>
 
-      <div class="clearfix">
-        <label>Status</label>
-        <div class="input">
-          <span class="uneditable-input">${ order.status }</span>
-        </div>
+    <div class="clearfix">
+      <label>Status</label>
+      <div class="input">
+        <span class="uneditable-input">${ order.status }</span>
       </div>
-
-    <% } %>
+    </div>
 
     <div class="clearfix">
       <label>&nbsp;</label>

@@ -20,22 +20,13 @@
         <scalate.workdir>${basedir}/target/_scalate</scalate.workdir>
         <scalate.package.resources>samson.example.scalate.resources</scalate.package.resources>
 
-        <scalate-version>1.5.3</scalate-version>
         <scala-version>2.9.1</scala-version>
+        <scala-plugin-version>2.15.2</scala-plugin-version>
+        <scalate-version>1.5.3</scalate-version>
     </properties>
 
     <dependencies>
         <!-- Scalate -->
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>${scala-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-compiler</artifactId>
-            <version>${scala-version}</version>
-        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -106,6 +97,41 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>${scala-plugin-version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- lets disable vscaladoc -->
+                    <scaladocClassName>scala.tools.nsc.ScalaDoc</scaladocClassName>
+                    <!--
+                    <scalaJars>
+                        <scalaJar>
+                            <groupId>org.scala-lang</groupId>
+                            <artifactId>scala-compiler</artifactId>
+                            <version>${scala-version}</version>
+                        </scalaJar>
+                    </scalaJars>
+                    -->
+                    <jvmArgs>
+                        <jvmArg>-Xmx1024m</jvmArg>
+                    </jvmArgs>
+                    <args>
+                        <arg>-unchecked</arg>
+                        <arg>-deprecation</arg>
+                    </args>
+                    <scalaVersion>${scala-version}</scalaVersion>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
@@ -214,23 +240,6 @@
             <id>provided</id>
             <dependencies>
                 <!-- Scalate -->
-                <dependency>
-                    <groupId>org.scala-lang</groupId>
-                    <artifactId>scala-library</artifactId>
-                    <version>${scala-version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>org.scala-lang</groupId>
-                    <artifactId>scala-compiler</artifactId>
-                    <version>${scala-version}</version>
-                    <scope>provided</scope>
-                </dependency>
-                <dependency>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                    <scope>provided</scope>
-                </dependency>
                 <dependency>
                     <groupId>org.fusesource.scalate</groupId>
                     <artifactId>scalate-core</artifactId>
