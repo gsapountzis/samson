@@ -11,7 +11,8 @@
 <% } %>
 
 <% attributes("javascripts") = capture { %>
-<script type="text/javascript" src="${ uri("/resources/js/jquery-ui-1.8.16.custom.min.js") }"></script>
+<script type="text/javascript" src="${ uri("/resources/js/jquery-ui-1.8.16.custom.js") }"></script>
+<script type="text/javascript" src="${ uri("/resources/js/orders.js") }"></script>
 <% } %>
 
 <form id="orderForm" action="${ uri("/orders/" + id) }" method="post">
@@ -112,22 +113,3 @@
     <a href="${ uri("/orders/" + id) }" class="btn">Cancel</a>
   </div>
 </form>
-
-<script>
-$(function() {
-	var dateOptions = {
-			dateFormat: "dd M yy",
-			showOn: "button",
-			buttonImageOnly: true
-		};
-
-	$("#orderDate").datepicker(dateOptions);
-	$("#shipDate").datepicker(dateOptions);
-
-	$("#orderForm").submit(function() {
-		var i = 0;
-
-		return true;
-	});
-});
-</script>
