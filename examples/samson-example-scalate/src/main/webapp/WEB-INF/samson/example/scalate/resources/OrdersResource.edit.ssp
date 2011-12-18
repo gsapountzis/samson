@@ -10,7 +10,7 @@
 
   import samson.JForm.Field
 
-  def messages(field: Field) = Nil
+  def messages(field: Field) = field.getMessages.getValidationErrors
 %>
 
 <% attributes("stylesheets") = capture { %>
@@ -88,9 +88,20 @@
 
     <% } %>
 
+    <% using(orderForm("items")) { field => %>
+
+      <div class="clearfix <%= if (field.isError) "error" %>">
+        <label>&nbsp;</label>
+        <div class="input">
+          <span class="help-inline"><%= messages(field) %></span>
+        </div>
+      </div>
+
+    <% } %>
+
     <% var first = true; order.items.foreach(item => { %>
 
-      <div class="clearfix">
+      <div id="items" class="clearfix">
         <% if (first) { first = false; %><label>Items</label><% } %>
         <div class="input">
           <span class="uneditable-input span4">${ item.product.name }</span> &nbsp;&times;&nbsp;
@@ -121,7 +132,9 @@ $(function() {
 	$("#shipDate").datepicker(dateOptions);
 
 	$("#orderForm").submit(function() {
-		return false;
+		var i = 0;
+
+		return true;
 	});
 });
 </script>

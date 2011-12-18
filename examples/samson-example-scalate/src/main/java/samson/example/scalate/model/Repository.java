@@ -22,6 +22,9 @@ public class Repository {
     private Map<Long, Order> orders = new HashMap<Long, Order>();
 
     private Repository() {
+
+        // -- Product
+
         Product product = new Product();
         product.code = "0596529260";
         product.name = "Restful Web Services";
@@ -40,6 +43,8 @@ public class Repository {
         product.price = BigDecimal.valueOf(23.17);
         createProduct(product);
 
+        // -- Customer
+
         Customer customer = new Customer();
         customer.name = "George";
         createCustomer(customer);
@@ -55,6 +60,8 @@ public class Repository {
         customer = new Customer();
         customer.name = "Andrew";
         createCustomer(customer);
+
+        // -- Order
 
         Calendar cal = Calendar.getInstance();
         cal.set(2011, 8 - 1, 23);
@@ -99,6 +106,8 @@ public class Repository {
         createOrder(order);
     }
 
+    // -- Product
+
     public Collection<Product> getProducts() {
         return products.values();
     }
@@ -118,15 +127,20 @@ public class Repository {
 
     public Long createProduct(Product product) {
         Long id = seq.getAndIncrement();
-        product.id = id;
-        products.put(id, product);
+        saveProduct(id, product);
         return id;
     }
 
     public void updateProduct(Long id, Product product) {
+        saveProduct(id, product);
+    }
+
+    private void saveProduct(Long id, Product product) {
         product.id = id;
         products.put(id, product);
     }
+
+    // -- Customer
 
     public Collection<Customer> getCustomers() {
         return customers.values();
@@ -148,45 +162,74 @@ public class Repository {
         return id;
     }
 
+    // -- Order
+
     public Collection<Order> getOrders() {
         return orders.values();
     }
 
     public Order findOrder(Long id) {
-        return orders.get(id);
+        Order order = orders.get(id);
+        fetchOrderCustomer(order);
+        for (OrderItem item : order.items) {
+            fetchOrderItemProduct(item);
+        }
+        return order;
+    }
+
+    private Order fetchOrderCustomer(Order order) {
+        order.customer = customers.get(order.customer.id);
+        return order;
+    }
+
+    private OrderItem fetchOrderItemProduct(OrderItem item) {
+        item.product = products.get(item.product.id);
+        return item;
     }
 
     public Long createOrder(Order order) {
         Long id = seq.getAndIncrement();
-        order.id = id;
         saveOrder(id, order);
         return id;
     }
 
     public void updateOrder(Long id, Order order) {
-        order.id = id;
         saveOrder(id, order);
     }
 
-    public void saveOrder(Long id, Order order) {
-        if (order == null) {
-            throw new IllegalArgumentException();
-        }
-        if (order.customer == null) {
-            throw new IllegalArgumentException();
-        }
-        if (order.customer.id == null) {
-            throw new IllegalArgumentException();
-        }
+    private void saveOrder(Long id, Order order) {
+        checkNotNull(order);
+        checkNotNull(order.customer);
+        checkNotNull(order.customer.id);
+        checkForeignKey(customers, order.customer.id);
 
-        Customer customer = customers.get(order.customer.id);
-        if (customer == null) {
-            throw new RuntimeException("Foreign constraint violation");
+        for (OrderItem item : order.items) {
+            checkNotNull(item);
+            checkNotNull(item.product);
+            checkNotNull(item.product.id);
+            checkForeignKey(products, item.product.id);
         }
-        order.customer = customer;
 
         order.id = id;
         orders.put(id, order);
+    }
+
+    // -- Constraints
+
+    public static <T> T checkNotNull(T ref) {
+        if (ref == null) {
+            throw new NullPointerException();
+        }
+        return ref;
+    }
+
+    public static void checkForeignKey(Map<?,?> table, Object key) {
+        if (key == null) {
+            return;
+        }
+        if (!table.containsKey(key)) {
+            throw new IllegalStateException("Foreign constraint violation");
+        }
     }
 
 }
