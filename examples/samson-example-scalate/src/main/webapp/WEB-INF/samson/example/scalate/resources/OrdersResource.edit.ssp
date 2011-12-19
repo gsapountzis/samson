@@ -38,7 +38,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="code">Code</label>
         <div class="input">
-          <input class="span4" id="code" name="order.code" size="30" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="code" name="order.code" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -50,7 +50,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="orderDate">Order date</label>
         <div class="input">
-          <input class="span4" id="orderDate" name="order.orderDate" size="30" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="orderDate" name="order.orderDate" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -62,7 +62,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="shipDate">Ship date</label>
         <div class="input">
-          <input class="span4" id="shipDate" name="order.shipDate" size="30" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="shipDate" name="order.shipDate" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -74,7 +74,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="status">Status</label>
         <div class="input">
-          <input class="span4" id="status" name="order.status" size="30" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="status" name="order.status" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -98,12 +98,9 @@
           val itemForm = itemsForm.index(i)
           val itemField = itemsForm.getField
           val qtyField = itemForm.dot("qty").getField
-
-          val itemFormError = List(itemField.isError, qtyField.isError).foldLeft(false)(_ || _)
-          val itemFormMessages = List(messages(itemField), messages(qtyField)).filter(!isNullOrEmpty(_)).mkString(", ")
         %>
 
-        <div class="samson-item clearfix <%= if (itemFormError) "error" %>">
+        <div class="samson-item clearfix <%= if (multiError(itemField, qtyField)) "error" %>">
           <label>Item <%= i + 1 %></label>
           <div class="input">
             <!-- Composite key -->
@@ -112,8 +109,9 @@
 
             <span class="uneditable-input span4"><%= item.product.name %></span> &nbsp;&times;&nbsp;
             <input id="name" type="hidden" value="<%= item.product.name %>" />
-            <input id="qty" class="span1" value="<%= qtyField.getValue %>" />
-            <span class="help-inline"><%= itemFormMessages %></span>
+
+            <input id="qty" class="span1" type="text" value="<%= qtyField.getValue %>" />
+            <span class="help-inline"><%= multiMessages(itemField, qtyField) %></span>
           </div>
         </div>
 

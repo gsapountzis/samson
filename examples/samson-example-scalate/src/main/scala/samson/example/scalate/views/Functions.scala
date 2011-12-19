@@ -26,4 +26,8 @@ object Functions {
     conversionError.getOrElse((validationErrors ++ errors).mkString(", "))
   }
 
+  def multiError(fields: Field*) = fields.map(_.isError).foldLeft(false)(_ || _)
+
+  def multiMessages(fields: Field*) = fields.map(messages(_)).filter(!isNullOrEmpty(_)).mkString(", ")
+
 }
