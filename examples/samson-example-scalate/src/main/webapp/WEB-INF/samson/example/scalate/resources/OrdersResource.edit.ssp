@@ -1,6 +1,7 @@
 <%@ val it: OrdersResource %>
 <% val id = it.model.id %>
 <% val orderForm = it.model.orderForm %>
+<% val order = orderForm.get %>
 <% val customerOptions = it.getCustomerOptions %>
 
 <% import samson.example.scalate.views.Functions._ %>
@@ -81,7 +82,7 @@
 
     <% } %>
 
-    <% using2(orderForm.get.items, orderForm.path("items")) { (items, itemsForm) => %>
+    <% using2(orderForm.path("items"), order.items) { (itemsForm, items) => %>
 
       <% val itemsField = itemsForm.getField %>
 
