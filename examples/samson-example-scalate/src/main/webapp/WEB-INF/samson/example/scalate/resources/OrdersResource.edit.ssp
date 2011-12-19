@@ -97,7 +97,7 @@
 
         <%
           val itemForm = itemsForm.index(i)
-          val itemField = itemsForm.getField
+          val itemField = itemForm.getField
           val qtyField = itemForm.dot("qty").getField
         %>
 
