@@ -191,9 +191,6 @@ public class Repository {
     public Long createOrder(Order order) {
         Long id = seq.getAndIncrement();
         order.id = id;
-        for (OrderItem item : order.items) {
-            item.order.id = id;
-        }
         saveOrder(id, order);
         return id;
     }
@@ -210,6 +207,8 @@ public class Repository {
         checkForeignKey(customers, order.customer.id);
 
         for (OrderItem item : order.items) {
+            item.order = order;
+
             checkNotNull(item);
             checkNotNull(item.product);
             checkNotNull(item.product.id);

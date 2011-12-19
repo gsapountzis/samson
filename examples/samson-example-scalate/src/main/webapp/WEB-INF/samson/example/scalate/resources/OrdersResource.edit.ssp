@@ -104,13 +104,10 @@
         <div class="samson-item clearfix <%= if (multiError(itemField, qtyField)) "error" %>">
           <label>Item <%= i + 1 %></label>
           <div class="input">
-            <!-- Composite key -->
-            <input id="orderId" type="hidden" value="<%= item.order.id %>" />
-            <input id="productId" type="hidden" value="<%= item.product.id %>" />
-
-            <span class="uneditable-input span4"><%= item.product.name %></span> &nbsp;&times;&nbsp;
+            <input id="id" type="hidden" value="<%= item.product.id %>" />
             <input id="name" type="hidden" value="<%= item.product.name %>" />
 
+            <span class="uneditable-input span4"><%= item.product.name %></span> &nbsp;&times;&nbsp;
             <input id="qty" class="span1" type="text" value="<%= qtyField.getValue %>" />
             <span class="help-inline"><%= multiMessages(itemField, qtyField) %></span>
           </div>
