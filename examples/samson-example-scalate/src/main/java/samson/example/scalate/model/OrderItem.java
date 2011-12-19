@@ -5,7 +5,6 @@ import javax.validation.constraints.NotNull;
 
 public class OrderItem {
 
-    @NotNull
     public Order order;
 
     @NotNull

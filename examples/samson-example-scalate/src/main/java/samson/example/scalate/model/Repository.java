@@ -207,16 +207,12 @@ public class Repository {
         checkForeignKey(customers, order.customer.id);
 
         for (OrderItem item : order.items) {
-            item.order = order;
-
             checkNotNull(item);
             checkNotNull(item.product);
             checkNotNull(item.product.id);
             checkForeignKey(products, item.product.id);
 
-            checkNotNull(item.order);
-            checkNotNull(item.order.id);
-            checkState(item.order.id.equals(id));
+            item.order = order;
         }
 
         orders.put(id, order);
