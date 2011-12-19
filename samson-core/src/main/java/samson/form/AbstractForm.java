@@ -11,16 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.ElementDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
-import javax.ws.rs.core.MultivaluedMap;
 
 import samson.JForm;
 import samson.bind.BinderFactory;
@@ -36,7 +33,6 @@ import samson.metadata.ListTcp;
 abstract class AbstractForm<T> implements JForm<T> {
 
     protected final Element parameter;
-    protected String rootPath;
     protected T value;
 
     protected BinderFactory binderFactory;
@@ -77,169 +73,47 @@ abstract class AbstractForm<T> implements JForm<T> {
     }
 
     @Override
-    public JForm<T> params(MultivaluedMap<String, String> params) {
-        return apply(params);
+    public T get() {
+        return value;
     }
 
     @Override
-    public JForm<T> params(String path, MultivaluedMap<String, String> params) {
-        this.rootPath = path;
-        return apply(params);
+    public JForm<?> path(String path) {
+        return new PathForm(this, path);
     }
 
     @Override
-    public JForm<T> form() {
-        return apply(getFormParams());
+    public JForm<?> dot(String property) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public JForm<T> form(String path) {
-        this.rootPath = path;
-        return apply(getFormParams());
+    public JForm<?> index(String index) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public JForm<T> query() {
-        return apply(getQueryParams());
+    public JForm<?> index(int index) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public JForm<T> query(String path) {
-        this.rootPath = path;
-        return apply(getQueryParams());
+    public String getPath() {
+        return null;
     }
-
-    protected abstract JForm<T> apply(MultivaluedMap<String, String> params);
-
-    protected abstract MultivaluedMap<String, String> getFormParams();
-
-    protected abstract MultivaluedMap<String, String> getQueryParams();
 
     @Override
-    public final T get() {
-        return getValue();
+    public Field getField() {
+        return getField(null);
     }
-
-    // -- Fields
-
-    @Override
-    public Map<String, Field> getFields() {
-        return fields;
-    }
-
-    private final Map<String, Field> fields = new Map<String, AbstractForm.Field>() {
-
-        @Override
-        public int size() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean isEmpty() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Field get(final Object key) {
-
-            return new Field() {
-
-                private final String param = (String) key;
-
-                @Override
-                public String getName() {
-                    return param;
-                }
-
-                @Override
-                public Object getObjectValue() {
-                    return form.getObjectValue(param);
-                }
-
-                @Override
-                public String getValue() {
-                    return form.getValue(param);
-                }
-
-                @Override
-                public List<String> getValues() {
-                    return form.getValues(param);
-                }
-
-                @Override
-                public boolean isError() {
-                    return form.isError(param);
-                }
-
-                @Override
-                public Conversion getConversion() {
-                    return form.getConversion(param);
-                }
-
-                @Override
-                public Set<ConstraintViolation<?>> getViolations() {
-                    return form.getViolations(param);
-                }
-
-                @Override
-                public Messages getMessages() {
-                    return form.getMessages(param);
-                }
-            };
-
-        }
-
-        @Override
-        public Field put(String key, Field value) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Field remove(Object key) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void putAll(Map<? extends String, ? extends Field> m) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void clear() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Set<String> keySet() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Collection<Field> values() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Set<java.util.Map.Entry<String, Field>> entrySet() {
-            throw new UnsupportedOperationException();
-        }
-
-    };
-
-    // -- Messages
 
     final Map<Path, List<String>> infos = new HashMap<Path, List<String>>();
     final Map<Path, List<String>> errors = new HashMap<Path, List<String>>();
+
+    @Override
+    public void info(String msg) {
+        info(null, msg);
+    }
 
     @Override
     public void info(String path, String msg) {
@@ -247,11 +121,14 @@ abstract class AbstractForm<T> implements JForm<T> {
     }
 
     @Override
+    public void error(String msg) {
+        error(null, msg);
+    }
+
+    @Override
     public void error(String path, String msg) {
         message(errors, path, msg);
     }
-
-    // XXX check that messages work for null-or-empty path i.e. root object
 
     private static void message(Map<Path, List<String>> level, String param, String msg) {
         Path path = Path.createPath(param);
@@ -277,28 +154,33 @@ abstract class AbstractForm<T> implements JForm<T> {
     }
 
     @Override
+    public Messages getMessages() {
+        return getMessages(null);
+    }
+
+    @Override
     public Messages getMessages(final String param) {
 
         return new Messages() {
 
             @Override
             public String getConversionInfo() {
-                return form.getConversionInfo(param);
+                return getDefaultConversionInfo();
             }
 
             @Override
             public String getConversionError() {
-                return form.getConversionError(param);
+                throw new UnsupportedOperationException();
             }
 
             @Override
             public List<String> getValidationInfos() {
-                return form.getValidationInfos(param);
+                return Collections.emptyList();
             }
 
             @Override
             public List<String> getValidationErrors() {
-                return form.getValidationErrors(param);
+                throw new UnsupportedOperationException();
             }
 
             @Override
@@ -310,69 +192,55 @@ abstract class AbstractForm<T> implements JForm<T> {
             public List<String> getErrors() {
                 return getMessages(errors, param);
             }
-        };
-    }
 
-    abstract String getConversionError(String param);
+            private String getDefaultConversionInfo() {
+                Conversion binding = getField(param).getConversion();
+                if (binding == null) {
+                    return null;
+                }
 
-    abstract List<String> getValidationErrors(String param);
-
-    String getConversionInfo(String param) {
-        // XXX default info message for demo
-        return getDefaultConversionInfo(param);
-    }
-
-    private String getDefaultConversionInfo(String param) {
-        Conversion binding = getConversion(param);
-        if (binding == null) {
-            return null;
-        }
-
-        return binding.getElement().tcp.c.getSimpleName();
-    }
-
-    List<String> getValidationInfos(String param) {
-        return Collections.emptyList();
-    }
-
-    @SuppressWarnings("unused")
-    private List<String> getDefaultValidationInfos(String param) {
-        ElementDescriptor element = getValidationElement(param);
-        if (element != null) {
-            List<String> messages = new ArrayList<String>();
-            for (ConstraintDescriptor<?> constraint : element.getConstraintDescriptors()) {
-                Annotation annotation = constraint.getAnnotation();
-                String name = annotation.annotationType().getSimpleName();
-                messages.add(name);
+                return binding.getElement().tcp.c.getSimpleName();
             }
-            return messages;
-        }
-        return Collections.emptyList();
-    }
 
-    private ElementDescriptor getValidationElement(String param) {
-        Validator validator = validatorFactory.getValidator();
+            @SuppressWarnings("unused")
+            private List<String> getDefaultValidationInfos() {
+                ElementDescriptor element = getValidationElement();
+                if (element != null) {
+                    List<String> messages = new ArrayList<String>();
+                    for (ConstraintDescriptor<?> constraint : element.getConstraintDescriptors()) {
+                        Annotation annotation = constraint.getAnnotation();
+                        String name = annotation.annotationType().getSimpleName();
+                        messages.add(name);
+                    }
+                    return messages;
+                }
+                return Collections.emptyList();
+            }
 
-        // XXX must translate parameter name to javax.validation format: e.g user[username] vs. user.username
-        // XXX must check for root bean
+            private ElementDescriptor getValidationElement() {
+                Validator validator = validatorFactory.getValidator();
 
-        Class<?> clazz = parameter.tcp.c;
-        BeanDescriptor bean = validator.getConstraintsForClass(clazz);
-        PropertyDescriptor property = bean.getConstraintsForProperty(param);
-        return property;
+                // XXX must translate parameter name to javax.validation format: e.g user[username] vs. user.username
+                // XXX must check for root bean
+
+                Class<?> clazz = parameter.tcp.c;
+                BeanDescriptor bean = validator.getConstraintsForClass(clazz);
+                PropertyDescriptor property = bean.getConstraintsForProperty(param);
+                return property;
+            }
+        };
     }
 
     // -- Conversion: toString()
 
-    // cannot be static, non thread-safe (could use ThreadLocal)
-    private final DateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.US);
-
     /**
      * Ad-hoc formatter.
-     *
-     * XXX Should be replaced with a parser/formatter framework provided by the
-     * JAX-RS implementation. Right now Jersey only supports the parsing part,
-     * while RESTEasy seems to have support for both.
+     * <p>
+     * XXX Parse/Format framework.
+     * <p>
+     * Should be replaced with a parse/format framework provided by the JAX-RS
+     * implementation. Right now Jersey only supports the parsing part, while
+     * RESTEasy seems to have support for both.
      */
     private String format(Element element, Object object) {
         if (object != null) {
@@ -387,6 +255,9 @@ abstract class AbstractForm<T> implements JForm<T> {
         }
         return null;
     }
+
+    // cannot be static, non thread-safe (could use ThreadLocal)
+    private final DateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.US);
 
     protected String toStringValue(Element element, Object object) {
         Class<?> clazz = element.tcp.c;

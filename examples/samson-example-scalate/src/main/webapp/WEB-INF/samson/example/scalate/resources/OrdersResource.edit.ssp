@@ -1,7 +1,6 @@
 <%@ val it: OrdersResource %>
 <% val id = it.model.id %>
-<% val order = it.model.orderForm.get %>
-<% val orderForm = it.model.orderForm.getFields %>
+<% val orderForm = it.model.orderForm %>
 <% val customerOptions = it.getCustomerOptions %>
 
 <% import samson.example.scalate.views.Functions._ %>
@@ -18,7 +17,7 @@
 <form id="orderForm" action="${ uri("/orders/" + id) }" method="post">
   <fieldset>
 
-    <% using2(orderForm("customer.id"), customerOptions) { (field, options) => %>
+    <% using2(orderForm.path("customer.id").getField, customerOptions) { (field, options) => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="customer">Customer</label>
@@ -34,7 +33,7 @@
 
     <% } %>
 
-    <% using(orderForm("code")) { field => %>
+    <% using(orderForm.path("code").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="code">Code</label>
@@ -46,7 +45,7 @@
 
     <% } %>
 
-    <% using(orderForm("orderDate")) { field => %>
+    <% using(orderForm.path("orderDate").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="orderDate">Order date</label>
@@ -58,7 +57,7 @@
 
     <% } %>
 
-    <% using(orderForm("shipDate")) { field => %>
+    <% using(orderForm.path("shipDate").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="shipDate">Ship date</label>
@@ -70,7 +69,7 @@
 
     <% } %>
 
-    <% using(orderForm("status")) { field => %>
+    <% using(orderForm.path("status").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="status">Status</label>
@@ -82,29 +81,45 @@
 
     <% } %>
 
-    <% using(orderForm("items")) { field => %>
+    <% using2(orderForm.get.items, orderForm.path("items")) { (items, itemsForm) => %>
 
-      <div class="clearfix <%= if (field.isError) "error" %>">
+      <% val itemsField = itemsForm.getField %>
+
+      <div class="clearfix <%= if (itemsField.isError) "error" %>">
         <label>&nbsp;</label>
         <div class="input">
-          <span class="help-inline"><%= messages(field) %></span>
+          <span class="help-inline"><%= messages(itemsField) %></span>
         </div>
       </div>
+
+      <% var i = 0; items.foreach(item => { %>
+
+        <%
+          val itemForm = itemsForm.index(i)
+          val itemField = itemsForm.getField
+          val qtyField = itemForm.dot("qty").getField
+
+          val itemFormError = List(itemField.isError, qtyField.isError).foldLeft(false)(_ || _)
+          val itemFormMessages = List(messages(itemField), messages(qtyField)).filter(!isNullOrEmpty(_)).mkString(", ")
+        %>
+
+        <div class="samson-item clearfix <%= if (itemFormError) "error" %>">
+          <label>Item <%= i + 1 %></label>
+          <div class="input">
+            <!-- Composite key -->
+            <input id="orderId" type="hidden" value="<%= item.order.id %>" />
+            <input id="productId" type="hidden" value="<%= item.product.id %>" />
+
+            <span class="uneditable-input span4"><%= item.product.name %></span> &nbsp;&times;&nbsp;
+            <input id="name" type="hidden" value="<%= item.product.name %>" />
+            <input id="qty" class="span1" value="<%= qtyField.getValue %>" />
+            <span class="help-inline"><%= itemFormMessages %></span>
+          </div>
+        </div>
+
+      <% i += 1; }) %>
 
     <% } %>
-
-    <% var first = true; order.items.foreach(item => { %>
-
-      <div id="items" class="clearfix">
-        <% if (first) { first = false; %><label>Items</label><% } %>
-        <div class="input">
-          <span class="uneditable-input span4">${ item.product.name }</span> &nbsp;&times;&nbsp;
-          <input id="id" type="hidden" value="${ item.product.id }" />
-          <input id="qty" class="span1" value="${ item.qty }" />
-        </div>
-      </div>
-
-    <% }) %>
 
   </fieldset>
 

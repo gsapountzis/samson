@@ -22,7 +22,6 @@ import samson.form.Property.Path;
 import samson.metadata.Element;
 import samson.metadata.ElementRef;
 
-
 /**
  * Binding form.
  */
@@ -32,46 +31,20 @@ class BindForm<T> extends AbstractForm<T> {
 
     private static final boolean VALIDATE = true;
 
-    private ParamsProvider formParams;
-    private ParamsProvider queryParams;
-
     private FormNode unnamedRoot;
     private FormNode root;
 
     private List<Conversion> conversionErrors = Collections.emptyList();
     private Set<ConstraintViolation<T>> violations = Collections.emptySet();
 
-    public BindForm(Element parameter) {
-        this(parameter, null);
-    }
-
     public BindForm(Element parameter, T value) {
         super(parameter);
         this.value = value;
     }
 
-    public void setFormParamsProvider(ParamsProvider formParams) {
-        this.formParams = formParams;
-    }
+    public JForm<T> apply(String path, MultivaluedMap<String, String> params) {
 
-    public void setQueryParamsProvider(ParamsProvider queryParams) {
-        this.queryParams = queryParams;
-    }
-
-    @Override
-    public MultivaluedMap<String, String> getFormParams() {
-        return formParams.get();
-    }
-
-    @Override
-    public MultivaluedMap<String, String> getQueryParams() {
-        return queryParams.get();
-    }
-
-    @Override
-    public JForm<T> apply(MultivaluedMap<String, String> params) {
-
-        parse(params);
+        parse(path, params);
 
         bind();
 
@@ -86,7 +59,7 @@ class BindForm<T> extends AbstractForm<T> {
         return sb.toString();
     }
 
-    private void parse(MultivaluedMap<String, String> params) {
+    private void parse(String rootPath, MultivaluedMap<String, String> params) {
 
         unnamedRoot = new FormNode(Node.createPrefix(null));
 
@@ -161,22 +134,21 @@ class BindForm<T> extends AbstractForm<T> {
             LOGGER.debug("{}: {}", violation.getPropertyPath(), violation.getMessage());
         }
 
-        // annotate the parameter tree with violations, parses and normalizes the property path
+        // annotate the parameter tree with violations
         for (ConstraintViolation<T> violation : violations) {
-            javax.validation.Path path = violation.getPropertyPath();
-            String param = path.toString();
-            getViolations(param).add(violation);
+            // parse and normalize the validation property path
+            javax.validation.Path validationPath = violation.getPropertyPath();
+            String param = validationPath.toString();
+            Path path = Path.createPath(param);
+            FormNode node = root.getDefinedChild(path);
+
+            node.getViolations().add(violation);
         }
 
         LOGGER.trace(printTree(root));
     }
 
     // -- Form methods
-
-    @Override
-    public T getValue() {
-        return value;
-    }
 
     @Override
     public boolean hasErrors() {
@@ -204,100 +176,136 @@ class BindForm<T> extends AbstractForm<T> {
 
     // -- Field methods
 
-    private FormNode getFormNode(String param) {
-        Path path = Path.createPath(param);
-        return root.getDefinedChild(path);
+    @Override
+    public Field getField(final String param) {
+        final Path path = Path.createPath(param);
+        final FormNode node = root.getDefinedChild(path);
+        final Conversion binding = node.getConversion();
+
+        return new Field() {
+
+            @Override
+            public String getName() {
+                return param;
+            }
+
+            @Override
+            public Object getObjectValue() {
+                if (binding == null) {
+                    return null;
+                }
+
+                return binding.getValue();
+            }
+
+            @Override
+            public String getValue() {
+                if (binding == null) {
+                    return null;
+                }
+
+                if (binding.isError()) {
+                    return Utils.getFirst(node.getStringValues());
+                }
+                else {
+                    return toStringValue(binding.getElement(), binding.getValue());
+                }
+            }
+
+            @Override
+            public List<String> getValues() {
+                if (binding == null) {
+                    return null;
+                }
+
+                if (binding.isError()) {
+                    return node.getStringValues();
+                }
+                else {
+                    return toStringList(binding.getElement(), binding.getValue());
+                }
+            }
+
+            @Override
+            public boolean isError() {
+                if (node.isError()) {
+                    return true;
+                }
+                if (errors.containsKey(path)) {
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public Conversion getConversion() {
+                return node.getConversion();
+            }
+
+            @Override
+            public Set<ConstraintViolation<?>> getViolations() {
+                return node.getViolations();
+            }
+
+            @Override
+            public Messages getMessages() {
+                return form.getMessages(param);
+            }
+
+        };
     }
 
     @Override
-    public Object getObjectValue(String param) {
-        Conversion binding = getConversion(param);
-        if (binding == null) {
-            return null;
-        }
+    public Messages getMessages(final String param) {
+        final Field field = getField(param);
+        final Messages messages = super.getMessages(param);
 
-        return binding.getValue();
-    }
+        return new Messages() {
 
-    @Override
-    public String getValue(String param) {
-        FormNode node = getFormNode(param);
-        Conversion binding = node.getConversion();
-        if (binding == null) {
-            return null;
-        }
+            @Override
+            public String getConversionInfo() {
+                return messages.getConversionInfo();
+            }
 
-        if (binding.isError()) {
-            return Utils.getFirst(node.getStringValues());
-        }
-        else {
-            return toStringValue(binding.getElement(), binding.getValue());
-        }
-    }
+            @Override
+            public String getConversionError() {
+                Conversion binding = field.getConversion();
+                if (binding == null) {
+                    return null;
+                }
 
-    @Override
-    public List<String> getValues(String param) {
-        FormNode node = getFormNode(param);
-        Conversion binding = node.getConversion();
-        if (binding == null) {
-            return null;
-        }
+                if (binding.isError()) {
+                    String stringValue = field.getValue();
+                    return getErrorMessage(binding.getElement(), stringValue);
+                }
+                return null;
+            }
 
-        if (binding.isError()) {
-            return node.getStringValues();
-        }
-        else {
-            return toStringList(binding.getElement(), binding.getValue());
-        }
-    }
+            @Override
+            public List<String> getValidationInfos() {
+                return messages.getValidationInfos();
+            }
 
-    @Override
-    public boolean isError(String param) {
-        Path path = Path.createPath(param);
-        FormNode node = root.getDefinedChild(path);
-        if (node.isError()) {
-            return true;
-        }
-        if (errors.containsKey(path)) {
-            return true;
-        }
-        return false;
-    }
+            @Override
+            public List<String> getValidationErrors() {
+                List<String> messages = new ArrayList<String>();
+                for (ConstraintViolation<?> violation : field.getViolations()) {
+                    messages.add(violation.getMessage());
+                }
+                return messages;
+            }
 
-    @Override
-    public Conversion getConversion(String param) {
-        FormNode node = getFormNode(param);
-        return node.getConversion();
-    }
+            @Override
+            public List<String> getInfos() {
+                return messages.getInfos();
+            }
 
-    @Override
-    public Set<ConstraintViolation<?>> getViolations(String param) {
-        FormNode node = getFormNode(param);
-        return node.getViolations();
-    }
+            @Override
+            public List<String> getErrors() {
+                return messages.getErrors();
+            }
 
-    @Override
-    String getConversionError(String param) {
-        FormNode node = getFormNode(param);
-        Conversion binding = node.getConversion();
-        if (binding == null) {
-            return null;
-        }
-
-        if (binding.isError()) {
-            String stringValue = Utils.getFirst(node.getStringValues());
-            return getErrorMessage(binding.getElement(), stringValue);
-        }
-        return null;
-    }
-
-    @Override
-    List<String> getValidationErrors(String param) {
-        List<String> messages = new ArrayList<String>();
-        for (ConstraintViolation<?> violation : getViolations(param)) {
-            messages.add(violation.getMessage());
-        }
-        return messages;
+        };
     }
 
     private final static String ERROR_MESSAGE_TEMPLATE = "cannot convert value '%s' to '%s'";

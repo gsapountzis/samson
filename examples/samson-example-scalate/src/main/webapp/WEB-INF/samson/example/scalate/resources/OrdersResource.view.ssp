@@ -44,17 +44,17 @@
       <label>&nbsp;</label>
     </div>
 
-    <% var first = true; order.items.foreach(item => { %>
+    <% var i = 0; order.items.foreach(item => { %>
 
       <div class="clearfix">
-        <% if (first) { first = false; %><label>Items</label><% } %>
+        <label>Item <%= i + 1 %></label>
         <div class="input">
           <span class="uneditable-input span4">${ item.product.name }</span> &nbsp;&times;&nbsp;
           <span class="uneditable-input span1">${ item.qty }</span>
         </div>
       </div>
 
-    <% }) %>
+    <% i += 1; }) %>
 
   </fieldset>
 

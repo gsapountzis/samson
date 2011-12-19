@@ -127,16 +127,17 @@ public class Repository {
 
     public Long createProduct(Product product) {
         Long id = seq.getAndIncrement();
+        product.id = id;
         saveProduct(id, product);
         return id;
     }
 
     public void updateProduct(Long id, Product product) {
+        product.id = id;
         saveProduct(id, product);
     }
 
     private void saveProduct(Long id, Product product) {
-        product.id = id;
         products.put(id, product);
     }
 
@@ -189,11 +190,16 @@ public class Repository {
 
     public Long createOrder(Order order) {
         Long id = seq.getAndIncrement();
+        order.id = id;
+        for (OrderItem item : order.items) {
+            item.order.id = id;
+        }
         saveOrder(id, order);
         return id;
     }
 
     public void updateOrder(Long id, Order order) {
+        order.id = id;
         saveOrder(id, order);
     }
 
@@ -208,9 +214,12 @@ public class Repository {
             checkNotNull(item.product);
             checkNotNull(item.product.id);
             checkForeignKey(products, item.product.id);
+
+            checkNotNull(item.order);
+            checkNotNull(item.order.id);
+            checkState(item.order.id.equals(id));
         }
 
-        order.id = id;
         orders.put(id, order);
     }
 
@@ -221,6 +230,12 @@ public class Repository {
             throw new NullPointerException();
         }
         return ref;
+    }
+
+    public static void checkState(boolean expression) {
+        if (!expression) {
+            throw new IllegalStateException();
+        }
     }
 
     public static void checkForeignKey(Map<?,?> table, Object key) {

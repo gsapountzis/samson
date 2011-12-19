@@ -1,12 +1,12 @@
 <%@ val it: ProductsResource %>
-<% val product = it.model.productForm.getFields %>
+<% val productForm = it.model.productForm %>
 
 <% import samson.example.scalate.views.Functions._ %>
 
 <form action="${ uri("/products") }" method="post">
   <fieldset>
 
-    <% using(product("code")) { field => %>
+    <% using(productForm.path("code").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="code">Code</label>
@@ -18,7 +18,7 @@
 
     <% } %>
 
-    <% using(product("name")) { field => %>
+    <% using(productForm.path("name").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="name">Name</label>
@@ -30,7 +30,7 @@
 
     <% } %>
 
-    <% using(product("price")) { field => %>
+    <% using(productForm.path("price").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="price">Price</label>

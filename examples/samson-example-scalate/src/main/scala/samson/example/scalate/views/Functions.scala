@@ -14,6 +14,8 @@ object Functions {
 
   def using4[A, B, C, D](a: A, b: B, c: C, d: D)(body: (A, B, C, D) => Unit) = body(a, b, c, d)
 
+  def isNullOrEmpty(s: String) = (s == null || s.isEmpty)
+
   def messages(field: Field) = {
     val messages = field.getMessages()
 

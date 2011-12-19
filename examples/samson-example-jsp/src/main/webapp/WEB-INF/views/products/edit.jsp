@@ -5,10 +5,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib uri="samson" prefix="ss"%>
+<%@ taglib uri="samson" prefix="sms"%>
 
 <c:set var="id" value="${ it.id }" />
-<c:set var="product" value="${ it.productForm.fields }" />
+<c:set var="productForm" value="${ it.productForm }" />
 
 <html>
   <head>
@@ -34,33 +34,33 @@
       <form action="<c:url value="/products/${ id }" />" method="post">
         <fieldset>
 
-          <c:set var="field" value="${ product['code'] }" />
+          <c:set var="field" value="${ sms:path(productForm, 'code').field }" />
 
           <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
             <label for="code">Code</label>
             <div class="input">
               <input class="span4" id="code" name="product.code" size="30" type="text" value="${fn:escapeXml( field.value )}" />
-              <span class="help-inline"><c:out value="${ ss:messages(field) }" /></span>
+              <span class="help-inline"><c:out value="${ sms:messages(field) }" /></span>
             </div>
           </div>
 
-          <c:set var="field" value="${ product['name'] }" />
+          <c:set var="field" value="${ sms:path(productForm, 'name').field }" />
 
           <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
             <label for="name">Name</label>
             <div class="input">
               <input class="span4" id="name" name="product.name" size="30" type="text" value="${fn:escapeXml( field.value )}" />
-              <span class="help-inline"><c:out value="${ ss:messages(field) }" /></span>
+              <span class="help-inline"><c:out value="${ sms:messages(field) }" /></span>
             </div>
           </div>
 
-          <c:set var="field" value="${ product['price'] }" />
+          <c:set var="field" value="${ sms:path(productForm, 'price').field }" />
 
           <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
             <label for="price">Price</label>
             <div class="input">
               <input class="span4" id="price" name="product.price" size="30" type="text" value="${fn:escapeXml( field.value )}" />
-              <span class="help-inline"><c:out value="${ ss:messages(field) }" /></span>
+              <span class="help-inline"><c:out value="${ sms:messages(field) }" /></span>
             </div>
           </div>
 

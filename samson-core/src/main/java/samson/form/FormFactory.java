@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import samson.JForm;
+import samson.JFormBuilder;
 import samson.JFormProvider;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterProvider;
@@ -67,22 +68,22 @@ public class FormFactory implements JFormProvider {
     // -- Binding form factory methods
 
     @Override
-    public <T> JForm<T> bind(Class<T> type) {
+    public <T> JFormBuilder<T> bind(Class<T> type) {
         return bind(element(type), null);
     }
 
     @Override
-    public <T> JForm<T> bind(Class<T> type, T instance) {
+    public <T> JFormBuilder<T> bind(Class<T> type, T instance) {
         return bind(element(type), instance);
     }
 
     @Override
-    public JForm<?> bind(Element element) {
+    public JFormBuilder<?> bind(Element element) {
         return bind(element, null);
     }
 
-    public <T> JForm<T> bind(Element element, T instance) {
-        BindForm<T> form = new BindForm<T>(element, instance);
+    public <T> JFormBuilder<T> bind(Element element, T instance) {
+        FormBuilder<T> form = new FormBuilder<T>(element, instance);
         form.setBinderFactory(binderFactory);
         form.setValidatorFactory(validatorFactory);
         form.setExtractorProvider(extractorProvider);

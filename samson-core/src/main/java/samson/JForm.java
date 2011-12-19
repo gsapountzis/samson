@@ -1,36 +1,42 @@
 package samson;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MultivaluedMap;
 
 import samson.convert.Conversion;
 
 /**
- * A thin facade over the binding and validation results that is compatible with
- * the JAX-RS programming model.
+ * Facade over the binding and validation results that is compatible with the
+ * JAX-RS programming model.
  * <p>
- * It can be used in the parameter list of a resource method:
+ * JForm essentially overlays a graph-of-fields over the object-graph. It can be
+ * used in the parameter list of a resource method, or within the resource
+ * method body:
+ *
  * <pre>
- * &#064;Path(&quot;{id}&quot;)
- * public void post(&#64;PathParam(&quot;id&quot;) Long id, &#064;FormParam(&quot;user&quot;) JForm&lt;User&gt; userForm) {
- * }
- * </pre>
- * Or within the resource method body:
- * <pre>
- * &#64;Context JFormProvider jForm;
+ * // resource method parameter
  *
  * &#064;Path(&quot;{id}&quot;)
- * public void post(&#64;PathParam(&quot;id&quot;) Long id) {
+ * public void post(@PathParam(&quot;id&quot;) Long id,
+ *         &#064;FormParam(&quot;user&quot;) JForm&lt;User&gt; userForm) {
+ *
+ * }
+ *
+ * // resource method body
+ *
+ * &#064;Context JFormProvider jForm;
+ *
+ * &#064;Path(&quot;{id}&quot;)
+ * public void post(@PathParam(&quot;id&quot;) Long id) {
  *
  *     JForm&lt;User&gt; userForm = jForm.bind(User.class).form(&quot;user&quot;);
  * }
  * </pre>
+ *
  * </p>
  *
  * @author sap
@@ -44,72 +50,66 @@ import samson.convert.Conversion;
  */
 public interface JForm<T> {
 
-    /*
-     * Apply methods for binding forms.
-     */
-
-    JForm<T> params(MultivaluedMap<String, String> params);
-
-    JForm<T> params(String path, MultivaluedMap<String, String> params);
-
-    JForm<T> form();
-
-    JForm<T> form(String path);
-
-    JForm<T> query();
-
-    JForm<T> query(String path);
-
-    /*
-     * Form methods (over the whole tree).
-     */
+    // -- Form
 
     /**
-     * Short for {@link #getValue()}
+     * Get the underlying Java object in a type-safe way.
      */
     T get();
 
-    T getValue();
-
+    /**
+     * Returns <code>true<code> if the form tree has any error.
+     */
     boolean hasErrors();
 
     List<Conversion> getConversionErrors();
 
     Set<ConstraintViolation<T>> getViolations();
 
-    /*
-     * Field methods (root object is the null or empty string).
+    // -- Path
+
+    /**
+     * Get the sub-form rooted at path.
      */
+    JForm<?> path(String path);
 
-    Object getObjectValue(String param);
+    JForm<?> dot(String property);
 
-    String getValue(String param);
+    JForm<?> index(String index);
 
-    List<String> getValues(String param);
+    JForm<?> index(int index);
 
-    boolean isError(String param);
+    String getPath();
 
-    Conversion getConversion(String param);
+    // -- Field
 
-    Set<ConstraintViolation<?>> getViolations(String param);
+    /**
+     * Get the field value for the root object of the form.
+     */
+    Field getField();
+
+    Field getField(String path);
+
+    /**
+     * Get the messages for the root object of the form.
+     */
+    Messages getMessages();
+
+    Messages getMessages(String path);
+
+    void info(String msg);
 
     void info(String path, String msg);
 
+    void error(String msg);
+
     void error(String path, String msg);
 
-    Messages getMessages(String param);
-
     /**
-     * Map of fields abstraction over the form.
-     */
-    Map<String, Field> getFields();
-
-    /**
-     * Form field abstraction.
+     * Form node value.
      * <p>
-     * Used for providing a Map of Fields abstraction over the Form for easier
-     * access from view templates.
-     * </p>
+     * The node can be either a field (leaf node) or a sub-form (tree of nodes).
+     * In the case of a tree, the value corresponds to the <em>root</em> object.
      */
     public static interface Field {
 
@@ -132,7 +132,7 @@ public interface JForm<T> {
     }
 
     /**
-     * Form field messages.
+     * Form node messages.
      */
     public static interface Messages {
 

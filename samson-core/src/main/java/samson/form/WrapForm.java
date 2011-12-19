@@ -5,14 +5,11 @@ import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
-import javax.ws.rs.core.MultivaluedMap;
 
-import samson.JForm;
 import samson.bind.Binder;
 import samson.convert.Conversion;
 import samson.metadata.Element;
 import samson.metadata.ElementRef;
-
 
 /**
  * Wrapping form.
@@ -24,27 +21,36 @@ class WrapForm<T> extends AbstractForm<T> {
         this.value = value;
     }
 
-    @Override
-    protected MultivaluedMap<String, String> getFormParams() {
-        return null;
+    private ElementRef getPathElementRef(String param) {
+        ElementRef ref = new ElementRef(parameter, valueAccessor);
+
+        Property.Path path = Property.Path.createPath(param);
+        for (Property.Node node : path) {
+            Binder binder = binderFactory.getBinder(ref, true);
+            ref = binder.getElementRef(node.getName());
+            if (ref == ElementRef.NULL_REF) {
+                return ElementRef.NULL_REF;
+            }
+        }
+
+        return ref;
     }
 
-    @Override
-    protected MultivaluedMap<String, String> getQueryParams() {
-        return null;
-    }
+    private Conversion getConversion(String param) {
+        ElementRef ref = getPathElementRef(param);
+        if (ref != ElementRef.NULL_REF) {
 
-    @Override
-    public JForm<T> apply(MultivaluedMap<String, String> params) {
-        throw new UnsupportedOperationException("Cannot bind a wrapping form");
+            Element paramElement = ref.element;
+            Object paramValue = ref.accessor.get();
+
+            return Conversion.fromValue(paramElement, paramValue);
+        }
+        else {
+            return null;
+        }
     }
 
     // -- Form methods
-
-    @Override
-    public T getValue() {
-        return value;
-    }
 
     @Override
     public boolean hasErrors() {
@@ -64,82 +70,103 @@ class WrapForm<T> extends AbstractForm<T> {
     // -- Field methods
 
     @Override
-    public Object getObjectValue(String param) {
-        Conversion binding = getConversion(param);
-        if (binding == null) {
-            return null;
-        }
-        return binding.getValue();
-    }
+    public Field getField(final String param) {
+        final Conversion binding = getConversion(param);
 
-    @Override
-    public String getValue(String param) {
-        Conversion binding = getConversion(param);
-        if (binding == null) {
-            return null;
-        }
+        return new Field() {
 
-        return toStringValue(binding.getElement(), binding.getValue());
-    }
-
-    @Override
-    public List<String> getValues(String param) {
-        Conversion binding = getConversion(param);
-        if (binding == null) {
-            return null;
-        }
-
-        return toStringList(binding.getElement(), binding.getValue());
-    }
-
-    @Override
-    public boolean isError(String param) {
-        return false;
-    }
-
-    private ElementRef getPathElementRef(String param) {
-        ElementRef ref = new ElementRef(parameter, valueAccessor);
-
-        Property.Path path = Property.Path.createPath(param);
-        for (Property.Node node : path) {
-            Binder binder = binderFactory.getBinder(ref, true);
-            ref = binder.getElementRef(node.getName());
-            if (ref == ElementRef.NULL_REF) {
-                return ElementRef.NULL_REF;
+            @Override
+            public String getName() {
+                return param;
             }
-        }
 
-        return ref;
+            @Override
+            public Object getObjectValue() {
+                if (binding == null) {
+                    return null;
+                }
+
+                return binding.getValue();
+            }
+
+            @Override
+            public String getValue() {
+                if (binding == null) {
+                    return null;
+                }
+
+                return toStringValue(binding.getElement(), binding.getValue());
+            }
+
+            @Override
+            public List<String> getValues() {
+                if (binding == null) {
+                    return null;
+                }
+
+                return toStringList(binding.getElement(), binding.getValue());
+            }
+
+            @Override
+            public boolean isError() {
+                return false;
+            }
+
+            @Override
+            public Conversion getConversion() {
+                return binding;
+            }
+
+            @Override
+            public Set<ConstraintViolation<?>> getViolations() {
+                return Collections.emptySet();
+            }
+
+            @Override
+            public samson.JForm.Messages getMessages() {
+                return form.getMessages(param);
+            }
+
+        };
     }
 
     @Override
-    public Conversion getConversion(String param) {
-        ElementRef ref = getPathElementRef(param);
-        if (ref != ElementRef.NULL_REF) {
+    public Messages getMessages(final String param) {
+        final Messages messages = super.getMessages(param);
 
-            Element paramElement = ref.element;
-            Object paramValue = ref.accessor.get();
+        return new Messages() {
 
-            return Conversion.fromValue(paramElement, paramValue);
-        }
-        else {
-            return null;
-        }
-    }
+            @Override
+            public String getConversionInfo() {
+                return messages.getConversionInfo();
+            }
 
-    @Override
-    public Set<ConstraintViolation<?>> getViolations(String param) {
-        return Collections.emptySet();
-    }
+            @Override
+            public String getConversionError() {
+                return null;
+            }
 
-    @Override
-    String getConversionError(String param) {
-        return null;
-    }
+            @Override
+            public List<String> getValidationInfos() {
+                return messages.getValidationInfos();
+            }
 
-    @Override
-    List<String> getValidationErrors(String param) {
-        return Collections.emptyList();
+            @Override
+            public List<String> getValidationErrors() {
+                return Collections.emptyList();
+            }
+
+            @Override
+            public List<String> getInfos() {
+                return messages.getInfos();
+            }
+
+            @Override
+            public List<String> getErrors() {
+                return messages.getErrors();
+            }
+
+        };
     }
 
 }

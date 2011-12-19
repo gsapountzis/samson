@@ -3,10 +3,15 @@ package samson.example.jsp.views;
 import java.util.Iterator;
 import java.util.List;
 
+import samson.JForm;
 import samson.JForm.Field;
 import samson.JForm.Messages;
 
 public class Functions {
+
+    public static JForm<?> path(JForm<?> form, String path) {
+        return form.path(path);
+    }
 
     public static String messages(Object object) {
         Field field = castField(object);
