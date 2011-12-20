@@ -52,8 +52,15 @@ public class OrderForm extends ForwardingForm<Order> {
             for (Long id : map.keySet()) {
                 List<Integer> indices = map.get(id);
                 if (indices.size() > 1) {
+                    boolean first = true;
                     for (Integer index : indices) {
-                        itemsForm.index(index).error("duplicate item");
+                        if (first) {
+                            first = false;
+                            itemsForm.index(index).error("first item");
+                        }
+                        else {
+                            itemsForm.index(index).error("duplicate item");
+                        }
                     }
                 }
 
