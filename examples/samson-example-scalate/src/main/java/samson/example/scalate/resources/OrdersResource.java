@@ -22,6 +22,7 @@ import samson.JForm;
 import samson.JFormProvider;
 import samson.example.scalate.model.Customer;
 import samson.example.scalate.model.Order;
+import samson.example.scalate.model.OrderForm;
 import samson.example.scalate.model.Product;
 import samson.example.scalate.model.Repository;
 
@@ -66,7 +67,7 @@ public class OrdersResource {
     @POST
     public Response update(@PathParam("id") Long id) {
 
-        JForm<Order> orderForm = jForm.bind(Order.class).form("order");
+        OrderForm orderForm = new OrderForm(jForm.bind(Order.class).form("order")).validate();
 
         if (orderForm.hasErrors()) {
             return Response.status(BAD_REQUEST).entity(views.edit(id, orderForm)).build();
