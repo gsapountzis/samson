@@ -47,7 +47,7 @@
     <% var i = 0; order.items.foreach(item => { %>
 
       <div class="clearfix">
-        <label>Item <%= i + 1 %></label>
+        <label>&nbsp;</label>
         <div class="input">
           <span class="uneditable-input span4">${ item.product.name }</span> &nbsp;&times;&nbsp;
           <span class="uneditable-input span1">${ item.qty }</span>

@@ -26,3 +26,11 @@ body {
   display: inline-block;
   width: 330px;
 }
+
+.samson-item .ui-button {
+  font-size: 0.8em;
+}
+
+.samson-item-new .ui-button {
+  font-size: 0.8em;
+}

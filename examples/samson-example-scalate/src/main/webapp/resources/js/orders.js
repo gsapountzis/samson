@@ -29,4 +29,11 @@ $(function() {
 
 		return true;
 	});
+
+	$( ".samson-item button#del" ).click( function( event ) {
+		event.preventDefault();
+		$( this ).closest( "div.samson-item" ).fadeOut( "fast", function() {
+			$( this ).remove();
+		});
+	});
 });

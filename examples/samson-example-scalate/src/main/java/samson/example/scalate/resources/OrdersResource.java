@@ -22,6 +22,7 @@ import samson.JForm;
 import samson.JFormProvider;
 import samson.example.scalate.model.Customer;
 import samson.example.scalate.model.Order;
+import samson.example.scalate.model.Product;
 import samson.example.scalate.model.Repository;
 
 import com.sun.jersey.api.view.Viewable;
@@ -82,6 +83,20 @@ public class OrdersResource {
         for (Customer c : Repository.get().getCustomers()) {
             unsorted.put(c.id.toString(), c.name);
         }
+
+        return sortByValue(unsorted);
+    }
+
+    public Map<String, String> getProductOptions() {
+        final Map<String, String> unsorted = new HashMap<String, String>();
+        for (Product p : Repository.get().getProducts()) {
+            unsorted.put(p.id.toString(), p.name);
+        }
+
+        return sortByValue(unsorted);
+    }
+
+    private Map<String, String> sortByValue(final Map<String, String> unsorted) {
 
         Map<String, String> options = new TreeMap<String, String>(new Comparator<String>() {
             @Override
