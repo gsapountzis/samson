@@ -27,10 +27,10 @@ body {
   width: 330px;
 }
 
-.samson-item .ui-button {
+.order-item-edit .ui-button {
   font-size: 0.8em;
 }
 
-.samson-item-new .ui-button {
+.order-items-new .ui-button {
   font-size: 0.8em;
 }

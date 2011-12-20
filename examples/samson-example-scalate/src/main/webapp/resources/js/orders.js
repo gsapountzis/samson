@@ -12,28 +12,40 @@ $(function() {
 		var i = 0;
 
 		// Fill-in the name attribute of each item's input elements
-		$( ".samson-item > .input" ).each( function() {
+		$( "div.order-item-edit > .input" ).each( function() {
+			var $itemInput = $( this ),
+				itemName = "order.items[" + i + "]";
 
-			var $id = $( this ).children( "#id" ),
-				$name = $( this ).children( "#name" ),
-				$qty = $( this ).children( "#qty" );
-
-			var itemName = "order.items[" + i + "]";
-
-			$id.attr( "name", itemName + ".product.id" );
-			$name.attr( "name", itemName + ".product.name" );
-			$qty.attr( "name", itemName + ".qty" );
+			$itemInput
+				.children( "#id" ).attr( "name", itemName + "." + "product.id" ).end()
+				.children( "#name" ).attr( "name", itemName + "." + "product.name" ).end()
+				.children( "#qty" ).attr( "name", itemName + "." + "qty" ).end();
 
 			i++;
 		});
-
-		return true;
 	});
 
-	$( ".samson-item button#del" ).click( function( event ) {
-		event.preventDefault();
-		$( this ).closest( "div.samson-item" ).fadeOut( "fast", function() {
+	$( "div.order-item-edit button#del" ).live( "click", function() {
+		$( this ).closest( "div.order-item-edit" ).fadeOut( "fast", function() {
 			$( this ).remove();
 		});
+	});
+
+	$( "div.order-items-new button#add" ).click( function() {
+		var $item = $( this ),
+			$itemInput = $item.parent( ".input" ),
+			$tmpl = $( "div.order-item-edit-tmpl" ).clone().removeClass( "order-item-edit-tmpl" ).addClass( "order-item-edit" ),
+			$tmplInput = $tmpl.children( ".input" );
+
+		var $product = $itemInput.find( "#product > option" ).filter( ":selected" ),
+			$qty = $itemInput.children( "#qty" );
+
+		$tmplInput
+			.children( "#id" ).val( $product.val() ).end()
+			.children( "#name" ).val( $product.text() ).end()
+			.children( "#nameText" ).val( $product.text() ).end()
+			.children( "#qty" ).val( $qty.val() ).end();
+
+		$( "div.order-items" ).append( $tmpl.hide().fadeIn( "slow" ) );
 	});
 });
