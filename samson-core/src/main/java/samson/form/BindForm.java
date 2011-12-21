@@ -78,6 +78,22 @@ class BindForm<T> extends AbstractForm<T> {
         LOGGER.trace(printTree(root));
     }
 
+    private void bind() {
+        ElementRef ref = new ElementRef(parameter, valueAccessor);
+
+        Binder binder = binderFactory.getBinder(ref, root.hasChildren());
+        binder.read(root);
+
+        conversionErrors = new ArrayList<Conversion>();
+        convert(binder.getNode(), root);
+
+        for (Conversion conversion : conversionErrors) {
+            LOGGER.debug("conversion error cause {}", conversion.getCause().toString());
+        }
+
+        LOGGER.trace(printTree(root));
+    }
+
     private void convert(BinderNode binderNode, FormNode formNode) {
         Binder binder = binderNode.getBinder();
 
@@ -101,25 +117,7 @@ class BindForm<T> extends AbstractForm<T> {
         }
     }
 
-    private void bind() {
-
-        ElementRef ref = new ElementRef(parameter, valueAccessor);
-
-        Binder binder = binderFactory.getBinder(ref, root.hasChildren());
-        binder.read(root);
-
-        conversionErrors = new ArrayList<Conversion>();
-        convert(binder.getNode(), root);
-
-        for (Conversion conversion : conversionErrors) {
-            LOGGER.debug("conversion error cause {}", conversion.getCause().toString());
-        }
-
-        LOGGER.trace(printTree(root));
-    }
-
     private void validate() {
-
         if (!VALIDATE || (validatorFactory == null)) {
             return;
         }
@@ -134,14 +132,14 @@ class BindForm<T> extends AbstractForm<T> {
             LOGGER.debug("{}: {}", violation.getPropertyPath(), violation.getMessage());
         }
 
-        // annotate the parameter tree with violations
         for (ConstraintViolation<T> violation : violations) {
             // parse and normalize the validation property path
             javax.validation.Path validationPath = violation.getPropertyPath();
             String param = validationPath.toString();
             Path path = Path.createPath(param);
-            FormNode node = root.getDefinedChild(path);
 
+            // annotate the form tree with violations
+            FormNode node = root.getDefinedChild(path);
             node.getViolations().add(violation);
         }
 

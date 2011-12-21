@@ -123,7 +123,7 @@ class WrapForm<T> extends AbstractForm<T> {
             }
 
             @Override
-            public samson.JForm.Messages getMessages() {
+            public Messages getMessages() {
                 return form.getMessages(param);
             }
 
