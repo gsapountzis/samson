@@ -79,10 +79,12 @@ public class OrdersResource {
         return Response.seeOther(Paths.view(id)).build();
     }
 
+    // -- Option values (should be cached either at the resources or repository level)
+
     public Map<String, String> getCustomerOptions() {
         final Map<String, String> unsorted = new HashMap<String, String>();
         for (Customer c : Repository.get().getCustomers()) {
-            unsorted.put(c.id.toString(), c.name);
+            unsorted.put(Long.toString(c.id), c.name);
         }
 
         return sortByValue(unsorted);
@@ -91,7 +93,7 @@ public class OrdersResource {
     public Map<String, String> getProductOptions() {
         final Map<String, String> unsorted = new HashMap<String, String>();
         for (Product p : Repository.get().getProducts()) {
-            unsorted.put(p.id.toString(), p.name);
+            unsorted.put(Long.toString(p.id), p.name);
         }
 
         return sortByValue(unsorted);

@@ -25,6 +25,7 @@
         <label for="customer">Customer</label>
         <div class="input">
           <select class="span4" id="customer" name="order.customer.id">
+            <!-- option value="">-- Select customer --</option -->
             <% customerOptions.foreach(option => { %>
               <option value="<%= option.key %>" <%= if (option.key == field.getValue) "selected" %>><%= option.value %></option>
             <% }) %>
@@ -102,12 +103,12 @@
 
         <%
           val itemForm = itemsForm.index(i)
-          val itemField = itemForm.getField
+          val productField = itemForm.dot("product").getField
           val qtyField = itemForm.dot("qty").getField
         %>
 
         <!--  edit item -->
-        <div class="order-item-edit clearfix <%= if (multiError(itemField, qtyField)) "error" %>">
+        <div class="order-item-edit clearfix <%= if (multiError(productField, qtyField)) "error" %>">
           <label>&nbsp;</label>
           <div class="input">
             <input id="id" type="hidden" value="<%= item.product.id %>" />
@@ -120,7 +121,7 @@
               <span class="ui-button-icon-primary ui-icon ui-icon-minusthick"></span>
               <span class="ui-button-text">&nbsp;</span>
             </button>
-            <span class="help-inline"><%= multiMessages(itemField, qtyField) %></span>
+            <span class="help-inline"><%= multiMessages(productField, qtyField) %></span>
           </div>
         </div>
 
@@ -152,6 +153,7 @@
         <label>&nbsp;</label>
         <div class="input">
           <select class="span4" id="product">
+            <option value="">-- Select product --</option>
             <% productOptions.foreach(option => { %>
               <option value="<%= option.key %>"><%= option.value %></option>
             <% }) %>

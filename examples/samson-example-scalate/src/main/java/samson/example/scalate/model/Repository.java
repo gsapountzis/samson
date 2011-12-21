@@ -171,9 +171,11 @@ public class Repository {
 
     public Order findOrder(Long id) {
         Order order = orders.get(id);
-        fetchOrderCustomer(order);
-        for (OrderItem item : order.items) {
-            fetchOrderItemProduct(item);
+        if (order != null) {
+            fetchOrderCustomer(order);
+            for (OrderItem item : order.items) {
+                fetchOrderItemProduct(item);
+            }
         }
         return order;
     }

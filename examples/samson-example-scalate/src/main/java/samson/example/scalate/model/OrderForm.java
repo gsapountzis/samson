@@ -1,8 +1,6 @@
 package samson.example.scalate.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import samson.JForm;
@@ -10,10 +8,12 @@ import samson.JForm;
 public class OrderForm extends ForwardingForm<Order> {
 
     private final JForm<Order> orderForm;
+    private final JForm<?> itemsForm;
 
     public OrderForm(JForm<Order> delegate) {
         super(delegate);
         this.orderForm = delegate;
+        this.itemsForm = orderForm.path("items");
     }
 
     /**
@@ -24,47 +24,38 @@ public class OrderForm extends ForwardingForm<Order> {
      * be implemented as a {@link javax.validation.Constraint}.
      */
     public OrderForm validate() {
-        Order order = orderForm.get(); // XXX check not null
-        boolean duplicates = false;
-        Map<Long, List<Integer>> map = new HashMap<Long, List<Integer>>();
+        Order order = orderForm.get();
+        if (order == null) {
+            return this;
+        }
+
+        Map<Long, Integer> map = new HashMap<Long, Integer>();
+        boolean containsDup = false;
 
         int i = 0;
         for (OrderItem item : order.items) {
-            Long id = item.product.id; // XXX check not null
 
-            List<Integer> indices = map.get(id);
-            if (indices == null) {
-                indices = new ArrayList<Integer>();
-                map.put(id, indices);
+            Long id = (item != null && item.product != null) ? item.product.id : null;
+            if (id != null) {
+                if (map.containsKey(id)) {
+                    containsDup = true;
+                    Integer first = map.get(id);
+                    if (first != null) {
+                        map.put(id, null);
+                        itemsForm.index(first).dot("product").error("first item");
+                    }
+                    itemsForm.index(i).dot("product").error("duplicate item");
+                }
+                else {
+                    map.put(id, i);
+                }
             }
-            else {
-                duplicates = true;
-            }
-            indices.add(i);
 
             i += 1;
         }
 
-        if (duplicates) {
-            JForm<?> itemsForm = orderForm.path("items");
-            itemsForm.error("Order contains duplicate items");
-
-            for (Long id : map.keySet()) {
-                List<Integer> indices = map.get(id);
-                if (indices.size() > 1) {
-                    boolean first = true;
-                    for (Integer index : indices) {
-                        if (first) {
-                            first = false;
-                            itemsForm.index(index).error("first item");
-                        }
-                        else {
-                            itemsForm.index(index).error("duplicate item");
-                        }
-                    }
-                }
-
-            }
+        if (containsDup) {
+            itemsForm.error("order contains duplicate items");
         }
 
         return this;

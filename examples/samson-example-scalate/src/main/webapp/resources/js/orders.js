@@ -40,6 +40,8 @@ $(function() {
 		var $product = $itemInput.find( "#product > option" ).filter( ":selected" ),
 			$qty = $itemInput.children( "#qty" );
 
+		// Don't do any conversion/validation here in order to demonstrate server-side features
+
 		$tmplInput
 			.children( "#id" ).val( $product.val() ).end()
 			.children( "#name" ).val( $product.text() ).end()
