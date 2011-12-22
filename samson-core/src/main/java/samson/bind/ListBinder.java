@@ -38,7 +38,7 @@ class ListBinder extends Binder {
 
         List<?> list = (List<?>) ref.accessor.get();
         if (list == null) {
-            list = ListTcp.createInstance(listTcp.getTcp());
+            list = listTcp.createInstance();
             ref.accessor.set(list);
         }
 
@@ -70,8 +70,8 @@ class ListBinder extends Binder {
     private ElementRef getElementRef(Annotation[] annotations, ListTcp listTcp, List<?> list, String stringIndex) {
         int index = getIndex(stringIndex);
         if (index >= 0 && index < MAX_LIST_SIZE) {
-            Element itemElement = listTcp.getItemElement(annotations, stringIndex);
-            Accessor itemAccessor = ListTcp.createAccessor(list, index);
+            Element itemElement = listTcp.createItemElement(annotations, stringIndex);
+            Accessor itemAccessor = ListTcp.createItemAccessor(list, index);
             return new ElementRef(itemElement, itemAccessor);
         }
         else {

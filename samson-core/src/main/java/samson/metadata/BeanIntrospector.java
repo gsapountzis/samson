@@ -17,8 +17,7 @@ import samson.jersey.spi.inject.Errors;
 
 class BeanIntrospector {
 
-    static BeanTcp createBeanMetadata(TypeClassPair tcp) {
-        Class<?> beanClass = tcp.c;
+    static BeanMetadata createBeanMetadata(Class<?> beanClass) {
 
         Map<String, Tuple> properties = new HashMap<String, Tuple>();
 
@@ -32,7 +31,7 @@ class BeanIntrospector {
 
         findGetters(methodList, properties);
 
-        return new BeanTcp(tcp, map(beanClass, properties));
+        return new BeanMetadata(beanClass, map(beanClass, properties));
     }
 
     private static void checkClass(Class<?> clazz) {

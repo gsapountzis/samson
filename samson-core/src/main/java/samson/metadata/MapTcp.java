@@ -34,12 +34,8 @@ public class MapTcp {
         return valueTcp;
     }
 
-    public Element getValueElement(Annotation[] annotations, String name) {
-        return new Element(annotations, valueTcp, name);
-    }
-
-    public static Map<?, ?> createInstance(TypeClassPair mapTcp) {
-        Class<?> mapClass = mapTcp.c;
+    public Map<?, ?> createInstance() {
+        Class<?> mapClass = tcp.c;
 
         if (!Map.class.isAssignableFrom(mapClass)) {
             throw new IllegalArgumentException();
@@ -63,7 +59,11 @@ public class MapTcp {
         }
     }
 
-    public static Element.Accessor createAccessor(final Map<?, ?> map, final Object key) {
+    public Element createValueElement(Annotation[] annotations, String key) {
+        return new Element(annotations, valueTcp, key);
+    }
+
+    public static Element.Accessor createValueAccessor(final Map<?, ?> map, final Object key) {
         if (map == null) {
             return Element.Accessor.NULL_ACCESSOR;
         }

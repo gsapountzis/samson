@@ -293,7 +293,7 @@ abstract class AbstractForm<T> implements JForm<T> {
         Annotation[] annotations = listElement.annotations;
         ListTcp listTcp = new ListTcp(listElement.tcp);
 
-        return listTcp.getItemElement(annotations, "0");
+        return listTcp.createItemElement(annotations, "0");
     }
 
     // -- Conversion: fromString()

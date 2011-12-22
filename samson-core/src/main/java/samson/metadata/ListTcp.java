@@ -28,12 +28,8 @@ public class ListTcp {
         return itemTcp;
     }
 
-    public Element getItemElement(Annotation[] annotations, String name) {
-        return new Element(annotations, itemTcp, name);
-    }
-
-    public static List<?> createInstance(TypeClassPair listTcp) {
-        Class<?> listClass = listTcp.c;
+    public List<?> createInstance() {
+        Class<?> listClass = tcp.c;
 
         if (!List.class.isAssignableFrom(listClass)) {
             throw new IllegalArgumentException();
@@ -57,7 +53,11 @@ public class ListTcp {
         }
     }
 
-    public static Element.Accessor createAccessor(final List<?> list, final int index) {
+    public Element createItemElement(Annotation[] annotations, String index) {
+        return new Element(annotations, itemTcp, index);
+    }
+
+    public static Element.Accessor createItemAccessor(final List<?> list, final int index) {
         if (list == null) {
             return Element.Accessor.NULL_ACCESSOR;
         }

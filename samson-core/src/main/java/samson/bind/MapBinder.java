@@ -34,7 +34,7 @@ class MapBinder extends Binder {
 
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
         if (map == null) {
-            map = MapTcp.createInstance(mapTcp.getTcp());
+            map = mapTcp.createInstance();
             ref.accessor.set(map);
         }
 
@@ -66,8 +66,8 @@ class MapBinder extends Binder {
     private ElementRef getElementRef(Annotation[] annotations, MapTcp mapTcp, Map<?,?> map, String stringKey) {
         Object key = getKey(mapTcp.getKeyTcp(), stringKey);
         if (key != null) {
-            Element valueElement = mapTcp.getValueElement(annotations, stringKey);
-            Accessor valueAccessor = MapTcp.createAccessor(map, key);
+            Element valueElement = mapTcp.createValueElement(annotations, stringKey);
+            Accessor valueAccessor = MapTcp.createValueAccessor(map, key);
             return new ElementRef(valueElement, valueAccessor);
         }
         else {

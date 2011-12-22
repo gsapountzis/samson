@@ -33,8 +33,8 @@ public class BeanTcp {
         return properties;
     }
 
-    public static Object createInstance(TypeClassPair beanTcp) {
-        Class<?> beanClass = beanTcp.c;
+    public Object createInstance() {
+        Class<?> beanClass = tcp.c;
 
         try {
             return beanClass.newInstance();
@@ -45,7 +45,7 @@ public class BeanTcp {
         }
     }
 
-    public static Element.Accessor createAccessor(final Object bean, final BeanProperty property) {
+    public static Element.Accessor createPropertyAccessor(final Object bean, final BeanProperty property) {
         if (bean == null) {
             return Element.Accessor.NULL_ACCESSOR;
         }

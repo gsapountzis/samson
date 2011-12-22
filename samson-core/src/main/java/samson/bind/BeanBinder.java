@@ -17,7 +17,7 @@ class BeanBinder extends Binder {
 
         Object bean = ref.accessor.get();
         if (bean == null) {
-            bean = BeanTcp.createInstance(beanTcp.getTcp());
+            bean = beanTcp.createInstance();
             ref.accessor.set(bean);
         }
 
@@ -53,7 +53,7 @@ class BeanBinder extends Binder {
     }
 
     private ElementRef getElementRef(Object bean, BeanProperty property) {
-        Accessor propertyAccessor = BeanTcp.createAccessor(bean, property);
+        Accessor propertyAccessor = BeanTcp.createPropertyAccessor(bean, property);
         return new ElementRef(property, propertyAccessor);
     }
 

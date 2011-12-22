@@ -13,8 +13,9 @@ import samson.convert.Converter;
 import samson.convert.ConverterProvider;
 import samson.convert.MultivaluedTypePredicate;
 import samson.jersey.core.reflection.ReflectionHelper;
+import samson.metadata.BeanMetadata;
+import samson.metadata.BeanMetadataCache;
 import samson.metadata.BeanTcp;
-import samson.metadata.BeanTcpCache;
 import samson.metadata.ElementRef;
 import samson.metadata.TypeClassPair;
 
@@ -22,12 +23,12 @@ public class BinderFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BinderFactory.class);
 
-    private final BeanTcpCache beanCache;
+    private final BeanMetadataCache beanCache;
     private ConverterProvider converterProvider;
     private MultivaluedTypePredicate stringTypePredicate;
 
     public BinderFactory() {
-        this.beanCache = new BeanTcpCache();
+        this.beanCache = new BeanMetadataCache();
     }
 
     public void setConverterProvider(ConverterProvider converterProvider) {
@@ -39,7 +40,8 @@ public class BinderFactory {
     }
 
     public BeanTcp getBeanMetadata(TypeClassPair tcp) {
-        return beanCache.get(tcp);
+        BeanMetadata metadata = beanCache.get(tcp.c);
+        return new BeanTcp(tcp, metadata.getProperties());
     }
 
     public Converter<?> getConverter(TypeClassPair tcp, Annotation annotations[]) {
