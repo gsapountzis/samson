@@ -2,7 +2,6 @@ package samson.bind;
 
 import samson.metadata.BeanProperty;
 import samson.metadata.BeanTcp;
-import samson.metadata.Element.Accessor;
 import samson.metadata.ElementRef;
 
 class BeanBinder extends Binder {
@@ -27,7 +26,7 @@ class BeanBinder extends Binder {
 
             ParamNode<?> propertyTree = beanTree.getChild(property.name);
 
-            ElementRef propertyRef = getElementRef(bean, property);
+            ElementRef propertyRef = new ElementRef(property, property.createAccessor(bean));
 
             Binder binder = factory.getBinder(propertyRef, propertyTree.hasChildren());
             if (binder != Binder.NULL_BINDER) {
@@ -45,16 +44,11 @@ class BeanBinder extends Binder {
 
         if (beanTcp.hasProperty(name)) {
             BeanProperty property = beanTcp.getProperty(name);
-            return getElementRef(bean, property);
+            return new ElementRef(property, property.createAccessor(bean));
         }
         else {
             return ElementRef.NULL_REF;
         }
-    }
-
-    private ElementRef getElementRef(Object bean, BeanProperty property) {
-        Accessor propertyAccessor = BeanTcp.createPropertyAccessor(bean, property);
-        return new ElementRef(property, propertyAccessor);
     }
 
 }

@@ -45,23 +45,4 @@ public class BeanTcp {
         }
     }
 
-    public static Element.Accessor createPropertyAccessor(final Object bean, final BeanProperty property) {
-        if (bean == null) {
-            return Element.Accessor.NULL_ACCESSOR;
-        }
-
-        return new Element.Accessor() {
-
-            @Override
-            public void set(Object value) {
-                property.set(bean, value);
-            }
-
-            @Override
-            public Object get() {
-                return property.get(bean);
-            }
-        };
-    }
-
 }

@@ -19,6 +19,27 @@ public abstract class BeanProperty extends Element {
 
     public abstract void set(Object bean, Object value);
 
+    public Element.Accessor createAccessor(final Object bean) {
+        if (bean == null) {
+            return Element.Accessor.NULL_ACCESSOR;
+        }
+
+        final BeanProperty property = this;
+
+        return new Element.Accessor() {
+
+            @Override
+            public void set(Object value) {
+                property.set(bean, value);
+            }
+
+            @Override
+            public Object get() {
+                return property.get(bean);
+            }
+        };
+    }
+
     public static BeanProperty fromPublicField(Class<?> beanClass, Annotation[] annotations, String name, Field field) {
 
         TypeClassPair tcp = createTcp(
