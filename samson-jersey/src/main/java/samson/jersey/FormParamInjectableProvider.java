@@ -56,9 +56,6 @@ public class FormParamInjectableProvider implements InjectableProvider<FormParam
             Form form = (Form) context.getProperties().get(FormDispatchProvider.FORM_PROPERTY);
             if (form == null) {
                 form = getForm(context);
-                if (form == null) {
-                    throw new IllegalStateException();
-                }
                 context.getProperties().put(FormDispatchProvider.FORM_PROPERTY, form);
             }
             return form;
@@ -66,11 +63,13 @@ public class FormParamInjectableProvider implements InjectableProvider<FormParam
 
         static Form getForm(HttpContext context) {
             final HttpRequestContext r = context.getRequest();
-            if (r.getMethod().equals("GET"))
-                return null;
+            if (r.getMethod().equals("GET")) {
+                throw new IllegalStateException("Form with HTTP method GET");
+            }
 
-            if (!MediaTypes.typeEquals(MediaType.APPLICATION_FORM_URLENCODED_TYPE, r.getMediaType()))
-                return null;
+            if (!MediaTypes.typeEquals(MediaType.APPLICATION_FORM_URLENCODED_TYPE, r.getMediaType())) {
+                throw new IllegalStateException("Form with HTTP content-type other than x-www-form-urlencoded");
+            }
 
             return r.getFormParameters();
         }
