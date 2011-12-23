@@ -14,7 +14,7 @@ import com.sun.jersey.spi.StringReader;
 class JerseyConverters {
 
     public static boolean isNullOrEmpty(String s) {
-        return (s != null && s.isEmpty());
+        return (s == null || s.isEmpty());
     }
 
     public static class StringConverter implements Converter<String> {
