@@ -10,26 +10,33 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>samson-core</artifactId>
+    <artifactId>samson-jersey-convert</artifactId>
     <packaging>jar</packaging>
-    <name>Samson :: Core</name>
+    <name>Samson :: Jersey Convert</name>
 
     <dependencies>
         <dependency>
             <groupId>com.github.gsapountzis.samson</groupId>
             <artifactId>samson-convert</artifactId>
         </dependency>
+
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>jsr311-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

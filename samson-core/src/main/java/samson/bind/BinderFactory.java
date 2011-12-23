@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import samson.convert.Converter;
+import samson.convert.ConverterPredicate;
 import samson.convert.ConverterProvider;
-import samson.convert.MultivaluedTypePredicate;
 import samson.jersey.core.reflection.ReflectionHelper;
 import samson.metadata.BeanMetadata;
 import samson.metadata.BeanMetadataCache;
@@ -25,7 +25,7 @@ public class BinderFactory {
 
     private final BeanMetadataCache beanCache;
     private ConverterProvider converterProvider;
-    private MultivaluedTypePredicate stringTypePredicate;
+    private ConverterPredicate stringTypePredicate;
 
     public BinderFactory() {
         this.beanCache = new BeanMetadataCache();
@@ -35,7 +35,7 @@ public class BinderFactory {
         this.converterProvider = converterProvider;
     }
 
-    public void setStringTypePredicate(MultivaluedTypePredicate stringTypePredicate) {
+    public void setStringTypePredicate(ConverterPredicate stringTypePredicate) {
         this.stringTypePredicate = stringTypePredicate;
     }
 
@@ -45,7 +45,7 @@ public class BinderFactory {
     }
 
     public Converter<?> getConverter(TypeClassPair tcp, Annotation annotations[]) {
-        return converterProvider.get(tcp.c, tcp.t, annotations);
+        return converterProvider.get(tcp.t, tcp.c, annotations);
     }
 
     public Binder getBinder(ElementRef ref, boolean composite) {
@@ -102,7 +102,7 @@ public class BinderFactory {
             }
         }
         else {
-            boolean isStringType = stringTypePredicate.apply(tcp.c, tcp.t, null);
+            boolean isStringType = stringTypePredicate.apply(tcp.t, tcp.c, null);
             if (!isStringType) {
                 LOGGER.warn("String-based type {} does not have an extractor", tcp.c);
                 type = BinderType.NULL;

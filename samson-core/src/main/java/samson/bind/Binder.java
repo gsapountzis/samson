@@ -5,20 +5,9 @@ import samson.metadata.ElementRef;
 public abstract class Binder {
 
     final BinderType type;
-
     final BinderFactory factory;
-
     final ElementRef ref;
-
     final BinderNode node;
-
-    Binder() {
-        this.type = BinderType.NULL;
-        this.factory = null;
-        this.ref = null;
-
-        this.node = new BinderNode(this, null);
-    }
 
     Binder(BinderType type, BinderFactory factory, ElementRef ref) {
         this.type = type;
@@ -46,26 +35,11 @@ public abstract class Binder {
 
 //  public abstract void write(ParamNode<?> node);
 
-    static final Binder NULL_BINDER = new Binder() {
-
-        @Override
-        public BinderType getType() {
-            return BinderType.NULL;
-        }
-
-        @Override
-        public ElementRef getElementRef() {
-            return ElementRef.NULL_REF;
-        }
+    static final Binder NULL_BINDER = new Binder(BinderType.NULL, null, ElementRef.NULL_REF) {
 
         @Override
         public ElementRef getElementRef(String name) {
             return ElementRef.NULL_REF;
-        }
-
-        @Override
-        public BinderNode getNode() {
-            return null;
         }
 
         @Override

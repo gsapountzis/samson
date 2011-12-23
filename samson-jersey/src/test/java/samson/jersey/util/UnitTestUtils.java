@@ -7,9 +7,9 @@ import java.util.Set;
 
 import samson.JFormProvider;
 import samson.form.FormFactory;
-import samson.jersey.SamsonMultivaluedExtractorProvider;
-import samson.jersey.SamsonMultivaluedTypePredicate;
-import samson.jersey.SamsonStringReaderWorkers;
+import samson.jersey.convert.JerseyConverterPredicate;
+import samson.jersey.convert.JerseyConverterProvider;
+import samson.jersey.convert.JerseyMultivaluedConverterProvider;
 
 import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParameterExtractorFactory;
 import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParameterExtractorProvider;
@@ -59,12 +59,15 @@ public class UnitTestUtils {
         StringReaderWorkers srw = new TestStringReaderFactory();
         MultivaluedParameterExtractorProvider mpep = new MultivaluedParameterExtractorFactory(srw);
 
-        SamsonMultivaluedTypePredicate samsonStp = new SamsonMultivaluedTypePredicate();
+        JerseyConverterPredicate samsonStp = new JerseyConverterPredicate();
         samsonStp.setStringReaderProvider(srw);
         samsonStp.setExtractorProvider(mpep);
 
-        SamsonStringReaderWorkers samsonSrw = new SamsonStringReaderWorkers(srw);
-        SamsonMultivaluedExtractorProvider samsonMpep = new SamsonMultivaluedExtractorProvider(mpep);
+        JerseyConverterProvider samsonSrw = new JerseyConverterProvider();
+        samsonSrw.setStringReaderProvider(srw);
+
+        JerseyMultivaluedConverterProvider samsonMpep = new JerseyMultivaluedConverterProvider(samsonSrw);
+        samsonMpep.setExtractorProvider(mpep);
 
         FormFactory provider = new FormFactory();
         provider.setStringTypePredicate(samsonStp);

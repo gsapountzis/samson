@@ -5,8 +5,8 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
+import samson.Conversion;
 import samson.JForm;
-import samson.convert.Conversion;
 
 class PathForm implements JForm<Object> {
 

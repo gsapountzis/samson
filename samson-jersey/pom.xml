@@ -19,6 +19,10 @@
             <groupId>com.github.gsapountzis.samson</groupId>
             <artifactId>samson-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.gsapountzis.samson</groupId>
+            <artifactId>samson-jersey-convert</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -51,7 +55,7 @@
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
+            <artifactId>slf4j-log4j12</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

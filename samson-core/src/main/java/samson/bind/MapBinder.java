@@ -18,8 +18,6 @@ class MapBinder extends Binder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapBinder.class);
 
-    private Converter<?> converter;
-
     MapBinder(BinderFactory factory, ElementRef ref) {
         super(BinderType.MAP, factory, ref);
     }
@@ -76,22 +74,19 @@ class MapBinder extends Binder {
         }
     }
 
+    private Converter<?> converter;
+
     private Object getKey(TypeClassPair keyTcp, String stringKey) {
-        if (keyTcp.c == String.class) {
-            return stringKey;
-        }
-        else {
+        if (converter == null) {
+            converter = factory.getConverter(keyTcp, null);
             if (converter == null) {
-                converter = factory.getConverter(keyTcp, null);
-                if (converter == null) {
-                    throw new RuntimeException("Unsupported map key type");
-                }
+                throw new RuntimeException("Unsupported map key type");
             }
-            try {
-                return converter.fromString(stringKey);
-            } catch (ConverterException ex) {
-                return null;
-            }
+        }
+        try {
+            return converter.fromString(stringKey);
+        } catch (ConverterException ex) {
+            return null;
         }
     }
 

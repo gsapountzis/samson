@@ -40,7 +40,17 @@
             </dependency>
             <dependency>
                 <groupId>com.github.gsapountzis.samson</groupId>
+                <artifactId>samson-convert</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.gsapountzis.samson</groupId>
                 <artifactId>samson-jersey</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.gsapountzis.samson</groupId>
+                <artifactId>samson-jersey-convert</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

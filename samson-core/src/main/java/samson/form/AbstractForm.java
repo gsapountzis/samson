@@ -1,15 +1,10 @@
 package samson.form;
 
 import java.lang.annotation.Annotation;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.validation.Validator;
@@ -19,16 +14,18 @@ import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.ElementDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
 
+import samson.Conversion;
 import samson.JForm;
+import samson.bind.Binder;
 import samson.bind.BinderFactory;
-import samson.convert.Conversion;
 import samson.convert.ConverterException;
-import samson.convert.MultivaluedExtractor;
-import samson.convert.MultivaluedExtractorProvider;
+import samson.convert.MultivaluedConverter;
+import samson.convert.MultivaluedConverterProvider;
 import samson.form.Property.Path;
 import samson.metadata.Element;
 import samson.metadata.Element.Accessor;
-import samson.metadata.ListTcp;
+import samson.metadata.ElementRef;
+import samson.metadata.TypeClassPair;
 
 abstract class AbstractForm<T> implements JForm<T> {
 
@@ -37,7 +34,7 @@ abstract class AbstractForm<T> implements JForm<T> {
 
     protected BinderFactory binderFactory;
     protected ValidatorFactory validatorFactory;
-    protected MultivaluedExtractorProvider extractorProvider;
+    protected MultivaluedConverterProvider extractorProvider;
 
     protected final AbstractForm<T> form = this;
 
@@ -68,7 +65,7 @@ abstract class AbstractForm<T> implements JForm<T> {
         this.validatorFactory = validatorFactory;
     }
 
-    public void setExtractorProvider(MultivaluedExtractorProvider extractorProvider) {
+    public void setExtractorProvider(MultivaluedConverterProvider extractorProvider) {
         this.extractorProvider = extractorProvider;
     }
 
@@ -194,141 +191,118 @@ abstract class AbstractForm<T> implements JForm<T> {
             }
 
             private String getDefaultConversionInfo() {
-                Conversion binding = getField(param).getConversion();
-                if (binding == null) {
+                ElementRef ref = getElementRef(param);
+                if (ref == ElementRef.NULL_REF) {
                     return null;
                 }
 
-                return binding.getElement().tcp.c.getSimpleName();
+                String message = ref.element.tcp.c.getSimpleName();
+                return message;
             }
 
             @SuppressWarnings("unused")
             private List<String> getDefaultValidationInfos() {
-                ElementDescriptor element = getValidationElement();
+                ElementDescriptor element = getValidationElement(param);
                 if (element != null) {
                     List<String> messages = new ArrayList<String>();
                     for (ConstraintDescriptor<?> constraint : element.getConstraintDescriptors()) {
                         Annotation annotation = constraint.getAnnotation();
-                        String name = annotation.annotationType().getSimpleName();
-                        messages.add(name);
+                        String message = annotation.annotationType().getSimpleName();
+                        messages.add(message);
                     }
                     return messages;
                 }
-                return Collections.emptyList();
-            }
-
-            private ElementDescriptor getValidationElement() {
-                Validator validator = validatorFactory.getValidator();
-
-                // XXX must translate parameter name to javax.validation format: e.g user[username] vs. user.username
-                // XXX must check for root bean
-
-                Class<?> clazz = parameter.tcp.c;
-                BeanDescriptor bean = validator.getConstraintsForClass(clazz);
-                PropertyDescriptor property = bean.getConstraintsForProperty(param);
-                return property;
+                else {
+                    return Collections.emptyList();
+                }
             }
         };
     }
 
-    // -- Conversion: toString()
+    protected ElementRef getElementRef(String param) {
+        ElementRef ref = new ElementRef(parameter, valueAccessor);
 
-    /**
-     * Ad-hoc formatter.
-     * <p>
-     * XXX Parse/Format framework.
-     * <p>
-     * Should be replaced with a parse/format framework provided by the JAX-RS
-     * implementation. Right now Jersey only supports the parsing part, while
-     * RESTEasy seems to have support for both.
-     */
-    private String format(Element element, Object object) {
-        if (object != null) {
-            Class<?> clazz = element.tcp.c;
-            if (clazz == Date.class) {
-                Date date = (Date) object;
-                return dateFormat.format(date);
-            }
-            else {
-                return object.toString();
+        Property.Path path = Property.Path.createPath(param);
+        for (Property.Node node : path) {
+            Binder binder = binderFactory.getBinder(ref, true);
+            ref = binder.getElementRef(node.getName());
+            if (ref == ElementRef.NULL_REF) {
+                return ElementRef.NULL_REF;
             }
         }
-        return null;
+
+        return ref;
     }
 
-    // cannot be static, non thread-safe (could use ThreadLocal)
-    private final DateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.US);
-
-    protected String toStringValue(Element element, Object object) {
-        Class<?> clazz = element.tcp.c;
-        if (Collection.class.isAssignableFrom(clazz)) {
-            Element itemElement = getItemElement(element);
-            Collection<?> collection = (Collection<?>) object;
-            Object item = Utils.getFirst(collection);
-            return format(itemElement, item);
+    protected Conversion conversionFromElement(ElementRef ref) {
+        if (ref != ElementRef.NULL_REF) {
+            return Conversion.fromValue(
+                    ref.element.annotations,
+                    ref.element.tcp.t,
+                    ref.element.tcp.c,
+                    ref.accessor.get());
         }
         else {
-            return format(element, object);
+            return null;
         }
     }
 
-    protected List<String> toStringList(Element element, Object object) {
-        List<String> stringList = new ArrayList<String>();
+    private ElementDescriptor getValidationElement(String param) {
+        Class<?> clazz = parameter.tcp.c;
 
-        Class<?> clazz = element.tcp.c;
-        if (Collection.class.isAssignableFrom(clazz)) {
-            Element itemElement = getItemElement(element);
-            Collection<?> collection = (Collection<?>) object;
-            for (Object item : collection) {
-                stringList.add(format(itemElement, item));
-            }
+        // XXX must translate parameter name to javax.validation format: e.g user[username] vs. user.username
+        // XXX must check for root bean
+
+        Validator validator = validatorFactory.getValidator();
+        BeanDescriptor bean = validator.getConstraintsForClass(clazz);
+        PropertyDescriptor property = bean.getConstraintsForProperty(param);
+        return property;
+    }
+
+    protected String toStringValue(Conversion conversion) {
+        return Utils.getFirst(toStringList(conversion));
+    }
+
+    protected List<String> toStringList(Conversion conversion) {
+
+        @SuppressWarnings("unchecked")
+        MultivaluedConverter<Object> extractor = (MultivaluedConverter<Object>) extractorProvider.get(
+                conversion.getType(),
+                conversion.getRawType(),
+                conversion.getAnnotations());
+
+        if (extractor != null) {
+            return extractor.toStringList(conversion.getValue());
         }
         else {
-            stringList.add(format(element, object));
+            return Collections.emptyList();
         }
-        return stringList;
     }
-
-    private static Element getItemElement(Element listElement) {
-        Annotation[] annotations = listElement.annotations;
-        ListTcp listTcp = new ListTcp(listElement.tcp);
-
-        return listTcp.createItemElement(annotations, "0");
-    }
-
-    // -- Conversion: fromString()
 
     protected Conversion fromStringList(Element element, List<String> values) {
 
-        MultivaluedExtractor extractor = extractorProvider.get(element);
-        if (extractor == null) {
+        MultivaluedConverter<?> extractor = extractorProvider.get(
+                element.tcp.t,
+                element.tcp.c,
+                element.annotations,
+                element.encoded,
+                element.defaultValue);
+
+        if (extractor != null) {
+            Annotation[] annotations = element.annotations;
+            TypeClassPair tcp = element.tcp;
+            try {
+                Object value = extractor.fromStringList(values);
+                return Conversion.fromValue(annotations, tcp.t, tcp.c, value);
+            }
+            catch (ConverterException ex) {
+                Throwable cause = ex.getCause();
+                return Conversion.fromError(annotations, tcp.t, tcp.c, cause);
+            }
+        }
+        else {
             return null;
         }
-
-        try {
-            Object object = extractValue(extractor, values);
-            return Conversion.fromValue(element, object);
-        }
-        catch (ConverterException ex) {
-            // XXX handle empty as null
-            String param = Utils.getFirst(values);
-            if (Utils.isEmpty(param)) {
-                Object object = extractDefaultValue(extractor);
-                return Conversion.fromValue(element, object);
-            }
-            else {
-                return Conversion.fromError(element, ex.getCause());
-            }
-        }
-    }
-
-    private Object extractValue(MultivaluedExtractor extractor, List<String> values) {
-        return extractor.fromStringList(values);
-    }
-
-    private Object extractDefaultValue(MultivaluedExtractor extractor) {
-        List<String> values = Collections.emptyList();
-        return extractor.fromStringList(values);
     }
 
 }

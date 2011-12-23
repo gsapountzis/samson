@@ -12,11 +12,11 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import samson.Conversion;
 import samson.JForm;
 import samson.bind.Binder;
 import samson.bind.BinderNode;
 import samson.bind.BinderType;
-import samson.convert.Conversion;
 import samson.form.Property.Node;
 import samson.form.Property.Path;
 import samson.metadata.Element;
@@ -96,11 +96,11 @@ class BindForm<T> extends AbstractForm<T> {
 
     private void convert(BinderNode binderNode, FormNode formNode) {
         Binder binder = binderNode.getBinder();
+        ElementRef ref = binder.getElementRef();
 
         if (binder.getType() == BinderType.STRING) {
-            ElementRef ref = binder.getElementRef();
-
-            Conversion conversion = fromStringList(ref.element, binderNode.getStringValues());
+            List<String> values = binderNode.getStringValues();
+            Conversion conversion = fromStringList(ref.element, values);
             formNode.setConversion(conversion);
             if (conversion.isError()) {
                 conversionErrors.add(conversion);
@@ -110,6 +110,8 @@ class BindForm<T> extends AbstractForm<T> {
             }
         }
         else {
+            Conversion conversion = conversionFromElement(ref);
+            formNode.setConversion(conversion);
             for (BinderNode binderChild : binderNode.getChildren()) {
                 String name = binderChild.getName();
                 convert(binderChild, formNode.getChild(name));
@@ -206,7 +208,7 @@ class BindForm<T> extends AbstractForm<T> {
                     return Utils.getFirst(node.getStringValues());
                 }
                 else {
-                    return toStringValue(binding.getElement(), binding.getValue());
+                    return toStringValue(binding);
                 }
             }
 
@@ -220,7 +222,7 @@ class BindForm<T> extends AbstractForm<T> {
                     return node.getStringValues();
                 }
                 else {
-                    return toStringList(binding.getElement(), binding.getValue());
+                    return toStringList(binding);
                 }
             }
 
@@ -237,7 +239,7 @@ class BindForm<T> extends AbstractForm<T> {
 
             @Override
             public Conversion getConversion() {
-                return node.getConversion();
+                return binding;
             }
 
             @Override
@@ -255,8 +257,9 @@ class BindForm<T> extends AbstractForm<T> {
 
     @Override
     public Messages getMessages(final String param) {
-        final Field field = getField(param);
         final Messages messages = super.getMessages(param);
+        final Path path = Path.createPath(param);
+        final FormNode node = root.getDefinedChild(path);
 
         return new Messages() {
 
@@ -267,14 +270,14 @@ class BindForm<T> extends AbstractForm<T> {
 
             @Override
             public String getConversionError() {
-                Conversion binding = field.getConversion();
+                Conversion binding = node.getConversion();
                 if (binding == null) {
                     return null;
                 }
 
                 if (binding.isError()) {
-                    String stringValue = field.getValue();
-                    return getErrorMessage(binding.getElement(), stringValue);
+                    String stringValue = Utils.getFirst(node.getStringValues());
+                    return getConversionErrorMessage(binding, stringValue);
                 }
                 return null;
             }
@@ -286,8 +289,10 @@ class BindForm<T> extends AbstractForm<T> {
 
             @Override
             public List<String> getValidationErrors() {
+                Set<ConstraintViolation<?>> violations = node.getViolations();
+
                 List<String> messages = new ArrayList<String>();
-                for (ConstraintViolation<?> violation : field.getViolations()) {
+                for (ConstraintViolation<?> violation : violations) {
                     messages.add(violation.getMessage());
                 }
                 return messages;
@@ -306,10 +311,10 @@ class BindForm<T> extends AbstractForm<T> {
         };
     }
 
-    private final static String ERROR_MESSAGE_TEMPLATE = "cannot convert value '%s' to '%s'";
+    private final static String CONVERSION_ERROR_MESSAGE_TEMPLATE = "cannot convert value '%s' to '%s'";
 
-    private static String getErrorMessage(Element element, String value) {
-        return String.format(ERROR_MESSAGE_TEMPLATE, value, element.tcp.c.getSimpleName());
+    private static String getConversionErrorMessage(Conversion conversion, String value) {
+        return String.format(CONVERSION_ERROR_MESSAGE_TEMPLATE, value, conversion.getRawType().getSimpleName());
     }
 
 }

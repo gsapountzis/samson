@@ -6,8 +6,7 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-import samson.bind.Binder;
-import samson.convert.Conversion;
+import samson.Conversion;
 import samson.metadata.Element;
 import samson.metadata.ElementRef;
 
@@ -19,35 +18,6 @@ class WrapForm<T> extends AbstractForm<T> {
     public WrapForm(Element parameter, T value) {
         super(parameter);
         this.value = value;
-    }
-
-    private ElementRef getPathElementRef(String param) {
-        ElementRef ref = new ElementRef(parameter, valueAccessor);
-
-        Property.Path path = Property.Path.createPath(param);
-        for (Property.Node node : path) {
-            Binder binder = binderFactory.getBinder(ref, true);
-            ref = binder.getElementRef(node.getName());
-            if (ref == ElementRef.NULL_REF) {
-                return ElementRef.NULL_REF;
-            }
-        }
-
-        return ref;
-    }
-
-    private Conversion getConversion(String param) {
-        ElementRef ref = getPathElementRef(param);
-        if (ref != ElementRef.NULL_REF) {
-
-            Element paramElement = ref.element;
-            Object paramValue = ref.accessor.get();
-
-            return Conversion.fromValue(paramElement, paramValue);
-        }
-        else {
-            return null;
-        }
     }
 
     // -- Form methods
@@ -71,7 +41,8 @@ class WrapForm<T> extends AbstractForm<T> {
 
     @Override
     public Field getField(final String param) {
-        final Conversion binding = getConversion(param);
+        final ElementRef ref = getElementRef(param);
+        final Conversion binding = conversionFromElement(ref);
 
         return new Field() {
 
@@ -95,7 +66,7 @@ class WrapForm<T> extends AbstractForm<T> {
                     return null;
                 }
 
-                return toStringValue(binding.getElement(), binding.getValue());
+                return toStringValue(binding);
             }
 
             @Override
@@ -104,7 +75,7 @@ class WrapForm<T> extends AbstractForm<T> {
                     return null;
                 }
 
-                return toStringList(binding.getElement(), binding.getValue());
+                return toStringList(binding);
             }
 
             @Override

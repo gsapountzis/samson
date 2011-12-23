@@ -6,7 +6,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import samson.JForm;
 import samson.JFormBuilder;
 import samson.bind.BinderFactory;
-import samson.convert.MultivaluedExtractorProvider;
+import samson.convert.MultivaluedConverterProvider;
 import samson.metadata.Element;
 
 class FormBuilder<T> implements JFormBuilder<T> {
@@ -16,7 +16,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
 
     private BinderFactory binderFactory;
     private ValidatorFactory validatorFactory;
-    private MultivaluedExtractorProvider extractorProvider;
+    private MultivaluedConverterProvider extractorProvider;
 
     private ParamsProvider formParams;
     private ParamsProvider queryParams;
@@ -34,7 +34,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
         this.validatorFactory = validatorFactory;
     }
 
-    public void setExtractorProvider(MultivaluedExtractorProvider extractorProvider) {
+    public void setExtractorProvider(MultivaluedConverterProvider extractorProvider) {
         this.extractorProvider = extractorProvider;
     }
 

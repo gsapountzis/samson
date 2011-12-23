@@ -14,8 +14,8 @@ import samson.JFormBuilder;
 import samson.JFormProvider;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterProvider;
-import samson.convert.MultivaluedExtractorProvider;
-import samson.convert.MultivaluedTypePredicate;
+import samson.convert.MultivaluedConverterProvider;
+import samson.convert.ConverterPredicate;
 import samson.metadata.Element;
 import samson.metadata.TypeClassPair;
 
@@ -28,7 +28,7 @@ public class FormFactory implements JFormProvider {
 
     private final BinderFactory binderFactory;
     private final ValidatorFactory validatorFactory;
-    private MultivaluedExtractorProvider extractorProvider;
+    private MultivaluedConverterProvider extractorProvider;
 
     public FormFactory() {
         this(null, null);
@@ -57,11 +57,11 @@ public class FormFactory implements JFormProvider {
         binderFactory.setConverterProvider(converterProvider);
     }
 
-    public void setExtractorProvider(MultivaluedExtractorProvider extractorProvider) {
+    public void setExtractorProvider(MultivaluedConverterProvider extractorProvider) {
         this.extractorProvider = extractorProvider;
     }
 
-    public void setStringTypePredicate(MultivaluedTypePredicate stringTypePredicate) {
+    public void setStringTypePredicate(ConverterPredicate stringTypePredicate) {
         binderFactory.setStringTypePredicate(stringTypePredicate);
     }
 

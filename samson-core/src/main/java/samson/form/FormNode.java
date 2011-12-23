@@ -9,8 +9,8 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
+import samson.Conversion;
 import samson.bind.ParamNode;
-import samson.convert.Conversion;
 import samson.form.Property.Node;
 import samson.form.Property.Path;
 

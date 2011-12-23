@@ -4,10 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.QueryParam;
-
-import samson.convert.Conversion;
 
 /**
  * Facade over the binding and validation results that is compatible with the
@@ -45,8 +41,8 @@ import samson.convert.Conversion;
  *            form object type: a primitive, string or string-based type as
  *            defined by the JAX-RS spec or a composite type (bean, list, map).
  *
- * @see QueryParam
- * @see FormParam
+ * @see javax.ws.rs.QueryParam
+ * @see javax.ws.rs.FormParam
  */
 public interface JForm<T> {
 

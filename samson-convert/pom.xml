@@ -10,28 +10,9 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>samson-core</artifactId>
+    <artifactId>samson-convert</artifactId>
     <packaging>jar</packaging>
-    <name>Samson :: Core</name>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.github.gsapountzis.samson</groupId>
-            <artifactId>samson-convert</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-    </dependencies>
+    <name>Samson :: Convert</name>
 
     <build>
         <plugins>

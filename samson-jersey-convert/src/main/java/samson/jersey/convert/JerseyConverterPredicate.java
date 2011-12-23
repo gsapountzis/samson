@@ -1,4 +1,4 @@
-package samson.jersey;
+package samson.jersey.convert;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import samson.convert.MultivaluedTypePredicate;
+import samson.convert.ConverterPredicate;
 
 import com.sun.jersey.api.model.Parameter;
 import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParameterExtractor;
@@ -17,7 +17,7 @@ import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParamet
 import com.sun.jersey.spi.StringReader;
 import com.sun.jersey.spi.StringReaderWorkers;
 
-public class SamsonMultivaluedTypePredicate implements MultivaluedTypePredicate {
+public class JerseyConverterPredicate implements ConverterPredicate {
 
     private StringReaderWorkers stringReaderProvider;
     private MultivaluedParameterExtractorProvider extractorProvider;
@@ -31,37 +31,37 @@ public class SamsonMultivaluedTypePredicate implements MultivaluedTypePredicate 
     }
 
     @Override
-    public boolean apply(Class<?> type, Type genericType, Annotation[] annotations) {
-        return isStringType(type, genericType, annotations);
+    public boolean apply(Type type, Class<?> rawType, Annotation annotations[]) {
+        return isStringType(type, rawType, annotations);
     }
 
     private final ConcurrentMap<Integer, Boolean> resultCache = new ConcurrentHashMap<Integer, Boolean>();
 
-    private static int hashCode(Class<?> type, Type genericType, Annotation[] annotations) {
+    private static int hashCode(Type type, Class<?> rawType, Annotation annotations[]) {
         final int prime = 31;
         int result = 1;
         result = prime * result + Arrays.hashCode(annotations);
         result = prime * result + ((type == null) ? 0 : type.hashCode());
-        result = prime * result + ((genericType == null) ? 0 : genericType.hashCode());
+        result = prime * result + ((rawType == null) ? 0 : rawType.hashCode());
         return result;
     }
 
-    private boolean isStringType(Class<?> type, Type genericType, Annotation[] annotations) {
+    private boolean isStringType(Type type, Class<?> rawType, Annotation annotations[]) {
 
-        int hashCode = hashCode(type, genericType, annotations);
+        int hashCode = hashCode(type, rawType, annotations);
 
         // drop memo ?
         Boolean memo = resultCache.get(hashCode);
         if (memo == null) {
             Boolean result = false;
 
-            if (isStringTypeByClass(type)) {
+            if (isStringTypeByClass(rawType)) {
                 result = true;
             }
-            else if (isStringTypeByReader(type, genericType, annotations)) {
+            else if (isStringTypeByReader(type, rawType, annotations)) {
                 result = true;
             }
-            else if (isStringTypeByExtractor(type, genericType, annotations)) {
+            else if (isStringTypeByExtractor(type, rawType, annotations)) {
                 result = true;
             }
 
@@ -100,9 +100,9 @@ public class SamsonMultivaluedTypePredicate implements MultivaluedTypePredicate 
         return false;
     }
 
-    private boolean isStringTypeByReader(Class<?> type, Type genericType, Annotation[] annotations) {
+    private boolean isStringTypeByReader(Type type, Class<?> rawType, Annotation annotations[]) {
 
-        StringReader<?> stringReader = stringReaderProvider.getStringReader(type, genericType, annotations);
+        StringReader<?> stringReader = stringReaderProvider.getStringReader(rawType, type, annotations);
         if (stringReader != null) {
             return true;
         }
@@ -110,12 +110,12 @@ public class SamsonMultivaluedTypePredicate implements MultivaluedTypePredicate 
         return false;
     }
 
-    private boolean isStringTypeByExtractor(Class<?> type, Type genericType, Annotation[] annotations) {
+    private boolean isStringTypeByExtractor(Type type, Class<?> rawType, Annotation annotations[]) {
         if (annotations == null) {
             annotations = new Annotation[0];
         }
 
-        Parameter parameter = new Parameter(annotations, null, null, null, genericType, type);
+        Parameter parameter = new Parameter(annotations, null, null, null, type, rawType);
 
         MultivaluedParameterExtractor extractor = extractorProvider.get(parameter);
         if (extractor != null) {
