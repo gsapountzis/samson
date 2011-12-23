@@ -1,4 +1,4 @@
-package samson.jersey.util;
+package samson.jersey.test.util;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,7 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import samson.JForm;
-import samson.example.register.User;
+import samson.jersey.test.example.register.User;
 
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.representation.Form;

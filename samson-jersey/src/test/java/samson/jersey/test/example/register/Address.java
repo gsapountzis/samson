@@ -1,4 +1,4 @@
-package samson.example.register;
+package samson.jersey.test.example.register;
 
 public class Address {
 

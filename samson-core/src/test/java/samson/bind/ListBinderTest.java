@@ -14,7 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import samson.JFormProvider;
-import samson.jersey.util.UnitTestUtils;
+import samson.test.util.UnitTestUtils;
 
 import com.sun.jersey.api.representation.Form;
 

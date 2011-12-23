@@ -1,4 +1,4 @@
-package samson.jersey.util;
+package samson.test.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;

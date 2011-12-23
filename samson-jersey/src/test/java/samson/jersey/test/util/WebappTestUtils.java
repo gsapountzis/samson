@@ -1,4 +1,4 @@
-package samson.jersey.util;
+package samson.jersey.test.util;
 
 import static org.junit.Assert.assertTrue;
 

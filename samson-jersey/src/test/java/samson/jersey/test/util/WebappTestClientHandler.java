@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package samson.jersey.util;
+package samson.jersey.test.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

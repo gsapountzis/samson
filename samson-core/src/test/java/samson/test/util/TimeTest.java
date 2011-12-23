@@ -1,4 +1,4 @@
-package samson.jersey.util;
+package samson.test.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import samson.JFormProvider;
-import samson.example.register.User;
+import samson.test.example.register.User;
 
 import com.sun.jersey.api.representation.Form;
 
@@ -45,7 +45,6 @@ public class TimeTest {
     public void doTestBind() {
         Form form = new Form();
         form.add("user.email", "foo@bar.com");
-        form.add("user.dob", "16 Aug 2011");
         form.add("user.address.zipcode", "62400");
 
         User user = jForm.bind(User.class).params("user", form).get();

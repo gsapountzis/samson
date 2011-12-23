@@ -16,7 +16,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.junit.Test;
 
 import samson.JForm;
-import samson.jersey.util.WebappTestUtils;
+import samson.jersey.test.util.WebappTestUtils;
 
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;

@@ -12,8 +12,8 @@ import javax.ws.rs.Path;
 import org.junit.Test;
 
 import samson.JForm;
-import samson.example.register.User;
-import samson.jersey.util.WebappTestUtils;
+import samson.jersey.test.example.register.User;
+import samson.jersey.test.util.WebappTestUtils;
 
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.representation.Form;

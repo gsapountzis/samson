@@ -1,4 +1,4 @@
-package samson.example.register;
+package samson.test.example.register;
 
 import java.util.Date;
 

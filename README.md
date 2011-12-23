@@ -32,7 +32,7 @@ The module has been tested on Jersey 1.10.
 
 There are some simple examples [here](/gsapountzis/samson/tree/master/examples/).
 You can also check the available
-[unit](/gsapountzis/samson/tree/master/samson-jersey/src/test/java/samson/bind/) and
+[unit](/gsapountzis/samson/tree/master/samson-core/src/test/java/samson/bind/) and
 [integration](/gsapountzis/samson/tree/master/samson-jersey/src/test/java/samson/jersey/) tests.
 
 ## TODO
