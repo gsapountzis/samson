@@ -10,7 +10,9 @@
     <name>Samson</name>
 
     <modules>
+        <module>samson-convert</module>
         <module>samson-core</module>
+        <module>samson-jersey-convert</module>
         <module>samson-jersey</module>
         <module>examples</module>
     </modules>
