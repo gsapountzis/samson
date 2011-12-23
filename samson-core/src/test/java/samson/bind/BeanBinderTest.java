@@ -3,8 +3,6 @@ package samson.bind;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import javax.ws.rs.DefaultValue;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,7 +27,6 @@ public class BeanBinderTest {
 
     public static class Bean {
 
-        @DefaultValue("-1")
         private int a;
 
         private NestedBean nestedBean;
@@ -54,7 +51,6 @@ public class BeanBinderTest {
 
     public static class NestedBean {
 
-        @DefaultValue("-2")
         private int b;
 
         public int getB() {

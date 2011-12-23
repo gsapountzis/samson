@@ -3,11 +3,11 @@ package samson.form;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import javax.ws.rs.core.MultivaluedMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ class BindForm<T> extends AbstractForm<T> {
         this.value = value;
     }
 
-    public JForm<T> apply(String path, MultivaluedMap<String, String> params) {
+    public JForm<T> apply(String path, Map<String, List<String>> params) {
 
         parse(path, params);
 
@@ -59,7 +59,7 @@ class BindForm<T> extends AbstractForm<T> {
         return sb.toString();
     }
 
-    private void parse(String rootPath, MultivaluedMap<String, String> params) {
+    private void parse(String rootPath, Map<String, List<String>> params) {
 
         unnamedRoot = new FormNode(Node.createPrefix(null));
 

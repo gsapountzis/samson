@@ -1,7 +1,9 @@
 package samson.form;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.validation.ValidatorFactory;
-import javax.ws.rs.core.MultivaluedMap;
 
 import samson.JForm;
 import samson.JFormBuilder;
@@ -47,12 +49,12 @@ class FormBuilder<T> implements JFormBuilder<T> {
     }
 
     @Override
-    public JForm<T> params(MultivaluedMap<String, String> params) {
+    public JForm<T> params(Map<String, List<String>> params) {
         return params(null, params);
     }
 
     @Override
-    public JForm<T> params(String path, MultivaluedMap<String, String> params) {
+    public JForm<T> params(String path, Map<String, List<String>> params) {
         return apply(path, params);
     }
 
@@ -76,7 +78,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
         return apply(path, queryParams.get());
     }
 
-    private JForm<T> apply(String path, MultivaluedMap<String, String> params) {
+    private JForm<T> apply(String path, Map<String, List<String>> params) {
         BindForm<T> form = new BindForm<T>(element, instance);
         form.setBinderFactory(binderFactory);
         form.setValidatorFactory(validatorFactory);

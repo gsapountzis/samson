@@ -1,9 +1,10 @@
 package samson.form;
 
-import javax.ws.rs.core.MultivaluedMap;
+import java.util.List;
+import java.util.Map;
 
 public interface ParamsProvider {
 
-    MultivaluedMap<String, String> get();
+    Map<String, List<String>> get();
 
 }

@@ -1,12 +1,13 @@
 package samson;
 
-import javax.ws.rs.core.MultivaluedMap;
+import java.util.List;
+import java.util.Map;
 
 public interface JFormBuilder<T> {
 
-    JForm<T> params(MultivaluedMap<String, String> params);
+    JForm<T> params(Map<String, List<String>> params);
 
-    JForm<T> params(String path, MultivaluedMap<String, String> params);
+    JForm<T> params(String path, Map<String, List<String>> params);
 
     JForm<T> form();
 
