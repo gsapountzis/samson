@@ -23,10 +23,10 @@ object Functions {
     val validationErrors = messages.getValidationErrors.asScala.toList;
     val errors = messages.getErrors.asScala.toList;
 
-    conversionError.getOrElse((validationErrors ++ errors).mkString(", "))
+    conversionError.getOrElse((validationErrors ++ errors).filter(!isNullOrEmpty(_)).mkString(", "))
   }
 
-  def multiError(fields: Field*) = fields.map(_.isError).foldLeft(false)(_ || _)
+  def multiError(fields: Field*) = fields.map(_.isError).reduce(_ || _)
 
   def multiMessages(fields: Field*) = fields.map(messages(_)).filter(!isNullOrEmpty(_)).mkString(", ")
 
