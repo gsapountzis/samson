@@ -25,34 +25,33 @@ class ListBinder extends Binder {
     static final int MAX_LIST_SIZE = 256;
 
     ListBinder(BinderFactory factory, ElementRef ref) {
-        super(BinderType.LIST, factory, ref);
+        super(factory, BinderType.LIST, ref);
     }
 
     /**
      * Bind list parameters, i.e. indexed parameters.
      */
     @Override
-    public void read(ParamNode<?> listTree) {
+    public void read(BinderNode<?> node) {
         Annotation[] annotations = ref.element.annotations;
         ListTcp listTcp = new ListTcp(ref.element.tcp);
-
         List<?> list = (List<?>) ref.accessor.get();
         if (list == null) {
             list = listTcp.createInstance();
             ref.accessor.set(list);
         }
 
-        for (ParamNode<?> itemTree : listTree.getChildren()) {
-            String stringIndex = itemTree.getName();
+        for (BinderNode<?> child : node.getChildren()) {
+            String stringIndex = child.getName();
 
-            ElementRef itemRef = getElementRef(annotations, listTcp, list, stringIndex);
-            if (itemRef == ElementRef.NULL_REF)
+            ElementRef childRef = getElementRef(annotations, listTcp, list, stringIndex);
+            if (childRef == ElementRef.NULL_REF)
                 continue;
 
-            Binder binder = factory.getBinder(itemRef, itemTree.hasChildren());
+            Binder binder = factory.getBinder(childRef, child.hasChildren());
             if (binder != Binder.NULL_BINDER) {
-                binder.read(itemTree);
-                node.addChild(binder.getNode());
+                binder.read(child);
+                child.setBinder(binder);
             }
         }
     }
@@ -61,7 +60,6 @@ class ListBinder extends Binder {
     public ElementRef getElementRef(String name) {
         Annotation[] annotations = ref.element.annotations;
         ListTcp listTcp = new ListTcp(ref.element.tcp);
-
         List<?> list = (List<?>) ref.accessor.get();
 
         return getElementRef(annotations, listTcp, list, name);

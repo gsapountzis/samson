@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import samson.Conversion;
 import samson.JForm;
 import samson.bind.Binder;
-import samson.bind.BinderNode;
 import samson.bind.BinderType;
 import samson.form.Property.Path;
 import samson.metadata.Element;
@@ -55,9 +54,10 @@ class BindForm<T> extends AbstractForm<T> {
 
         Binder binder = binderFactory.getBinder(ref, root.hasChildren());
         binder.read(root);
+        root.setBinder(binder);
 
         conversionErrors = new ArrayList<Conversion>();
-        convert(binder.getNode(), root);
+        convert(root);
 
         for (Conversion conversion : conversionErrors) {
             LOGGER.debug("conversion error cause {}", conversion.getCause().toString());
@@ -66,14 +66,17 @@ class BindForm<T> extends AbstractForm<T> {
         LOGGER.trace(printTree(root));
     }
 
-    private void convert(BinderNode binderNode, FormNode formNode) {
-        Binder binder = binderNode.getBinder();
+    private void convert(FormNode node) {
+        Binder binder = node.getBinder();
+        if (binder == null) {
+            return;
+        }
         ElementRef ref = binder.getElementRef();
 
         if (binder.getType() == BinderType.STRING) {
-            List<String> values = binderNode.getStringValues();
+            List<String> values = node.getStringValues();
             Conversion conversion = fromStringList(ref.element, values);
-            formNode.setConversion(conversion);
+            node.setConversion(conversion);
             if (conversion.isError()) {
                 conversionErrors.add(conversion);
             }
@@ -83,10 +86,9 @@ class BindForm<T> extends AbstractForm<T> {
         }
         else {
             Conversion conversion = conversionFromElement(ref);
-            formNode.setConversion(conversion);
-            for (BinderNode binderChild : binderNode.getChildren()) {
-                String name = binderChild.getName();
-                convert(binderChild, formNode.getChild(name));
+            node.setConversion(conversion);
+            for (FormNode child : node.getChildren()) {
+                convert(child);
             }
         }
     }
@@ -114,7 +116,7 @@ class BindForm<T> extends AbstractForm<T> {
 
             // annotate the form tree with violations
             FormNode node = root.getDefinedChild(path);
-            node.getViolations().add(violation);
+            node.addViolation(violation);
         }
 
         LOGGER.trace(printTree(root));

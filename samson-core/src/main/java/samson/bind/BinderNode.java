@@ -1,70 +1,25 @@
 package samson.bind;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
-public class BinderNode implements ParamNode<BinderNode> {
+public interface BinderNode<T extends BinderNode<?>> {
 
-    private final Binder binder;
+    // -- Binder
 
-    private final String name;
+    Binder getBinder();
 
-    private List<String> stringValues;
+    void setBinder(Binder binder);
 
-    private Map<String, BinderNode> children;
+    // -- Node
 
-    public BinderNode(Binder binder, String name) {
-        this.binder = binder;
-        this.name = name;
-        this.children = new LinkedHashMap<String, BinderNode>();
-        this.stringValues = null;
-    }
+    String getName();
 
-    public Binder getBinder() {
-        return binder;
-    }
+    boolean hasChild(String name);
 
-    // -- Tree structure
+    T getChild(String name);
 
-    @Override
-    public String getName() {
-        return name;
-    }
+    boolean hasChildren();
 
-    @Override
-    public List<String> getStringValues() {
-        return stringValues;
-    }
-
-    public void setStringValues(List<String> stringValues) {
-        this.stringValues = stringValues;
-    }
-
-    public void addChild(BinderNode child) {
-        String name = child.getName();
-        children.put(name, child);
-    }
-
-    @Override
-    public boolean hasChild(String name) {
-        return children.containsKey(name);
-    }
-
-    @Override
-    public BinderNode getChild(String name) {
-        return children.get(name);
-    }
-
-    @Override
-    public boolean hasChildren() {
-        return !children.isEmpty();
-    }
-
-    @Override
-    public Collection<BinderNode> getChildren() {
-        return children.values();
-    }
+    Collection<T> getChildren();
 
 }

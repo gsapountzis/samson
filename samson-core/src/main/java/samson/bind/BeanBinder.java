@@ -7,13 +7,12 @@ import samson.metadata.ElementRef;
 class BeanBinder extends Binder {
 
     BeanBinder(BinderFactory factory, ElementRef ref) {
-        super(BinderType.BEAN, factory, ref);
+        super(factory, BinderType.BEAN, ref);
     }
 
     @Override
-    public void read(ParamNode<?> beanTree) {
-        BeanTcp beanTcp = factory.getBeanMetadata(ref.element.tcp);
-
+    public void read(BinderNode<?> node) {
+        BeanTcp beanTcp = factory.getBeanTcp(ref.element.tcp);
         Object bean = ref.accessor.get();
         if (bean == null) {
             bean = beanTcp.createInstance();
@@ -21,25 +20,23 @@ class BeanBinder extends Binder {
         }
 
         for (BeanProperty property : beanTcp.getProperties().values()) {
-            if (!beanTree.hasChild(property.name))
+            BinderNode<?> child = node.getChild(property.name);
+            if (child == null)
                 continue;
 
-            ParamNode<?> propertyTree = beanTree.getChild(property.name);
+            ElementRef childRef = new ElementRef(property, property.createAccessor(bean));
 
-            ElementRef propertyRef = new ElementRef(property, property.createAccessor(bean));
-
-            Binder binder = factory.getBinder(propertyRef, propertyTree.hasChildren());
+            Binder binder = factory.getBinder(childRef, child.hasChildren());
             if (binder != Binder.NULL_BINDER) {
-                binder.read(propertyTree);
-                node.addChild(binder.getNode());
+                binder.read(child);
+                child.setBinder(binder);
             }
         }
     }
 
     @Override
     public ElementRef getElementRef(String name) {
-        BeanTcp beanTcp = factory.getBeanMetadata(ref.element.tcp);
-
+        BeanTcp beanTcp = factory.getBeanTcp(ref.element.tcp);
         Object bean = ref.accessor.get();
 
         if (beanTcp.hasProperty(name)) {

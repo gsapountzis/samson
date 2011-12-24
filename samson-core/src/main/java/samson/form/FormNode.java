@@ -10,17 +10,20 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 
 import samson.Conversion;
-import samson.bind.ParamNode;
+import samson.bind.Binder;
+import samson.bind.BinderNode;
 import samson.form.Property.Node;
 import samson.form.Property.Path;
 
-public class FormNode implements ParamNode<FormNode> {
+public class FormNode implements BinderNode<FormNode> {
 
     private final Node node;
 
-    private List<String> stringValues;
+    private Binder binder;
 
     private Map<Node, FormNode> children;
+
+    private List<String> stringValues;
 
     private Conversion conversion;
 
@@ -34,24 +37,23 @@ public class FormNode implements ParamNode<FormNode> {
         this.violations = new LinkedHashSet<ConstraintViolation<?>>();
     }
 
-    public Node getNode() {
-        return node;
+    // -- Binder
+
+    @Override
+    public Binder getBinder() {
+        return binder;
     }
 
-    // -- Tree structure
+    @Override
+    public void setBinder(Binder binder) {
+        this.binder = binder;
+    }
+
+    // -- (String) Node
 
     @Override
     public String getName() {
         return node.getName();
-    }
-
-    @Override
-    public List<String> getStringValues() {
-        return stringValues;
-    }
-
-    public void setStringValues(List<String> values) {
-        this.stringValues = values;
     }
 
     @Override
@@ -74,6 +76,12 @@ public class FormNode implements ParamNode<FormNode> {
     @Override
     public Collection<FormNode> getChildren() {
         return children.values();
+    }
+
+    // -- Node
+
+    public Node getNode() {
+        return node;
     }
 
     public boolean hasChild(Node node) {
@@ -101,7 +109,15 @@ public class FormNode implements ParamNode<FormNode> {
         return tree;
     }
 
-    // -- Node decorations
+    // -- Decorations
+
+    public List<String> getStringValues() {
+        return stringValues;
+    }
+
+    public void setStringValues(List<String> values) {
+        this.stringValues = values;
+    }
 
     public Conversion getConversion() {
         return conversion;
@@ -113,6 +129,10 @@ public class FormNode implements ParamNode<FormNode> {
 
     public Set<ConstraintViolation<?>> getViolations() {
         return violations;
+    }
+
+    public void addViolation(ConstraintViolation<?> violation) {
+        violations.add(violation);
     }
 
     public boolean isError() {

@@ -30,7 +30,7 @@ public class BinderFactory {
         this.converterProvider = converterProvider;
     }
 
-    public BeanTcp getBeanMetadata(TypeClassPair tcp) {
+    public BeanTcp getBeanTcp(TypeClassPair tcp) {
         BeanMetadata metadata = beanCache.get(tcp.c);
         return new BeanTcp(tcp, metadata.getProperties());
     }
@@ -40,7 +40,7 @@ public class BinderFactory {
     }
 
     public Binder getBinder(ElementRef ref, boolean composite) {
-        BinderType type = getType(ref.element.tcp, composite);
+        BinderType type = getBinderType(ref.element.tcp, composite);
 
         if (type == BinderType.STRING) {
             return new StringBinder(ref);
@@ -59,11 +59,10 @@ public class BinderFactory {
         }
     }
 
-    public BinderType getType(TypeClassPair tcp, boolean composite) {
+    private BinderType getBinderType(TypeClassPair tcp, boolean composite) {
+        final Class<?> clazz = tcp.c;
 
-        Class<?> clazz = tcp.c;
         BinderType type = BinderType.NULL;
-
         if (composite) {
             if (List.class.isAssignableFrom(clazz)) {
                 type = BinderType.LIST;
@@ -86,7 +85,7 @@ public class BinderFactory {
                 if (!Modifier.isAbstract(modifiers)) {
                     Constructor<?> constructor = ReflectionHelper.getNoargConstructor(clazz);
                     if (constructor == null) {
-                        LOGGER.warn("Composite type {} does not have a no-arg constructor", tcp.c);
+                        LOGGER.warn("Composite type {} does not have a no-arg constructor", clazz);
                         type = BinderType.NULL;
                     }
                 }
@@ -95,7 +94,7 @@ public class BinderFactory {
         else {
             boolean isStringType = converterProvider.canConvert(tcp.t, tcp.c, null);
             if (!isStringType) {
-                LOGGER.warn("String-based type {} does not have an extractor", tcp.c);
+                LOGGER.warn("String-based type {} does not have an extractor", clazz);
                 type = BinderType.NULL;
             }
         }

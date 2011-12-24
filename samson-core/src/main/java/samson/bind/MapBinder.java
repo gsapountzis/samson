@@ -19,34 +19,33 @@ class MapBinder extends Binder {
     private static final Logger LOGGER = LoggerFactory.getLogger(MapBinder.class);
 
     MapBinder(BinderFactory factory, ElementRef ref) {
-        super(BinderType.MAP, factory, ref);
+        super(factory, BinderType.MAP, ref);
     }
 
     /**
      * Bind map parameters, i.e. indexed by key.
      */
     @Override
-    public void read(ParamNode<?> mapTree) {
+    public void read(BinderNode<?> node) {
         Annotation[] annotations = ref.element.annotations;
         MapTcp mapTcp = new MapTcp(ref.element.tcp);
-
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
         if (map == null) {
             map = mapTcp.createInstance();
             ref.accessor.set(map);
         }
 
-        for (ParamNode<?> valueTree : mapTree.getChildren()) {
-            String stringKey = valueTree.getName();
+        for (BinderNode<?> child : node.getChildren()) {
+            String stringKey = child.getName();
 
-            ElementRef valueRef = getElementRef(annotations, mapTcp, map, stringKey);
-            if (valueRef == ElementRef.NULL_REF)
+            ElementRef childRef = getElementRef(annotations, mapTcp, map, stringKey);
+            if (childRef == ElementRef.NULL_REF)
                 continue;
 
-            Binder binder = factory.getBinder(valueRef, valueTree.hasChildren());
+            Binder binder = factory.getBinder(childRef, child.hasChildren());
             if (binder != Binder.NULL_BINDER) {
-                binder.read(valueTree);
-                node.addChild(binder.getNode());
+                binder.read(child);
+                child.setBinder(binder);
             }
         }
     }
@@ -55,7 +54,6 @@ class MapBinder extends Binder {
     public ElementRef getElementRef(String name) {
         Annotation[] annotations = ref.element.annotations;
         MapTcp mapTcp = new MapTcp(ref.element.tcp);
-
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
 
         return getElementRef(annotations, mapTcp, map, name);

@@ -1,19 +1,15 @@
 package samson.bind;
 
-import java.util.List;
-
 import samson.metadata.ElementRef;
 
 class StringBinder extends Binder {
 
     StringBinder(ElementRef ref) {
-        super(BinderType.STRING, null, ref);
+        super(null, BinderType.STRING, ref);
     }
 
     @Override
-    public void read(ParamNode<?> tree) {
-        List<String> params = tree.getStringValues();
-        node.setStringValues(params);
+    public void read(BinderNode<?> node) {
     }
 
     @Override
