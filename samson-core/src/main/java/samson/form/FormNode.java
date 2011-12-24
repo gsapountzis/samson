@@ -14,7 +14,6 @@ import samson.bind.ParamNode;
 import samson.form.Property.Node;
 import samson.form.Property.Path;
 
-
 public class FormNode implements ParamNode<FormNode> {
 
     private final Node node;

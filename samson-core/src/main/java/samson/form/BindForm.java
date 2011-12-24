@@ -37,9 +37,8 @@ class BindForm<T> extends AbstractForm<T> {
     private List<Conversion> conversionErrors = Collections.emptyList();
     private Set<ConstraintViolation<T>> violations = Collections.emptySet();
 
-    public BindForm(Element parameter, T value) {
-        super(parameter);
-        this.value = value;
+    public BindForm(Element parameter, T parameterValue) {
+        super(parameter, parameterValue);
     }
 
     public JForm<T> apply(String path, Map<String, List<String>> params) {
@@ -51,12 +50,6 @@ class BindForm<T> extends AbstractForm<T> {
         validate();
 
         return this;
-    }
-
-    private static String printTree(FormNode root) {
-        StringBuilder sb = new StringBuilder("\n");
-        root.print(sb, 0);
-        return sb.toString();
     }
 
     private void parse(String rootPath, Map<String, List<String>> params) {
@@ -79,7 +72,7 @@ class BindForm<T> extends AbstractForm<T> {
     }
 
     private void bind() {
-        ElementRef ref = new ElementRef(parameter, valueAccessor);
+        ElementRef ref = new ElementRef(parameter, parameterAccessor);
 
         Binder binder = binderFactory.getBinder(ref, root.hasChildren());
         binder.read(root);
@@ -126,8 +119,8 @@ class BindForm<T> extends AbstractForm<T> {
 
         Validator validator = validatorFactory.getValidator();
 
-        if (value != null) {
-            violations = validator.validate(value);
+        if (parameterValue != null) {
+            violations = validator.validate(parameterValue);
         }
 
         for (ConstraintViolation<T> violation : violations) {
@@ -146,6 +139,12 @@ class BindForm<T> extends AbstractForm<T> {
         }
 
         LOGGER.trace(printTree(root));
+    }
+
+    private static String printTree(FormNode root) {
+        StringBuilder sb = new StringBuilder("\n");
+        root.print(sb, 0);
+        return sb.toString();
     }
 
     // -- Form methods

@@ -15,9 +15,8 @@ import samson.metadata.ElementRef;
  */
 class WrapForm<T> extends AbstractForm<T> {
 
-    public WrapForm(Element parameter, T value) {
-        super(parameter);
-        this.value = value;
+    public WrapForm(Element parameter, T parameterValue) {
+        super(parameter, parameterValue);
     }
 
     // -- Form methods

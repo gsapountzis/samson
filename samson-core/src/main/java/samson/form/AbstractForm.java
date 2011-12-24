@@ -29,32 +29,33 @@ import samson.metadata.TypeClassPair;
 
 abstract class AbstractForm<T> implements JForm<T> {
 
-    protected final Element parameter;
-    protected T value;
-
-    protected ConverterProvider converterProvider;
-    protected BinderFactory binderFactory;
-    protected ValidatorFactory validatorFactory;
-
     protected final AbstractForm<T> form = this;
 
-    protected final Accessor valueAccessor = new Accessor() {
+    protected final Element parameter;
+    protected T parameterValue;
+
+    protected final Accessor parameterAccessor = new Accessor() {
 
         @Override
         public Object get() {
-            return form.value;
+            return form.parameterValue;
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public void set(Object value) {
-            form.value = (T) value;
+            form.parameterValue = (T) value;
         }
 
     };
 
-    public AbstractForm(Element parameter) {
+    protected ConverterProvider converterProvider;
+    protected BinderFactory binderFactory;
+    protected ValidatorFactory validatorFactory;
+
+    public AbstractForm(Element parameter, T parameterValue) {
         this.parameter = parameter;
+        this.parameterValue = parameterValue;
     }
 
     public void setConverterProvider(ConverterProvider converterProvider) {
@@ -71,7 +72,7 @@ abstract class AbstractForm<T> implements JForm<T> {
 
     @Override
     public T get() {
-        return value;
+        return parameterValue;
     }
 
     @Override
@@ -220,7 +221,7 @@ abstract class AbstractForm<T> implements JForm<T> {
     }
 
     protected ElementRef getElementRef(String param) {
-        ElementRef ref = new ElementRef(parameter, valueAccessor);
+        ElementRef ref = new ElementRef(parameter, parameterAccessor);
 
         Property.Path path = Property.Path.createPath(param);
         for (Property.Node node : path) {
