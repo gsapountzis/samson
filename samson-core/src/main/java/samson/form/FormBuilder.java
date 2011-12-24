@@ -8,7 +8,7 @@ import javax.validation.ValidatorFactory;
 import samson.JForm;
 import samson.JFormBuilder;
 import samson.bind.BinderFactory;
-import samson.convert.MultivaluedConverterProvider;
+import samson.convert.ConverterProvider;
 import samson.metadata.Element;
 
 class FormBuilder<T> implements JFormBuilder<T> {
@@ -16,9 +16,9 @@ class FormBuilder<T> implements JFormBuilder<T> {
     private final Element element;
     private final T instance;
 
+    private ConverterProvider converterProvider;
     private BinderFactory binderFactory;
     private ValidatorFactory validatorFactory;
-    private MultivaluedConverterProvider extractorProvider;
 
     private ParamsProvider formParams;
     private ParamsProvider queryParams;
@@ -28,16 +28,16 @@ class FormBuilder<T> implements JFormBuilder<T> {
         this.instance = instance;
     }
 
+    public void setConverterProvider(ConverterProvider converterProvider) {
+        this.converterProvider = converterProvider;
+    }
+
     public void setBinderFactory(BinderFactory binderFactory) {
         this.binderFactory = binderFactory;
     }
 
     public void setValidatorFactory(ValidatorFactory validatorFactory) {
         this.validatorFactory = validatorFactory;
-    }
-
-    public void setExtractorProvider(MultivaluedConverterProvider extractorProvider) {
-        this.extractorProvider = extractorProvider;
     }
 
     public void setFormParamsProvider(ParamsProvider formParams) {
@@ -80,9 +80,9 @@ class FormBuilder<T> implements JFormBuilder<T> {
 
     private JForm<T> apply(String path, Map<String, List<String>> params) {
         BindForm<T> form = new BindForm<T>(element, instance);
+        form.setConverterProvider(converterProvider);
         form.setBinderFactory(binderFactory);
         form.setValidatorFactory(validatorFactory);
-        form.setExtractorProvider(extractorProvider);
 
         return form.apply(path, params);
     }

@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import samson.convert.Converter;
-import samson.convert.ConverterPredicate;
 import samson.convert.ConverterProvider;
 import samson.jersey.core.reflection.ReflectionHelper;
 import samson.metadata.BeanMetadata;
@@ -24,19 +23,11 @@ public class BinderFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(BinderFactory.class);
 
     private final BeanMetadataCache beanCache;
-    private ConverterProvider converterProvider;
-    private ConverterPredicate stringTypePredicate;
+    private final ConverterProvider converterProvider;
 
-    public BinderFactory() {
+    public BinderFactory(ConverterProvider converterProvider) {
         this.beanCache = new BeanMetadataCache();
-    }
-
-    public void setConverterProvider(ConverterProvider converterProvider) {
         this.converterProvider = converterProvider;
-    }
-
-    public void setStringTypePredicate(ConverterPredicate stringTypePredicate) {
-        this.stringTypePredicate = stringTypePredicate;
     }
 
     public BeanTcp getBeanMetadata(TypeClassPair tcp) {
@@ -102,7 +93,7 @@ public class BinderFactory {
             }
         }
         else {
-            boolean isStringType = stringTypePredicate.apply(tcp.t, tcp.c, null);
+            boolean isStringType = converterProvider.canConvert(tcp.t, tcp.c, null);
             if (!isStringType) {
                 LOGGER.warn("String-based type {} does not have an extractor", tcp.c);
                 type = BinderType.NULL;

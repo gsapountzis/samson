@@ -19,8 +19,8 @@ import samson.JForm;
 import samson.bind.Binder;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterException;
+import samson.convert.ConverterProvider;
 import samson.convert.MultivaluedConverter;
-import samson.convert.MultivaluedConverterProvider;
 import samson.form.Property.Path;
 import samson.metadata.Element;
 import samson.metadata.Element.Accessor;
@@ -32,9 +32,9 @@ abstract class AbstractForm<T> implements JForm<T> {
     protected final Element parameter;
     protected T value;
 
+    protected ConverterProvider converterProvider;
     protected BinderFactory binderFactory;
     protected ValidatorFactory validatorFactory;
-    protected MultivaluedConverterProvider extractorProvider;
 
     protected final AbstractForm<T> form = this;
 
@@ -57,16 +57,16 @@ abstract class AbstractForm<T> implements JForm<T> {
         this.parameter = parameter;
     }
 
+    public void setConverterProvider(ConverterProvider converterProvider) {
+        this.converterProvider = converterProvider;
+    }
+
     public void setBinderFactory(BinderFactory binderFactory) {
         this.binderFactory = binderFactory;
     }
 
     public void setValidatorFactory(ValidatorFactory validatorFactory) {
         this.validatorFactory = validatorFactory;
-    }
-
-    public void setExtractorProvider(MultivaluedConverterProvider extractorProvider) {
-        this.extractorProvider = extractorProvider;
     }
 
     @Override
@@ -266,7 +266,7 @@ abstract class AbstractForm<T> implements JForm<T> {
     protected List<String> toStringList(Conversion conversion) {
 
         @SuppressWarnings("unchecked")
-        MultivaluedConverter<Object> extractor = (MultivaluedConverter<Object>) extractorProvider.get(
+        MultivaluedConverter<Object> extractor = (MultivaluedConverter<Object>) converterProvider.getMultivalued(
                 conversion.getType(),
                 conversion.getRawType(),
                 conversion.getAnnotations());
@@ -281,7 +281,7 @@ abstract class AbstractForm<T> implements JForm<T> {
 
     protected Conversion fromStringList(Element element, List<String> values) {
 
-        MultivaluedConverter<?> extractor = extractorProvider.get(
+        MultivaluedConverter<?> extractor = converterProvider.getMultivalued(
                 element.tcp.t,
                 element.tcp.c,
                 element.annotations,

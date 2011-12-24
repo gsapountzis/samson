@@ -9,15 +9,13 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import samson.convert.ConverterPredicate;
-
 import com.sun.jersey.api.model.Parameter;
 import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParameterExtractor;
 import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParameterExtractorProvider;
 import com.sun.jersey.spi.StringReader;
 import com.sun.jersey.spi.StringReaderWorkers;
 
-public class JerseyConverterPredicate implements ConverterPredicate {
+class JerseyConverterPredicate {
 
     private StringReaderWorkers stringReaderProvider;
     private MultivaluedParameterExtractorProvider extractorProvider;
@@ -28,11 +26,6 @@ public class JerseyConverterPredicate implements ConverterPredicate {
 
     public void setExtractorProvider(MultivaluedParameterExtractorProvider extractorProvider) {
         this.extractorProvider = extractorProvider;
-    }
-
-    @Override
-    public boolean apply(Type type, Class<?> rawType, Annotation annotations[]) {
-        return isStringType(type, rawType, annotations);
     }
 
     private final ConcurrentMap<Integer, Boolean> resultCache = new ConcurrentHashMap<Integer, Boolean>();
@@ -46,7 +39,7 @@ public class JerseyConverterPredicate implements ConverterPredicate {
         return result;
     }
 
-    private boolean isStringType(Type type, Class<?> rawType, Annotation annotations[]) {
+    public boolean isStringType(Type type, Class<?> rawType, Annotation annotations[]) {
 
         int hashCode = hashCode(type, rawType, annotations);
 

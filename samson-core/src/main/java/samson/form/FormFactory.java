@@ -14,8 +14,6 @@ import samson.JFormBuilder;
 import samson.JFormProvider;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterProvider;
-import samson.convert.MultivaluedConverterProvider;
-import samson.convert.ConverterPredicate;
 import samson.metadata.Element;
 import samson.metadata.TypeClassPair;
 
@@ -26,19 +24,16 @@ public class FormFactory implements JFormProvider {
     private final ParamsProvider formParams;
     private final ParamsProvider queryParams;
 
+    private final ConverterProvider converterProvider;
     private final BinderFactory binderFactory;
     private final ValidatorFactory validatorFactory;
-    private MultivaluedConverterProvider extractorProvider;
 
-    public FormFactory() {
-        this(null, null);
-    }
-
-    public FormFactory(ParamsProvider formParams, ParamsProvider queryParams) {
+    public FormFactory(ParamsProvider formParams, ParamsProvider queryParams, ConverterProvider converterProvider) {
         this.formParams = formParams;
         this.queryParams = queryParams;
 
-        this.binderFactory = new BinderFactory();
+        this.converterProvider = converterProvider;
+        this.binderFactory = new BinderFactory(converterProvider);
 
         ValidatorFactory validatorFactory = null;
         try {
@@ -46,23 +41,8 @@ public class FormFactory implements JFormProvider {
         }
         catch (ValidationException ex) {
             LOGGER.warn("Unable to find validation provider", ex);
-            validatorFactory = null;
         }
         this.validatorFactory = validatorFactory;
-    }
-
-    // -- Setter injection for Jersey's custom DI
-
-    public void setConverterProvider(ConverterProvider converterProvider) {
-        binderFactory.setConverterProvider(converterProvider);
-    }
-
-    public void setExtractorProvider(MultivaluedConverterProvider extractorProvider) {
-        this.extractorProvider = extractorProvider;
-    }
-
-    public void setStringTypePredicate(ConverterPredicate stringTypePredicate) {
-        binderFactory.setStringTypePredicate(stringTypePredicate);
     }
 
     // -- Binding form factory methods
@@ -84,9 +64,9 @@ public class FormFactory implements JFormProvider {
 
     public <T> JFormBuilder<T> bind(Element element, T instance) {
         FormBuilder<T> form = new FormBuilder<T>(element, instance);
+        form.setConverterProvider(converterProvider);
         form.setBinderFactory(binderFactory);
         form.setValidatorFactory(validatorFactory);
-        form.setExtractorProvider(extractorProvider);
 
         form.setFormParamsProvider(formParams);
         form.setQueryParamsProvider(queryParams);
@@ -112,9 +92,9 @@ public class FormFactory implements JFormProvider {
 
     public <T> JForm<T> wrap(Element element, T instance) {
         WrapForm<T> form = new WrapForm<T>(element, instance);
+        form.setConverterProvider(converterProvider);
         form.setBinderFactory(binderFactory);
         form.setValidatorFactory(validatorFactory);
-        form.setExtractorProvider(extractorProvider);
         return form;
     }
 

@@ -8,9 +8,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import samson.JFormProvider;
 import samson.form.FormFactory;
 import samson.form.ParamsProvider;
-import samson.jersey.convert.JerseyConverterPredicate;
 import samson.jersey.convert.JerseyConverterProvider;
-import samson.jersey.convert.JerseyMultivaluedConverterProvider;
 
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.core.spi.component.ComponentContext;
@@ -44,33 +42,22 @@ public class JFormProviderInjectableProvider implements InjectableProvider<Conte
     };
 
     private final FormFactory provider;
-    private final JerseyConverterPredicate stringTypePredicate;
     private final JerseyConverterProvider converterProvider;
-    private final JerseyMultivaluedConverterProvider multivaluedConverterProvider;
 
     public JFormProviderInjectableProvider(@Context HttpContext context) {
         this.context = context;
-        this.provider = new FormFactory(formParams, queryParams);
-
-        this.stringTypePredicate = new JerseyConverterPredicate();
         this.converterProvider = new JerseyConverterProvider();
-        this.multivaluedConverterProvider = new JerseyMultivaluedConverterProvider(converterProvider);
-
-        this.provider.setStringTypePredicate(stringTypePredicate);
-        this.provider.setConverterProvider(converterProvider);
-        this.provider.setExtractorProvider(multivaluedConverterProvider);
+        this.provider = new FormFactory(formParams, queryParams, converterProvider);
     }
 
     @Context
     public void setStringReaderProvider(StringReaderWorkers srw) {
-        stringTypePredicate.setStringReaderProvider(srw);
         converterProvider.setStringReaderProvider(srw);
     }
 
     @Context
     public void setExtractorProvider(MultivaluedParameterExtractorProvider mpep) {
-        stringTypePredicate.setExtractorProvider(mpep);
-        multivaluedConverterProvider.setExtractorProvider(mpep);
+        converterProvider.setExtractorProvider(mpep);
     }
 
     @Override
