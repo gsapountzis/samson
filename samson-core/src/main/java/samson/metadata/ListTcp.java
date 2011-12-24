@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+import samson.Element;
+import samson.TypeClassPair;
 import samson.jersey.core.reflection.ReflectionHelper;
 
 public class ListTcp {
@@ -57,12 +59,12 @@ public class ListTcp {
         return new Element(annotations, itemTcp, index);
     }
 
-    public static Element.Accessor createItemAccessor(final List<?> list, final int index) {
+    public static ElementAccessor createItemAccessor(final List<?> list, final int index) {
         if (list == null) {
-            return Element.Accessor.NULL_ACCESSOR;
+            return ElementAccessor.NULL_ACCESSOR;
         }
 
-        return new Element.Accessor() {
+        return new ElementAccessor() {
 
             @SuppressWarnings("unchecked")
             @Override

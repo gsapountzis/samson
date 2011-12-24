@@ -7,11 +7,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
+import samson.Element;
 import samson.JForm;
 import samson.JFormProvider;
-import samson.jersey.core.reflection.ReflectionHelper;
-import samson.metadata.Element;
-import samson.metadata.TypeClassPair;
 
 import com.sun.jersey.api.container.ContainerException;
 import com.sun.jersey.api.core.HttpContext;
@@ -19,6 +17,8 @@ import com.sun.jersey.api.core.HttpRequestContext;
 import com.sun.jersey.api.model.Parameter;
 import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.core.header.MediaTypes;
+import com.sun.jersey.core.reflection.ReflectionHelper;
+import com.sun.jersey.core.reflection.ReflectionHelper.TypeClassPair;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.core.spi.component.ComponentScope;
 import com.sun.jersey.server.impl.inject.AbstractHttpContextInjectable;
@@ -51,28 +51,28 @@ public class FormParamInjectableProvider implements InjectableProvider<FormParam
             MultivaluedMap<String, String> params = getParameters(context, true);
             return jForm.bind(element).params(element.name, params);
         }
+    }
 
-        static MultivaluedMap<String, String> getParameters(HttpContext context, boolean decode) {
-            Form form = (Form) context.getProperties().get(FormDispatchProvider.FORM_PROPERTY);
-            if (form == null) {
-                form = getForm(context);
-                context.getProperties().put(FormDispatchProvider.FORM_PROPERTY, form);
-            }
-            return form;
+    static MultivaluedMap<String, String> getParameters(HttpContext context, boolean decode) {
+        Form form = (Form) context.getProperties().get(FormDispatchProvider.FORM_PROPERTY);
+        if (form == null) {
+            form = getForm(context);
+            context.getProperties().put(FormDispatchProvider.FORM_PROPERTY, form);
+        }
+        return form;
+    }
+
+    private static Form getForm(HttpContext context) {
+        final HttpRequestContext r = context.getRequest();
+        if (r.getMethod().equals("GET")) {
+            throw new IllegalStateException("Form with HTTP method GET");
         }
 
-        static Form getForm(HttpContext context) {
-            final HttpRequestContext r = context.getRequest();
-            if (r.getMethod().equals("GET")) {
-                throw new IllegalStateException("Form with HTTP method GET");
-            }
-
-            if (!MediaTypes.typeEquals(MediaType.APPLICATION_FORM_URLENCODED_TYPE, r.getMediaType())) {
-                throw new IllegalStateException("Form with HTTP content-type other than x-www-form-urlencoded");
-            }
-
-            return r.getFormParameters();
+        if (!MediaTypes.typeEquals(MediaType.APPLICATION_FORM_URLENCODED_TYPE, r.getMediaType())) {
+            throw new IllegalStateException("Form with HTTP content-type other than x-www-form-urlencoded");
         }
+
+        return r.getFormParameters();
     }
 
     @Override
@@ -82,21 +82,17 @@ public class FormParamInjectableProvider implements InjectableProvider<FormParam
 
     @Override
     public Injectable<JForm<?>> getInjectable(ComponentContext componentContext, FormParam annotation, Parameter parameter) {
-        Element element = getArgumentElement(parameter);
-        if (element == null) {
+        Class<?> clazz = parameter.getParameterClass();
+        if (clazz != JForm.class) {
             return null;
         }
 
+        Element element = getArgumentElement(parameter);
         return new FormParamInjectable(jForm, element);
     }
 
     static Element getArgumentElement(Parameter parameter) {
-        Class<?> clazz = parameter.getParameterClass();
         Type type = parameter.getParameterType();
-
-        if (clazz != JForm.class) {
-            return null;
-        }
 
         TypeClassPair tcp = ReflectionHelper.getTypeArgumentAndClass(type);
         if (tcp == null) {
@@ -105,9 +101,10 @@ public class FormParamInjectableProvider implements InjectableProvider<FormParam
 
         return new Element(
                 parameter.getAnnotations(),
-                tcp,
+                tcp.t, tcp.c,
                 parameter.getSourceName(),
                 parameter.isEncoded(),
                 parameter.getDefaultValue());
     }
+
 }

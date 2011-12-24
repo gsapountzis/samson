@@ -5,13 +5,13 @@ import java.util.Map;
 
 import javax.validation.ValidatorFactory;
 
+import samson.Element;
 import samson.JForm;
 import samson.JFormBuilder;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterProvider;
 import samson.form.Property.Node;
 import samson.form.Property.Path;
-import samson.metadata.Element;
 
 class FormBuilder<T> implements JFormBuilder<T> {
 

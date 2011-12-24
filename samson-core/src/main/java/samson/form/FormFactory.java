@@ -9,13 +9,13 @@ import javax.validation.ValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import samson.Element;
 import samson.JForm;
 import samson.JFormBuilder;
 import samson.JFormProvider;
+import samson.TypeClassPair;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterProvider;
-import samson.metadata.Element;
-import samson.metadata.TypeClassPair;
 
 public class FormFactory implements JFormProvider {
 
@@ -62,7 +62,7 @@ public class FormFactory implements JFormProvider {
         return bind(element, null);
     }
 
-    public <T> JFormBuilder<T> bind(Element element, T instance) {
+    private <T> JFormBuilder<T> bind(Element element, T instance) {
         return builder(element, instance);
     }
 
@@ -83,9 +83,11 @@ public class FormFactory implements JFormProvider {
         return wrap(element, null);
     }
 
-    public <T> JForm<T> wrap(Element element, T instance) {
+    private <T> JForm<T> wrap(Element element, T instance) {
         return builder(element, instance).wrap();
     }
+
+    // -- Helpers
 
     private <T> Element element(Class<T> type) {
         Annotation[] annotations = new Annotation[0];

@@ -1,6 +1,7 @@
-package samson.metadata;
+package samson;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 /**
  * Immutable method parameter / bean property descriptor.
@@ -20,6 +21,10 @@ public class Element {
         this(annotations, tcp, name, false, null);
     }
 
+    public Element(Annotation[] annotations, Type type, Class<?> rawType, String name) {
+        this(annotations, new TypeClassPair(type, rawType), name);
+    }
+
     public Element(Annotation[] annotations, TypeClassPair tcp, String name, boolean encoded, String defaultValue) {
         this.annotations = annotations;
         this.tcp = tcp;
@@ -29,23 +34,8 @@ public class Element {
         this.defaultValue = defaultValue;
     }
 
-    public static interface Accessor {
-
-        public static final Accessor NULL_ACCESSOR = new Accessor() {
-
-            @Override
-            public void set(Object value) {
-            }
-
-            @Override
-            public Object get() {
-                return null;
-            }
-        };
-
-        Object get();
-
-        void set(Object value);
+    public Element(Annotation[] annotations, Type type, Class<?> rawType, String name, boolean encoded, String defaultValue) {
+        this(annotations, new TypeClassPair(type, rawType), name, encoded, defaultValue);
     }
 
 }

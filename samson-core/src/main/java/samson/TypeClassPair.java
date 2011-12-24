@@ -1,11 +1,9 @@
-package samson.metadata;
+package samson;
 
 import java.lang.reflect.Type;
 
-import samson.jersey.core.reflection.ReflectionHelper;
-
 /**
- * {@link TypeClassPair} + {@link ReflectionHelper} = TypeLiteral
+ * TypeClassPair + ReflectionHelper = TypeLiteral
  */
 public final class TypeClassPair {
 

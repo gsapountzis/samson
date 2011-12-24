@@ -29,7 +29,7 @@ public class JFormProviderInjectableProvider implements InjectableProvider<Conte
 
         @Override
         public MultivaluedMap<String, String> get() {
-            return FormParamInjectableProvider.FormParamInjectable.getParameters(context, true);
+            return FormParamInjectableProvider.getParameters(context, true);
         }
     };
 
@@ -37,7 +37,7 @@ public class JFormProviderInjectableProvider implements InjectableProvider<Conte
 
         @Override
         public MultivaluedMap<String, String> get() {
-            return QueryParamInjectableProvider.QueryParamInjectable.getParameters(context, true);
+            return QueryParamInjectableProvider.getParameters(context, true);
         }
     };
 

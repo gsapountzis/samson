@@ -15,15 +15,15 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
 
+import samson.Element;
 import samson.JForm;
 import samson.JFormProvider;
-import samson.jersey.core.reflection.ReflectionHelper;
-import samson.metadata.Element;
-import samson.metadata.TypeClassPair;
 
 import com.sun.jersey.api.container.ContainerException;
 import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.core.provider.AbstractMessageReaderWriterProvider;
+import com.sun.jersey.core.reflection.ReflectionHelper;
+import com.sun.jersey.core.reflection.ReflectionHelper.TypeClassPair;
 import com.sun.jersey.spi.inject.ConstrainedTo;
 import com.sun.jersey.spi.inject.ServerSide;
 
@@ -59,7 +59,7 @@ public class FormBeanProvider extends AbstractMessageReaderWriterProvider<JForm<
         if (tcp == null) {
             throw new ContainerException("Parameterized type without type arguement");
         }
-        Element element = new Element(annotations, tcp, null);
+        Element element = new Element(annotations, tcp.t, tcp.c, null);
 
         MessageBodyReader<Form> formProvider = providers.getMessageBodyReader(Form.class, Form.class, annotations, mediaType);
         if (formProvider == null) {

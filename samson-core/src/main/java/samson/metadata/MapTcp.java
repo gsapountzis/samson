@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
+import samson.Element;
+import samson.TypeClassPair;
 import samson.jersey.core.reflection.ReflectionHelper;
 
 public class MapTcp {
@@ -63,12 +65,12 @@ public class MapTcp {
         return new Element(annotations, valueTcp, key);
     }
 
-    public static Element.Accessor createValueAccessor(final Map<?, ?> map, final Object key) {
+    public static ElementAccessor createValueAccessor(final Map<?, ?> map, final Object key) {
         if (map == null) {
-            return Element.Accessor.NULL_ACCESSOR;
+            return ElementAccessor.NULL_ACCESSOR;
         }
 
-        return new Element.Accessor() {
+        return new ElementAccessor() {
 
             @SuppressWarnings("unchecked")
             @Override

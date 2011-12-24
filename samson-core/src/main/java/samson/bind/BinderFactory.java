@@ -9,6 +9,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import samson.TypeClassPair;
 import samson.convert.Converter;
 import samson.convert.ConverterProvider;
 import samson.jersey.core.reflection.ReflectionHelper;
@@ -16,7 +17,6 @@ import samson.metadata.BeanMetadata;
 import samson.metadata.BeanMetadataCache;
 import samson.metadata.BeanTcp;
 import samson.metadata.ElementRef;
-import samson.metadata.TypeClassPair;
 
 public class BinderFactory {
 

@@ -6,13 +6,13 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import samson.Element;
+import samson.TypeClassPair;
 import samson.convert.Converter;
 import samson.convert.ConverterException;
-import samson.metadata.Element;
-import samson.metadata.Element.Accessor;
+import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
 import samson.metadata.MapTcp;
-import samson.metadata.TypeClassPair;
 
 class MapBinder extends Binder {
 
@@ -63,7 +63,7 @@ class MapBinder extends Binder {
         Object key = getKey(mapTcp.getKeyTcp(), stringKey);
         if (key != null) {
             Element valueElement = mapTcp.createValueElement(annotations, stringKey);
-            Accessor valueAccessor = MapTcp.createValueAccessor(map, key);
+            ElementAccessor valueAccessor = MapTcp.createValueAccessor(map, key);
             return new ElementRef(valueElement, valueAccessor);
         }
         else {

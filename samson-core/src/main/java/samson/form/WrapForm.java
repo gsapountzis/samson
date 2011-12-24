@@ -7,7 +7,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 
 import samson.Conversion;
-import samson.metadata.Element;
+import samson.Element;
 import samson.metadata.ElementRef;
 
 /**

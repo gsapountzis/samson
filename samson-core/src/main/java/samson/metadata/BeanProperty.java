@@ -7,6 +7,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
+import samson.Element;
+import samson.TypeClassPair;
 import samson.jersey.core.reflection.ReflectionHelper;
 
 public abstract class BeanProperty extends Element {
@@ -19,14 +21,14 @@ public abstract class BeanProperty extends Element {
 
     public abstract void set(Object bean, Object value);
 
-    public Element.Accessor createAccessor(final Object bean) {
+    public ElementAccessor createAccessor(final Object bean) {
         if (bean == null) {
-            return Element.Accessor.NULL_ACCESSOR;
+            return ElementAccessor.NULL_ACCESSOR;
         }
 
         final BeanProperty property = this;
 
-        return new Element.Accessor() {
+        return new ElementAccessor() {
 
             @Override
             public void set(Object value) {

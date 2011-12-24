@@ -12,11 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import samson.Conversion;
+import samson.Element;
 import samson.JForm;
 import samson.bind.Binder;
 import samson.bind.BinderType;
 import samson.form.Property.Path;
-import samson.metadata.Element;
 import samson.metadata.ElementRef;
 
 /**

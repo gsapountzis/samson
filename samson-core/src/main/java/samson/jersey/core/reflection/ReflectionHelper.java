@@ -50,7 +50,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
 
-import samson.metadata.TypeClassPair;
+import samson.TypeClassPair;
 
 public class ReflectionHelper {
 

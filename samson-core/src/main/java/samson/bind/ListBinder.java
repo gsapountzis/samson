@@ -6,8 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import samson.metadata.Element;
-import samson.metadata.Element.Accessor;
+import samson.Element;
+import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
 import samson.metadata.ListTcp;
 
@@ -69,7 +69,7 @@ class ListBinder extends Binder {
         int index = getIndex(stringIndex);
         if (index >= 0 && index < MAX_LIST_SIZE) {
             Element itemElement = listTcp.createItemElement(annotations, stringIndex);
-            Accessor itemAccessor = ListTcp.createItemAccessor(list, index);
+            ElementAccessor itemAccessor = ListTcp.createItemAccessor(list, index);
             return new ElementRef(itemElement, itemAccessor);
         }
         else {

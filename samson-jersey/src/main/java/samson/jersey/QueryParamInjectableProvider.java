@@ -4,9 +4,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 
+import samson.Element;
 import samson.JForm;
 import samson.JFormProvider;
-import samson.metadata.Element;
 
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.api.model.Parameter;
@@ -41,10 +41,10 @@ public class QueryParamInjectableProvider implements InjectableProvider<QueryPar
             MultivaluedMap<String, String> params = getParameters(context, true);
             return jForm.bind(element).params(element.name, params);
         }
+    }
 
-        static MultivaluedMap<String, String> getParameters(HttpContext context, boolean decode) {
-            return context.getUriInfo().getQueryParameters(decode);
-        }
+    static MultivaluedMap<String, String> getParameters(HttpContext context, boolean decode) {
+        return context.getUriInfo().getQueryParameters(decode);
     }
 
     @Override
@@ -54,11 +54,12 @@ public class QueryParamInjectableProvider implements InjectableProvider<QueryPar
 
     @Override
     public Injectable<JForm<?>> getInjectable(ComponentContext componentContext, QueryParam annotation, Parameter parameter) {
-        Element element = FormParamInjectableProvider.getArgumentElement(parameter);
-        if (element == null) {
+        Class<?> clazz = parameter.getParameterClass();
+        if (clazz != JForm.class) {
             return null;
         }
 
+        Element element = FormParamInjectableProvider.getArgumentElement(parameter);
         return new QueryParamInjectable(jForm, element);
     }
 

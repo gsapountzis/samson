@@ -15,17 +15,17 @@ import javax.validation.metadata.ElementDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
 
 import samson.Conversion;
+import samson.Element;
 import samson.JForm;
+import samson.TypeClassPair;
 import samson.bind.Binder;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterException;
 import samson.convert.ConverterProvider;
 import samson.convert.MultivaluedConverter;
 import samson.form.Property.Path;
-import samson.metadata.Element;
-import samson.metadata.Element.Accessor;
+import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
-import samson.metadata.TypeClassPair;
 
 abstract class AbstractForm<T> implements JForm<T> {
 
@@ -34,7 +34,7 @@ abstract class AbstractForm<T> implements JForm<T> {
     protected final Element parameter;
     protected T parameterValue;
 
-    protected final Accessor parameterAccessor = new Accessor() {
+    protected final ElementAccessor parameterAccessor = new ElementAccessor() {
 
         @Override
         public Object get() {
