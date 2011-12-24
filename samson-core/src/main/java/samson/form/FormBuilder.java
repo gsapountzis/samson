@@ -9,6 +9,8 @@ import samson.JForm;
 import samson.JFormBuilder;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterProvider;
+import samson.form.Property.Node;
+import samson.form.Property.Path;
 import samson.metadata.Element;
 
 class FormBuilder<T> implements JFormBuilder<T> {
@@ -55,7 +57,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
 
     @Override
     public JForm<T> params(String path, Map<String, List<String>> params) {
-        return apply(path, params);
+        return bind(path, params);
     }
 
     @Override
@@ -65,7 +67,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
 
     @Override
     public JForm<T> form(String path) {
-        return apply(path, formParams.get());
+        return bind(path, formParams.get());
     }
 
     @Override
@@ -75,16 +77,44 @@ class FormBuilder<T> implements JFormBuilder<T> {
 
     @Override
     public JForm<T> query(String path) {
-        return apply(path, queryParams.get());
+        return bind(path, queryParams.get());
     }
 
-    private JForm<T> apply(String path, Map<String, List<String>> params) {
-        BindForm<T> form = new BindForm<T>(element, instance);
+    private JForm<T> bind(String path, Map<String, List<String>> params) {
+        FormNode root = parse(path, params);
+
+        BindForm<T> form = new BindForm<T>(element, instance, root);
         form.setConverterProvider(converterProvider);
         form.setBinderFactory(binderFactory);
         form.setValidatorFactory(validatorFactory);
 
-        return form.apply(path, params);
+        return form.apply();
+    }
+
+    JForm<T> wrap() {
+        WrapForm<T> form = new WrapForm<T>(element, instance);
+        form.setConverterProvider(converterProvider);
+        form.setBinderFactory(binderFactory);
+        form.setValidatorFactory(validatorFactory);
+
+        return form;
+    }
+
+    private FormNode parse(String rootPath, Map<String, List<String>> params) {
+
+        FormNode unnamedRoot = new FormNode(Node.createPrefix(null));
+
+        for (String param : params.keySet()) {
+            List<String> values = params.get(param);
+
+            Path path = Path.createPath(param);
+            if (!path.isEmpty()) {
+                FormNode node = unnamedRoot.getDefinedChild(path);
+                node.setStringValues(values);
+            }
+        }
+
+        return unnamedRoot.getDefinedChild(Path.createPath(rootPath));
     }
 
 }

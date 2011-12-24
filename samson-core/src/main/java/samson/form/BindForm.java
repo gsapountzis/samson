@@ -3,7 +3,6 @@ package samson.form;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -17,7 +16,6 @@ import samson.JForm;
 import samson.bind.Binder;
 import samson.bind.BinderNode;
 import samson.bind.BinderType;
-import samson.form.Property.Node;
 import samson.form.Property.Path;
 import samson.metadata.Element;
 import samson.metadata.ElementRef;
@@ -31,44 +29,25 @@ class BindForm<T> extends AbstractForm<T> {
 
     private static final boolean VALIDATE = true;
 
-    private FormNode unnamedRoot;
-    private FormNode root;
+    private final FormNode root;
 
     private List<Conversion> conversionErrors = Collections.emptyList();
     private Set<ConstraintViolation<T>> violations = Collections.emptySet();
 
-    public BindForm(Element parameter, T parameterValue) {
+    public BindForm(Element parameter, T parameterValue, FormNode root) {
         super(parameter, parameterValue);
+        this.root = root;
+
+        LOGGER.trace(printTree(root));
     }
 
-    public JForm<T> apply(String path, Map<String, List<String>> params) {
-
-        parse(path, params);
+    public JForm<T> apply() {
 
         bind();
 
         validate();
 
         return this;
-    }
-
-    private void parse(String rootPath, Map<String, List<String>> params) {
-
-        unnamedRoot = new FormNode(Node.createPrefix(null));
-
-        for (String param : params.keySet()) {
-            List<String> values = params.get(param);
-
-            Path path = Path.createPath(param);
-            if (!path.isEmpty()) {
-                FormNode node = unnamedRoot.getDefinedChild(path);
-                node.setStringValues(values);
-            }
-        }
-
-        root = unnamedRoot.getDefinedChild(Path.createPath(rootPath));
-
-        LOGGER.trace(printTree(root));
     }
 
     private void bind() {

@@ -63,14 +63,7 @@ public class FormFactory implements JFormProvider {
     }
 
     public <T> JFormBuilder<T> bind(Element element, T instance) {
-        FormBuilder<T> form = new FormBuilder<T>(element, instance);
-        form.setConverterProvider(converterProvider);
-        form.setBinderFactory(binderFactory);
-        form.setValidatorFactory(validatorFactory);
-
-        form.setFormParamsProvider(formParams);
-        form.setQueryParamsProvider(queryParams);
-        return form;
+        return builder(element, instance);
     }
 
     // -- Wrapping form factory methods
@@ -91,11 +84,7 @@ public class FormFactory implements JFormProvider {
     }
 
     public <T> JForm<T> wrap(Element element, T instance) {
-        WrapForm<T> form = new WrapForm<T>(element, instance);
-        form.setConverterProvider(converterProvider);
-        form.setBinderFactory(binderFactory);
-        form.setValidatorFactory(validatorFactory);
-        return form;
+        return builder(element, instance).wrap();
     }
 
     private <T> Element element(Class<T> type) {
@@ -103,4 +92,16 @@ public class FormFactory implements JFormProvider {
         TypeClassPair tcp = new TypeClassPair(type, type);
         return new Element(annotations, tcp, null);
     }
+
+    private <T> FormBuilder<T> builder(Element element, T instance) {
+        FormBuilder<T> form = new FormBuilder<T>(element, instance);
+        form.setConverterProvider(converterProvider);
+        form.setBinderFactory(binderFactory);
+        form.setValidatorFactory(validatorFactory);
+
+        form.setFormParamsProvider(formParams);
+        form.setQueryParamsProvider(queryParams);
+        return form;
+    }
+
 }
