@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import samson.Element;
 import samson.JForm;
 import samson.bind.Binder;
+import samson.bind.BinderType;
 import samson.convert.ConverterException;
 import samson.form.Property.Path;
 import samson.metadata.ElementRef;
@@ -39,20 +40,31 @@ class BindForm<T> extends AbstractForm<T> {
     }
 
     public JForm<T> apply() {
-        bind();
-        convert();
-        validate();
-        return this;
-    }
-
-    private void bind() {
         ElementRef ref = new ElementRef(parameter, parameterAccessor);
 
         Binder binder = binderFactory.getBinder(ref, root.hasChildren());
-        if (binder != Binder.NULL_BINDER) {
+        BinderType binderType = binder.getType();
+        if (binderType != BinderType.NULL) {
+
             binder.read(root);
             root.setBinder(binder);
+
+            convert();
+
+            /*
+             * validation of standard types (primitives, string, list, map) actually requires
+             * method validation (in addition to bean validation), we validate for strings
+             * in case of user-defined types that may be beans
+             */
+            if (binderType == BinderType.STRING || binderType == BinderType.BEAN) {
+                validate();
+            }
         }
+        else {
+            // binder factory already warns for null binders
+        }
+
+        return this;
     }
 
     private void convert() {
@@ -77,11 +89,12 @@ class BindForm<T> extends AbstractForm<T> {
             return;
         }
 
-        Validator validator = validatorFactory.getValidator();
-
-        if (parameterValue != null) {
-            constraintViolations = validator.validate(parameterValue);
+        if (parameterValue == null) {
+            return;
         }
+
+        Validator validator = validatorFactory.getValidator();
+        constraintViolations = validator.validate(parameterValue);
 
         for (ConstraintViolation<T> violation : constraintViolations) {
             LOGGER.debug("{}: {}", violation.getPropertyPath(), violation.getMessage());
