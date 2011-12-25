@@ -50,14 +50,30 @@ class ListBinder extends Binder {
     }
 
     @Override
-    public ElementRef readChildRef(String childName) {
+    public void readComposite(BinderNode<?> node) {
         Annotation[] annotations = ref.element.annotations;
         ListTcp listTcp = new ListTcp(ref.element.tcp);
         List<?> list = (List<?>) ref.accessor.get();
 
-        ElementRef childRef = getElementRef(annotations, listTcp, list, childName);
+        for (BinderNode<?> child : node.getChildren()) {
+            String stringIndex = child.getName();
 
-        return childRef;
+            ElementRef childRef = getElementRef(annotations, listTcp, list, stringIndex);
+            if (childRef == ElementRef.NULL_REF)
+                continue;
+
+            if (child.hasChildren()) {
+                Binder binder = factory.getBinder(childRef, true);
+                if (binder != Binder.NULL_BINDER) {
+                    binder.readComposite(child);
+                    child.setBinder(binder);
+                }
+            }
+            else {
+                Binder binder = new StringBinder(childRef);
+                child.setBinder(binder);
+            }
+        }
     }
 
     private ElementRef getElementRef(Annotation[] annotations, ListTcp listTcp, List<?> list, String stringIndex) {

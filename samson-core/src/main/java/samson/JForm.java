@@ -63,11 +63,6 @@ public interface JForm<T> {
     Set<ConstraintViolation<T>> getConstraintViolations();
 
     /**
-     * Get the root path of the sub-form.
-     */
-    String getPath();
-
-    /**
      * Get the sub-form rooted at path.
      */
     JForm<?> path(String path);
@@ -77,6 +72,11 @@ public interface JForm<T> {
     JForm<?> index(String index);
 
     JForm<?> index(int index);
+
+    /**
+     * Get the root path of the sub-form.
+     */
+    String getPath();
 
     /**
      * Get the field value for the root object of the form.

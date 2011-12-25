@@ -35,11 +35,6 @@ public class ForwardingForm<T> implements JForm<T> {
     }
 
     @Override
-    public String getPath() {
-        return delegate.getPath();
-    }
-
-    @Override
     public JForm<?> path(String path) {
         return delegate.path(path);
     }
@@ -57,6 +52,11 @@ public class ForwardingForm<T> implements JForm<T> {
     @Override
     public JForm<?> index(int index) {
         return delegate.index(index);
+    }
+
+    @Override
+    public String getPath() {
+        return delegate.getPath();
     }
 
     @Override

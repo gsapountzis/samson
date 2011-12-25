@@ -52,14 +52,30 @@ class MapBinder extends Binder {
     }
 
     @Override
-    public ElementRef readChildRef(String childName) {
+    public void readComposite(BinderNode<?> node) {
         Annotation[] annotations = ref.element.annotations;
         MapTcp mapTcp = new MapTcp(ref.element.tcp);
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
 
-        ElementRef childRef = getElementRef(annotations, mapTcp, map, childName);
+        for (BinderNode<?> child : node.getChildren()) {
+            String stringKey = child.getName();
 
-        return childRef;
+            ElementRef childRef = getElementRef(annotations, mapTcp, map, stringKey);
+            if (childRef == ElementRef.NULL_REF)
+                continue;
+
+            if (child.hasChildren()) {
+                Binder binder = factory.getBinder(childRef, true);
+                if (binder != Binder.NULL_BINDER) {
+                    binder.readComposite(child);
+                    child.setBinder(binder);
+                }
+            }
+            else {
+                Binder binder = new StringBinder(childRef);
+                child.setBinder(binder);
+            }
+        }
     }
 
     private ElementRef getElementRef(Annotation[] annotations, MapTcp mapTcp, Map<?,?> map, String stringKey) {

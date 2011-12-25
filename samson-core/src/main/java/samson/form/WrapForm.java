@@ -8,7 +8,7 @@ import javax.validation.ConstraintViolation;
 
 import samson.Element;
 import samson.convert.ConverterException;
-import samson.metadata.ElementRef;
+import samson.form.Property.Path;
 
 /**
  * Wrapping form.
@@ -40,48 +40,30 @@ class WrapForm<T> extends AbstractForm<T> {
 
     @Override
     public Field getField(final String param) {
-        final ElementRef ref = elementRef(param);
+        final Path path = Path.createPath(param);
+        final FormNode root = formPath(path);
+        final FormNode node = root.getDefinedChild(path);
 
         return new Field() {
 
             @Override
             public Element getElement() {
-                if (ref != null) {
-                    return ref.element;
-                }
-                else {
-                    return null;
-                }
+                return node.getElement();
             }
 
             @Override
             public Object getObjectValue() {
-                if (ref != null) {
-                    return ref.accessor.get();
-                }
-                else {
-                    return null;
-                }
+                return node.getObjectValue();
             }
 
             @Override
             public String getValue() {
-                if (ref != null) {
-                    return toStringValue(ref.element, ref.accessor.get());
-                }
-                else {
-                    return null;
-                }
+                return node.getValue(form);
             }
 
             @Override
             public List<String> getValues() {
-                if (ref != null) {
-                    return toStringList(ref.element, ref.accessor.get());
-                }
-                else {
-                    return Collections.emptyList();
-                }
+                return node.getValues(form);
             }
 
             @Override
@@ -109,13 +91,12 @@ class WrapForm<T> extends AbstractForm<T> {
 
     @Override
     public Messages getMessages(final String param) {
-        final Messages messages = super.getMessages(param);
 
         return new Messages() {
 
             @Override
             public String getConversionInfo() {
-                return messages.getConversionInfo();
+                return getDefaultConversionInfo(param);
             }
 
             @Override
@@ -125,7 +106,7 @@ class WrapForm<T> extends AbstractForm<T> {
 
             @Override
             public List<String> getValidationInfos() {
-                return messages.getValidationInfos();
+                return getDefaultValidationInfos(param);
             }
 
             @Override
@@ -135,12 +116,12 @@ class WrapForm<T> extends AbstractForm<T> {
 
             @Override
             public List<String> getInfos() {
-                return messages.getInfos();
+                return getMessages(infos, param);
             }
 
             @Override
             public List<String> getErrors() {
-                return messages.getErrors();
+                return getMessages(errors, param);
             }
 
         };

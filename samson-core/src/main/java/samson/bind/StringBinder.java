@@ -13,8 +13,8 @@ class StringBinder extends Binder {
     }
 
     @Override
-    public ElementRef readChildRef(String childName) {
-        return ElementRef.NULL_REF;
+    public void readComposite(BinderNode<?> node) {
+        throw new IllegalStateException();
     }
 
 }

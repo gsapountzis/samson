@@ -18,7 +18,6 @@ import samson.bind.Binder;
 import samson.bind.BinderType;
 import samson.convert.ConverterException;
 import samson.form.Property.Path;
-import samson.metadata.ElementRef;
 
 /**
  * Binding form.
@@ -35,14 +34,11 @@ class BindForm<T> extends AbstractForm<T> {
     public BindForm(Element parameter, T parameterValue, FormNode root) {
         super(parameter, parameterValue);
         this.root = root;
-
         LOGGER.trace(printTree(root));
     }
 
     public JForm<T> apply() {
-        ElementRef ref = parameterRef;
-
-        Binder binder = binderFactory.getBinder(ref, root.hasChildren());
+        Binder binder = binderFactory.getBinder(parameterRef, root.hasChildren());
         if (binder != Binder.NULL_BINDER) {
             binder.read(root);
             root.setBinder(binder);
@@ -59,10 +55,6 @@ class BindForm<T> extends AbstractForm<T> {
                 validate();
             }
         }
-        else {
-            // binder factory already warns for null binders
-        }
-
         return this;
     }
 
@@ -75,7 +67,6 @@ class BindForm<T> extends AbstractForm<T> {
         for (ConverterException conversionError : conversionErrors) {
             LOGGER.debug("conversion error cause {}", conversionError.toString());
         }
-
         LOGGER.trace(printTree(root));
     }
 
@@ -83,11 +74,9 @@ class BindForm<T> extends AbstractForm<T> {
         if (JForm.CONF_DISABLE_VALIDATION) {
             return;
         }
-
         if (validatorFactory == null) {
             return;
         }
-
         if (parameterValue == null) {
             return;
         }
@@ -98,7 +87,6 @@ class BindForm<T> extends AbstractForm<T> {
         for (ConstraintViolation<T> violation : constraintViolations) {
             LOGGER.debug("{}: {}", violation.getPropertyPath(), violation.getMessage());
         }
-
         for (ConstraintViolation<T> violation : constraintViolations) {
             // parse and normalize the validation property path
             javax.validation.Path validationPath = violation.getPropertyPath();
@@ -109,7 +97,6 @@ class BindForm<T> extends AbstractForm<T> {
             FormNode node = root.getDefinedChild(path);
             node.addConstraintViolation(violation);
         }
-
         LOGGER.trace(printTree(root));
     }
 
@@ -205,7 +192,6 @@ class BindForm<T> extends AbstractForm<T> {
 
     @Override
     public Messages getMessages(final String param) {
-        final Messages messages = super.getMessages(param);
         final Path path = Path.createPath(param);
         final FormNode node = root.getDefinedChild(path);
 
@@ -213,13 +199,12 @@ class BindForm<T> extends AbstractForm<T> {
 
             @Override
             public String getConversionInfo() {
-                return messages.getConversionInfo();
+                return getDefaultConversionInfo(param);
             }
 
             @Override
             public String getConversionError() {
                 boolean error = node.isConversionError();
-
                 if (error) {
                     String stringValue = Utils.getFirst(node.getStringValues());
                     return getConversionErrorMessage(stringValue);
@@ -229,13 +214,12 @@ class BindForm<T> extends AbstractForm<T> {
 
             @Override
             public List<String> getValidationInfos() {
-                return messages.getValidationInfos();
+                return getDefaultValidationInfos(param);
             }
 
             @Override
             public List<String> getValidationErrors() {
                 Set<ConstraintViolation<?>> constraintViolations = node.getConstraintViolations();
-
                 List<String> messages = new ArrayList<String>();
                 for (ConstraintViolation<?> violation : constraintViolations) {
                     messages.add(violation.getMessage());
@@ -245,12 +229,12 @@ class BindForm<T> extends AbstractForm<T> {
 
             @Override
             public List<String> getInfos() {
-                return messages.getInfos();
+                return getMessages(infos, param);
             }
 
             @Override
             public List<String> getErrors() {
-                return messages.getErrors();
+                return getMessages(errors, param);
             }
 
         };

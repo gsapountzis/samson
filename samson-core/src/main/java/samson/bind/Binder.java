@@ -26,7 +26,7 @@ public abstract class Binder {
 
 //  public abstract void write(BinderNode<?> node);
 
-    public abstract ElementRef readChildRef(String childName);
+    public abstract void readComposite(BinderNode<?> node);
 
     public static final Binder NULL_BINDER = new Binder(null, BinderType.NULL, ElementRef.NULL_REF) {
 
@@ -35,8 +35,8 @@ public abstract class Binder {
         }
 
         @Override
-        public ElementRef readChildRef(String childName) {
-            return ElementRef.NULL_REF;
+        public void readComposite(BinderNode<?> node) {
+            throw new IllegalStateException();
         }
 
     };

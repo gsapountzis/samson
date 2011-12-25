@@ -78,6 +78,8 @@ abstract class AbstractForm<T> implements JForm<T> {
         return parameterValue;
     }
 
+    // -- Path
+
     @Override
     public JForm<?> path(String path) {
         return new PathForm(this, path);
@@ -103,10 +105,7 @@ abstract class AbstractForm<T> implements JForm<T> {
         return null;
     }
 
-    @Override
-    public Field getField() {
-        return getField(null);
-    }
+    // -- Messages
 
     final Map<Path, List<String>> infos = new HashMap<Path, List<String>>();
     final Map<Path, List<String>> errors = new HashMap<Path, List<String>>();
@@ -131,7 +130,7 @@ abstract class AbstractForm<T> implements JForm<T> {
         message(errors, path, msg);
     }
 
-    private static void message(Map<Path, List<String>> level, String param, String msg) {
+    static void message(Map<Path, List<String>> level, String param, String msg) {
         Path path = Path.createPath(param);
 
         List<String> msgs = level.get(path);
@@ -142,7 +141,7 @@ abstract class AbstractForm<T> implements JForm<T> {
         msgs.add(msg);
     }
 
-    private static List<String> getMessages(Map<Path, List<String>> level, String param) {
+    static List<String> getMessages(Map<Path, List<String>> level, String param) {
         Path path = Path.createPath(param);
 
         List<String> msgs = level.get(path);
@@ -154,89 +153,30 @@ abstract class AbstractForm<T> implements JForm<T> {
         }
     }
 
+    // -- Field
+
+    @Override
+    public Field getField() {
+        return getField(null);
+    }
+
     @Override
     public Messages getMessages() {
         return getMessages(null);
     }
 
-    @Override
-    public Messages getMessages(final String param) {
+    FormNode formPath(Path path) {
+        Node unnamed = Node.createPrefix(null);
+        FormNode root = new FormNode(unnamed);
+        root.getDefinedChild(path);
 
-        return new Messages() {
-
-            @Override
-            public String getConversionInfo() {
-                return getDefaultConversionInfo();
-            }
-
-            @Override
-            public String getConversionError() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public List<String> getValidationInfos() {
-                return getDefaultValidationInfos();
-            }
-
-            @Override
-            public List<String> getValidationErrors() {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public List<String> getInfos() {
-                return getMessages(infos, param);
-            }
-
-            @Override
-            public List<String> getErrors() {
-                return getMessages(errors, param);
-            }
-
-            private String getDefaultConversionInfo() {
-                Element element = getConversionElement(param);
-                if (element != null) {
-                    String message = element.tcp.c.getSimpleName();
-                    return message;
-                }
-                else {
-                    return null;
-                }
-            }
-
-            private List<String> getDefaultValidationInfos() {
-                ElementDescriptor element = getValidationElement(param);
-                if (element != null) {
-                    List<String> messages = new ArrayList<String>();
-                    for (ConstraintDescriptor<?> constraint : element.getConstraintDescriptors()) {
-                        Annotation annotation = constraint.getAnnotation();
-                        String message = annotation.annotationType().getSimpleName();
-                        messages.add(message);
-                    }
-                    return messages;
-                }
-                else {
-                    return Collections.emptyList();
-                }
-            }
-        };
-    }
-
-    protected ElementRef elementRef(String param) {
-        ElementRef ref = parameterRef;
-
-        Path path = Path.createPath(param);
-        for (Node node : path) {
-            String childName = node.getName();
-
-            Binder binder = binderFactory.getBinder(ref, true);
-            ref = binder.readChildRef(childName);
-            if (ref == ElementRef.NULL_REF) {
-                return null;
-            }
+        Binder binder = binderFactory.getBinder(parameterRef, root.hasChildren());
+        if (binder != Binder.NULL_BINDER) {
+            binder.readComposite(root);
+            root.setBinder(binder);
         }
-        return ref;
+
+        return root;
     }
 
     private String normalParam(String param) {
@@ -244,14 +184,38 @@ abstract class AbstractForm<T> implements JForm<T> {
         return param;
     }
 
-    private Element getConversionElement(String param) {
-        ElementRef ref = elementRef(param);
-        if (ref != null) {
-            return ref.element;
+    String getDefaultConversionInfo(String param) {
+        Element element = getConversionElement(param);
+        if (element != null) {
+            String message = element.tcp.c.getSimpleName();
+            return message;
         }
         else {
             return null;
         }
+    }
+
+    List<String> getDefaultValidationInfos(String param) {
+        ElementDescriptor element = getValidationElement(param);
+        if (element != null) {
+            List<String> messages = new ArrayList<String>();
+            for (ConstraintDescriptor<?> constraint : element.getConstraintDescriptors()) {
+                Annotation annotation = constraint.getAnnotation();
+                String message = annotation.annotationType().getSimpleName();
+                messages.add(message);
+            }
+            return messages;
+        }
+        else {
+            return Collections.emptyList();
+        }
+    }
+
+    private Element getConversionElement(String param) {
+        Path path = Path.createPath(param);
+        FormNode root = formPath(path);
+        FormNode node = root.getDefinedChild(path);
+        return node.getElement();
     }
 
     private ElementDescriptor getValidationElement(String param) {
@@ -275,11 +239,13 @@ abstract class AbstractForm<T> implements JForm<T> {
         }
     }
 
-    protected String toStringValue(Element element, Object value) {
+    // -- Conversion
+
+    String toStringValue(Element element, Object value) {
         return Utils.getFirst(toStringList(element, value));
     }
 
-    protected List<String> toStringList(Element element, Object value) {
+    List<String> toStringList(Element element, Object value) {
 
         @SuppressWarnings("unchecked")
         MultivaluedConverter<Object> extractor = (MultivaluedConverter<Object>) converterProvider.getMultivalued(
@@ -295,7 +261,7 @@ abstract class AbstractForm<T> implements JForm<T> {
         }
     }
 
-    protected Conversion fromStringList(Element element, List<String> values) {
+    Conversion fromStringList(Element element, List<String> values) {
 
         MultivaluedConverter<?> extractor = converterProvider.getMultivalued(
                 element.tcp.t,

@@ -41,13 +41,29 @@ class BeanBinder extends Binder {
     }
 
     @Override
-    public ElementRef readChildRef(String childName) {
+    public void readComposite(BinderNode<?> node) {
         BeanTcp beanTcp = factory.getBeanTcp(ref.element.tcp);
         Object bean = ref.accessor.get();
 
-        ElementRef childRef = getElementRef(beanTcp, bean, childName);
+        for (BinderNode<?> child : node.getChildren()) {
+            String propertyName = child.getName();
 
-        return childRef;
+            ElementRef childRef = getElementRef(beanTcp, bean, propertyName);
+            if (childRef == ElementRef.NULL_REF)
+                continue;
+
+            if (child.hasChildren()) {
+                Binder binder = factory.getBinder(childRef, true);
+                if (binder != Binder.NULL_BINDER) {
+                    binder.readComposite(child);
+                    child.setBinder(binder);
+                }
+            }
+            else {
+                Binder binder = new StringBinder(childRef);
+                child.setBinder(binder);
+            }
+        }
     }
 
     private ElementRef getElementRef(BeanTcp beanTcp, Object bean, String propertyName) {
