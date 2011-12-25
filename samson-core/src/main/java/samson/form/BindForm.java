@@ -25,8 +25,6 @@ class BindForm<T> extends AbstractForm<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BindForm.class);
 
-    private static final boolean VALIDATE = true;
-
     private final FormNode root;
 
     private Set<Throwable> conversionErrors = Collections.emptySet();
@@ -70,7 +68,11 @@ class BindForm<T> extends AbstractForm<T> {
     }
 
     private void validate() {
-        if (!VALIDATE || (validatorFactory == null)) {
+        if (JForm.CONF_DISABLE_VALIDATION) {
+            return;
+        }
+
+        if (validatorFactory == null) {
             return;
         }
 

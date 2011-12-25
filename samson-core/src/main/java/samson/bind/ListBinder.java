@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import samson.Element;
+import samson.JForm;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
 import samson.metadata.ListTcp;
@@ -14,15 +15,6 @@ import samson.metadata.ListTcp;
 class ListBinder extends Binder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ListBinder.class);
-
-    /**
-     * Maximum list size.
-     * <p>
-     * This is to prevent DoS attacks. For example the attacker could just set
-     * the list index to (2<sup>32</sup> - 1) and cause the allocation of more
-     * than 4GB of memory.
-     */
-    static final int MAX_LIST_SIZE = 256;
 
     ListBinder(BinderFactory factory, ElementRef ref) {
         super(factory, BinderType.LIST, ref);
@@ -67,7 +59,7 @@ class ListBinder extends Binder {
 
     private ElementRef getElementRef(Annotation[] annotations, ListTcp listTcp, List<?> list, String stringIndex) {
         int index = getIndex(stringIndex);
-        if (index >= 0 && index < MAX_LIST_SIZE) {
+        if (index >= 0 && index < JForm.CONF_MAX_LIST_SIZE) {
             Element itemElement = listTcp.createItemElement(annotations, stringIndex);
             ElementAccessor itemAccessor = ListTcp.createItemAccessor(list, index);
             return new ElementRef(itemElement, itemAccessor);
