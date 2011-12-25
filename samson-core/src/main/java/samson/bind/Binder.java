@@ -28,7 +28,7 @@ public abstract class Binder {
 
 //  public abstract void write(BinderNode<?> node);
 
-    static final Binder NULL_BINDER = new Binder(null, BinderType.NULL, ElementRef.NULL_REF) {
+    public static final Binder NULL_BINDER = new Binder(null, BinderType.NULL, ElementRef.NULL_REF) {
 
         @Override
         public ElementRef getElementRef(String name) {

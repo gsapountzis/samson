@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import samson.Element;
 import samson.JForm;
 import samson.bind.Binder;
-import samson.bind.BinderType;
 import samson.form.Property.Path;
 import samson.metadata.ElementRef;
 
@@ -41,11 +40,9 @@ class BindForm<T> extends AbstractForm<T> {
     }
 
     public JForm<T> apply() {
-
         bind();
-
+        convert();
         validate();
-
         return this;
     }
 
@@ -53,42 +50,23 @@ class BindForm<T> extends AbstractForm<T> {
         ElementRef ref = new ElementRef(parameter, parameterAccessor);
 
         Binder binder = binderFactory.getBinder(ref, root.hasChildren());
-        binder.read(root);
-        root.setBinder(binder);
+        if (binder != Binder.NULL_BINDER) {
+            binder.read(root);
+            root.setBinder(binder);
+        }
+    }
+
+    private void convert() {
+        root.convertTree(form);
 
         conversionErrors = new HashSet<Throwable>();
-        convert(root);
+        root.conversionErrors(conversionErrors);
 
         for (Throwable conversionError : conversionErrors) {
             LOGGER.debug("conversion error cause {}", conversionError.toString());
         }
 
         LOGGER.trace(printTree(root));
-    }
-
-    private void convert(FormNode node) {
-        Binder binder = node.getBinder();
-        if (binder == null) {
-            return;
-        }
-        ElementRef ref = binder.getElementRef();
-
-        if (binder.getType() == BinderType.STRING) {
-            List<String> values = node.getStringValues();
-            Conversion conversion = fromStringList(ref.element, values);
-            if (conversion.isError()) {
-                node.setConversionError(conversion.getCause());
-                conversionErrors.add(conversion.getCause());
-            }
-            else {
-                ref.accessor.set(conversion.getValue());
-            }
-        }
-        else {
-            for (FormNode child : node.getChildren()) {
-                convert(child);
-            }
-        }
     }
 
     private void validate() {
@@ -122,7 +100,7 @@ class BindForm<T> extends AbstractForm<T> {
 
     private static String printTree(FormNode root) {
         StringBuilder sb = new StringBuilder("\n");
-        root.print(sb, 0);
+        root.printTree(sb, 0);
         return sb.toString();
     }
 
@@ -159,61 +137,26 @@ class BindForm<T> extends AbstractForm<T> {
         final Path path = Path.createPath(param);
         final FormNode node = root.getDefinedChild(path);
 
-        final Binder binder = node.getBinder();
-        final ElementRef ref = (binder != null) ? binder.getElementRef() : ElementRef.NULL_REF;
-        final Element element = ref.element;
-        final Object elementValue = ref.accessor.get();
-
         return new Field() {
 
             @Override
             public Element getElement() {
-                if (ref != ElementRef.NULL_REF) {
-                    return element;
-                }
-                else {
-                    return null;
-                }
+                return node.getElement();
             }
 
             @Override
             public Object getObjectValue() {
-                if (ref != ElementRef.NULL_REF) {
-                    return elementValue;
-                }
-                else {
-                    return null;
-                }
+                return node.getObjectValue();
             }
 
             @Override
             public String getValue() {
-                if (ref != ElementRef.NULL_REF) {
-                    if (node.isError()) {
-                        return Utils.getFirst(node.getStringValues());
-                    }
-                    else {
-                        return toStringValue(element, elementValue);
-                    }
-                }
-                else {
-                    return null;
-                }
+                return node.getValue(form);
             }
 
             @Override
             public List<String> getValues() {
-                if (ref != ElementRef.NULL_REF) {
-                    if (node.isError()) {
-                        return node.getStringValues();
-                    }
-                    else {
-                        return toStringList(element, elementValue);
-                    }
-                }
-                else {
-                    return Collections.emptyList();
-                }
+                return node.getValues(form);
             }
 
             @Override

@@ -1,6 +1,7 @@
 package samson.form;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -9,10 +10,13 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
+import samson.Element;
 import samson.bind.Binder;
 import samson.bind.BinderNode;
+import samson.bind.BinderType;
 import samson.form.Property.Node;
 import samson.form.Property.Path;
+import samson.metadata.ElementRef;
 
 public class FormNode implements BinderNode<FormNode> {
 
@@ -118,12 +122,12 @@ public class FormNode implements BinderNode<FormNode> {
         this.stringValues = values;
     }
 
-    public Throwable getConversionError() {
-        return conversionError;
+    public boolean isConversionError() {
+        return (conversionError != null);
     }
 
-    public void setConversionError(Throwable conversionError) {
-        this.conversionError = conversionError;
+    public Throwable getConversionError() {
+        return conversionError;
     }
 
     public Set<ConstraintViolation<?>> getConstraintViolations() {
@@ -134,8 +138,75 @@ public class FormNode implements BinderNode<FormNode> {
         constraintViolations.add(constraintViolation);
     }
 
+    // -- Node Computations
+
+    public void convert(AbstractForm<?> form) {
+        if (binder != null) {
+            if (binder.getType() == BinderType.STRING) {
+                ElementRef ref = binder.getElementRef();
+                Conversion conversion = form.fromStringList(ref.element, stringValues);
+                if (conversion.isError()) {
+                    conversionError = conversion.getCause();
+                }
+                else {
+                    ref.accessor.set(conversion.getValue());
+                }
+            }
+        }
+    }
+
+    public Element getElement() {
+        if (binder != null) {
+            ElementRef ref = binder.getElementRef();
+            return ref.element;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public Object getObjectValue() {
+        if (binder != null) {
+            ElementRef ref = binder.getElementRef();
+            return ref.accessor.get();
+        }
+        else {
+            return null;
+        }
+    }
+
+    public String getValue(AbstractForm<?> form) {
+        if (isConversionError()) {
+            return Utils.getFirst(stringValues);
+        }
+        else {
+            if (binder != null) {
+                ElementRef ref = binder.getElementRef();
+                return form.toStringValue(ref.element, ref.accessor.get());
+            }
+            else {
+                return null;
+            }
+        }
+    }
+
+    public List<String> getValues(AbstractForm<?> form) {
+        if (isConversionError()) {
+            return stringValues;
+        }
+        else {
+            if (binder != null) {
+                ElementRef ref = binder.getElementRef();
+                return form.toStringList(ref.element, ref.accessor.get());
+            }
+            else {
+                return Collections.emptyList();
+            }
+        }
+    }
+
     public boolean isError() {
-        if (conversionError != null) {
+        if (isConversionError()) {
             return true;
         }
         if (constraintViolations.size() > 0) {
@@ -144,10 +215,28 @@ public class FormNode implements BinderNode<FormNode> {
         return false;
     }
 
-    // -- Visitor or Functional
+    // -- Tree Computations (visitor / functional)
+
+    public void convertTree(AbstractForm<?> form) {
+        convert(form);
+
+        for (FormNode child : children.values()) {
+            child.convertTree(form);
+        }
+    }
+
+    public void conversionErrors(Set<Throwable> conversionErrors) {
+        if (isConversionError()) {
+            conversionErrors.add(conversionError);
+        }
+
+        for (FormNode child : children.values()) {
+            child.conversionErrors(conversionErrors);
+        }
+    }
 
     public boolean hasErrors() {
-        if (this.isError()) {
+        if (isError()) {
             return true;
         }
 
@@ -160,9 +249,9 @@ public class FormNode implements BinderNode<FormNode> {
         return false;
     }
 
-    public void print(StringBuilder sb, int indent) {
+    public void printTree(StringBuilder sb, int indent) {
 
-        boolean error = (conversionError != null);
+        boolean error = isConversionError();
         sb.append("[").append(error ? "X" : " ").append("] ");
 
         int size = constraintViolations.size();
@@ -175,7 +264,7 @@ public class FormNode implements BinderNode<FormNode> {
         sb.append(s).append("\n");
 
         for (FormNode child : children.values()) {
-            child.print(sb, indent + s.length());
+            child.printTree(sb, indent + s.length());
         }
     }
 

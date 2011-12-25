@@ -40,15 +40,13 @@ class WrapForm<T> extends AbstractForm<T> {
     @Override
     public Field getField(final String param) {
         final ElementRef ref = getElementRef(param);
-        final Element element = ref.element;
-        final Object elementValue = ref.accessor.get();
 
         return new Field() {
 
             @Override
             public Element getElement() {
                 if (ref != ElementRef.NULL_REF) {
-                    return element;
+                    return ref.element;
                 }
                 else {
                     return null;
@@ -58,7 +56,7 @@ class WrapForm<T> extends AbstractForm<T> {
             @Override
             public Object getObjectValue() {
                 if (ref != ElementRef.NULL_REF) {
-                    return elementValue;
+                    return ref.accessor.get();
                 }
                 else {
                     return null;
@@ -68,7 +66,7 @@ class WrapForm<T> extends AbstractForm<T> {
             @Override
             public String getValue() {
                 if (ref != ElementRef.NULL_REF) {
-                    return toStringValue(element, elementValue);
+                    return toStringValue(ref.element, ref.accessor.get());
                 }
                 else {
                     return null;
@@ -78,7 +76,7 @@ class WrapForm<T> extends AbstractForm<T> {
             @Override
             public List<String> getValues() {
                 if (ref != ElementRef.NULL_REF) {
-                    return toStringList(element, elementValue);
+                    return toStringList(ref.element, ref.accessor.get());
                 }
                 else {
                     return Collections.emptyList();
