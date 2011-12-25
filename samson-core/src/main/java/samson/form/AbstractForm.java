@@ -176,7 +176,7 @@ abstract class AbstractForm<T> implements JForm<T> {
 
             @Override
             public List<String> getValidationInfos() {
-                return Collections.emptyList();
+                return getDefaultValidationInfos();
             }
 
             @Override
@@ -205,7 +205,6 @@ abstract class AbstractForm<T> implements JForm<T> {
                 }
             }
 
-            @SuppressWarnings("unused")
             private List<String> getDefaultValidationInfos() {
                 ElementDescriptor element = getValidationElement(param);
                 if (element != null) {
@@ -224,7 +223,7 @@ abstract class AbstractForm<T> implements JForm<T> {
         };
     }
 
-    protected ElementRef getElementRef(String param) {
+    protected ElementRef elementRef(String param) {
         ElementRef ref = parameterRef;
 
         Path path = Path.createPath(param);
@@ -240,8 +239,13 @@ abstract class AbstractForm<T> implements JForm<T> {
         return ref;
     }
 
+    private String normalParam(String param) {
+        // TODO: e.g. user[username] to user.username
+        return param;
+    }
+
     private Element getConversionElement(String param) {
-        ElementRef ref = getElementRef(param);
+        ElementRef ref = elementRef(param);
         if (ref != null) {
             return ref.element;
         }
@@ -251,15 +255,24 @@ abstract class AbstractForm<T> implements JForm<T> {
     }
 
     private ElementDescriptor getValidationElement(String param) {
+        Validator validator = validatorFactory.getValidator();
         Class<?> clazz = parameter.tcp.c;
 
-        // XXX must translate parameter name to javax.validation format: e.g user[username] vs. user.username
-        // XXX must check for root bean
-
-        Validator validator = validatorFactory.getValidator();
-        BeanDescriptor bean = validator.getConstraintsForClass(clazz);
-        PropertyDescriptor property = bean.getConstraintsForProperty(param);
-        return property;
+        if (Utils.isNullOrEmpty(param)) {
+            BeanDescriptor bean = validator.getConstraintsForClass(clazz);
+            return bean;
+        }
+        else {
+            String normalParam = normalParam(param);
+            if (normalParam != null) {
+                BeanDescriptor bean = validator.getConstraintsForClass(clazz);
+                PropertyDescriptor property = bean.getConstraintsForProperty(normalParam);
+                return property;
+            }
+            else {
+                return null;
+            }
+        }
     }
 
     protected String toStringValue(Element element, Object value) {

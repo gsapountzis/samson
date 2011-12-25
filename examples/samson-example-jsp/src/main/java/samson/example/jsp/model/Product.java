@@ -13,7 +13,7 @@ public class Product {
     public Long id;
 
     @NotEmpty
-    @Size(max = 20)
+    @Size(max = 40)
     public String code;
 
     public String name;

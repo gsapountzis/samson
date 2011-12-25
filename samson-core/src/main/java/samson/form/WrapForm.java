@@ -40,7 +40,7 @@ class WrapForm<T> extends AbstractForm<T> {
 
     @Override
     public Field getField(final String param) {
-        final ElementRef ref = getElementRef(param);
+        final ElementRef ref = elementRef(param);
 
         return new Field() {
 

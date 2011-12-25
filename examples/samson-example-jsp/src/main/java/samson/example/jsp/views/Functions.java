@@ -13,7 +13,15 @@ public class Functions {
         return form.path(path);
     }
 
-    public static String messages(Object object) {
+    public static String infos(Object object) {
+        Field field = castField(object);
+        Messages messages = field.getMessages();
+
+        String conversionInfo = messages.getConversionInfo();
+        return join(join(conversionInfo, messages.getValidationInfos()), messages.getInfos());
+    }
+
+    public static String errors(Object object) {
         Field field = castField(object);
         Messages messages = field.getMessages();
 
