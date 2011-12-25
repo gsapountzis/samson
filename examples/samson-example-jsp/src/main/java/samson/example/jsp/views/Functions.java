@@ -52,7 +52,7 @@ public class Functions {
     }
 
     private static String join(String string, List<String> list, String separator) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         if (!(string == null || string.isEmpty())) {
             sb.append(string);
