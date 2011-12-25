@@ -17,4 +17,9 @@ public class Customer implements Identifiable<Long> {
         return id;
     }
 
+    @Override
+    public boolean isIdValid() {
+        return (id != null) && (id > 0);
+    }
+
 }

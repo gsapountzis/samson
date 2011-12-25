@@ -15,7 +15,7 @@ public class Order implements Identifiable<Long> {
     public Long id;
 
     @NotNull
-    @NotNullId
+    @ValidId
     public Customer customer;
 
     @NotEmpty
@@ -35,6 +35,11 @@ public class Order implements Identifiable<Long> {
     @Override
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public boolean isIdValid() {
+        return (id != null) && (id > 0);
     }
 
 }

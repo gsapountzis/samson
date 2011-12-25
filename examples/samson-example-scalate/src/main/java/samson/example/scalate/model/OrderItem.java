@@ -8,7 +8,7 @@ public class OrderItem {
     public Order order;
 
     @NotNull
-    @NotNullId(message = "must select a product")
+    @ValidId(message = "must select a product")
     public Product product;
 
     @NotNull
