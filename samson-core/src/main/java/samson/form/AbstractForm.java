@@ -14,10 +14,8 @@ import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.ElementDescriptor;
 import javax.validation.metadata.PropertyDescriptor;
 
-import samson.Conversion;
 import samson.Element;
 import samson.JForm;
-import samson.TypeClassPair;
 import samson.bind.Binder;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterException;
@@ -32,8 +30,6 @@ abstract class AbstractForm<T> implements JForm<T> {
     protected final AbstractForm<T> form = this;
 
     protected final Element parameter;
-    protected T parameterValue;
-
     protected final ElementAccessor parameterAccessor = new ElementAccessor() {
 
         @Override
@@ -48,6 +44,7 @@ abstract class AbstractForm<T> implements JForm<T> {
         }
 
     };
+    protected T parameterValue;
 
     protected ConverterProvider converterProvider;
     protected BinderFactory binderFactory;
@@ -193,12 +190,13 @@ abstract class AbstractForm<T> implements JForm<T> {
 
             private String getDefaultConversionInfo() {
                 ElementRef ref = getElementRef(param);
-                if (ref == ElementRef.NULL_REF) {
+                if (ref != ElementRef.NULL_REF) {
+                    String message = ref.element.tcp.c.getSimpleName();
+                    return message;
+                }
+                else {
                     return null;
                 }
-
-                String message = ref.element.tcp.c.getSimpleName();
-                return message;
             }
 
             @SuppressWarnings("unused")
@@ -235,19 +233,6 @@ abstract class AbstractForm<T> implements JForm<T> {
         return ref;
     }
 
-    protected Conversion conversionFromElement(ElementRef ref) {
-        if (ref != ElementRef.NULL_REF) {
-            return Conversion.fromValue(
-                    ref.element.annotations,
-                    ref.element.tcp.t,
-                    ref.element.tcp.c,
-                    ref.accessor.get());
-        }
-        else {
-            return null;
-        }
-    }
-
     private ElementDescriptor getValidationElement(String param) {
         Class<?> clazz = parameter.tcp.c;
 
@@ -260,20 +245,20 @@ abstract class AbstractForm<T> implements JForm<T> {
         return property;
     }
 
-    protected String toStringValue(Conversion conversion) {
-        return Utils.getFirst(toStringList(conversion));
+    protected String toStringValue(Element element, Object value) {
+        return Utils.getFirst(toStringList(element, value));
     }
 
-    protected List<String> toStringList(Conversion conversion) {
+    protected List<String> toStringList(Element element, Object value) {
 
         @SuppressWarnings("unchecked")
         MultivaluedConverter<Object> extractor = (MultivaluedConverter<Object>) converterProvider.getMultivalued(
-                conversion.getType(),
-                conversion.getRawType(),
-                conversion.getAnnotations());
+                element.tcp.t,
+                element.tcp.c,
+                element.annotations);
 
         if (extractor != null) {
-            return extractor.toStringList(conversion.getValue());
+            return extractor.toStringList(value);
         }
         else {
             return Collections.emptyList();
@@ -290,15 +275,13 @@ abstract class AbstractForm<T> implements JForm<T> {
                 element.defaultValue);
 
         if (extractor != null) {
-            Annotation[] annotations = element.annotations;
-            TypeClassPair tcp = element.tcp;
             try {
                 Object value = extractor.fromStringList(values);
-                return Conversion.fromValue(annotations, tcp.t, tcp.c, value);
+                return Conversion.fromValue(value);
             }
             catch (ConverterException ex) {
                 Throwable cause = ex.getCause();
-                return Conversion.fromError(annotations, tcp.t, tcp.c, cause);
+                return Conversion.fromError(cause);
             }
         }
         else {

@@ -6,7 +6,6 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-import samson.Conversion;
 import samson.Element;
 import samson.metadata.ElementRef;
 
@@ -27,12 +26,12 @@ class WrapForm<T> extends AbstractForm<T> {
     }
 
     @Override
-    public List<Conversion> getConversionErrors() {
-        return Collections.emptyList();
+    public Set<Throwable> getConversionErrors() {
+        return Collections.emptySet();
     }
 
     @Override
-    public Set<ConstraintViolation<T>> getViolations() {
+    public Set<ConstraintViolation<T>> getConstraintViolations() {
         return Collections.emptySet();
     }
 
@@ -41,40 +40,49 @@ class WrapForm<T> extends AbstractForm<T> {
     @Override
     public Field getField(final String param) {
         final ElementRef ref = getElementRef(param);
-        final Conversion binding = conversionFromElement(ref);
+        final Element element = ref.element;
+        final Object elementValue = ref.accessor.get();
 
         return new Field() {
 
             @Override
-            public String getName() {
-                return param;
+            public Element getElement() {
+                if (ref != ElementRef.NULL_REF) {
+                    return element;
+                }
+                else {
+                    return null;
+                }
             }
 
             @Override
             public Object getObjectValue() {
-                if (binding == null) {
+                if (ref != ElementRef.NULL_REF) {
+                    return elementValue;
+                }
+                else {
                     return null;
                 }
-
-                return binding.getValue();
             }
 
             @Override
             public String getValue() {
-                if (binding == null) {
+                if (ref != ElementRef.NULL_REF) {
+                    return toStringValue(element, elementValue);
+                }
+                else {
                     return null;
                 }
-
-                return toStringValue(binding);
             }
 
             @Override
             public List<String> getValues() {
-                if (binding == null) {
-                    return null;
+                if (ref != ElementRef.NULL_REF) {
+                    return toStringList(element, elementValue);
                 }
-
-                return toStringList(binding);
+                else {
+                    return Collections.emptyList();
+                }
             }
 
             @Override
@@ -83,12 +91,12 @@ class WrapForm<T> extends AbstractForm<T> {
             }
 
             @Override
-            public Conversion getConversion() {
-                return binding;
+            public Throwable getConversionError() {
+                return null;
             }
 
             @Override
-            public Set<ConstraintViolation<?>> getViolations() {
+            public Set<ConstraintViolation<?>> getConstraintViolations() {
                 return Collections.emptySet();
             }
 

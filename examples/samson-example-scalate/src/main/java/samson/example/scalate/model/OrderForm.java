@@ -3,6 +3,7 @@ package samson.example.scalate.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import samson.ForwardingForm;
 import samson.JForm;
 
 public class OrderForm extends ForwardingForm<Order> {

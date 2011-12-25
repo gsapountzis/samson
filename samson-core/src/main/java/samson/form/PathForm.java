@@ -1,11 +1,9 @@
 package samson.form;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-import samson.Conversion;
 import samson.JForm;
 
 class PathForm implements JForm<Object> {
@@ -31,12 +29,12 @@ class PathForm implements JForm<Object> {
     }
 
     @Override
-    public List<Conversion> getConversionErrors() {
+    public Set<Throwable> getConversionErrors() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Set<ConstraintViolation<Object>> getViolations() {
+    public Set<ConstraintViolation<Object>> getConstraintViolations() {
         throw new UnsupportedOperationException();
     }
 

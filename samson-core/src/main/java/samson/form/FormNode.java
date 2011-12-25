@@ -9,7 +9,6 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-import samson.Conversion;
 import samson.bind.Binder;
 import samson.bind.BinderNode;
 import samson.form.Property.Node;
@@ -25,16 +24,16 @@ public class FormNode implements BinderNode<FormNode> {
 
     private List<String> stringValues;
 
-    private Conversion conversion;
+    private Throwable conversionError;
 
-    private Set<ConstraintViolation<?>> violations;
+    private Set<ConstraintViolation<?>> constraintViolations;
 
     public FormNode(Node node) {
         this.node = node;
         this.children = new LinkedHashMap<Node, FormNode>();
 
-        this.conversion = null;
-        this.violations = new LinkedHashSet<ConstraintViolation<?>>();
+        this.conversionError = null;
+        this.constraintViolations = new LinkedHashSet<ConstraintViolation<?>>();
     }
 
     // -- Binder
@@ -119,27 +118,27 @@ public class FormNode implements BinderNode<FormNode> {
         this.stringValues = values;
     }
 
-    public Conversion getConversion() {
-        return conversion;
+    public Throwable getConversionError() {
+        return conversionError;
     }
 
-    public void setConversion(Conversion conversion) {
-        this.conversion = conversion;
+    public void setConversionError(Throwable conversionError) {
+        this.conversionError = conversionError;
     }
 
-    public Set<ConstraintViolation<?>> getViolations() {
-        return violations;
+    public Set<ConstraintViolation<?>> getConstraintViolations() {
+        return constraintViolations;
     }
 
-    public void addViolation(ConstraintViolation<?> violation) {
-        violations.add(violation);
+    public void addConstraintViolation(ConstraintViolation<?> constraintViolation) {
+        constraintViolations.add(constraintViolation);
     }
 
     public boolean isError() {
-        if (conversion != null && conversion.isError()) {
+        if (conversionError != null) {
             return true;
         }
-        if (violations.size() > 0) {
+        if (constraintViolations.size() > 0) {
             return true;
         }
         return false;
@@ -163,10 +162,10 @@ public class FormNode implements BinderNode<FormNode> {
 
     public void print(StringBuilder sb, int indent) {
 
-        boolean error = (conversion != null) && conversion.isError();
+        boolean error = (conversionError != null);
         sb.append("[").append(error ? "X" : " ").append("] ");
 
-        int size = violations.size();
+        int size = constraintViolations.size();
         sb.append("[").append((size > 0) ? size : " ").append("] ");
 
         for (int i = 0; i < indent; i++) {

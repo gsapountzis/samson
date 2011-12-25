@@ -2,6 +2,7 @@ package samson.form;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -11,7 +12,6 @@ import javax.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import samson.Conversion;
 import samson.Element;
 import samson.JForm;
 import samson.bind.Binder;
@@ -30,8 +30,8 @@ class BindForm<T> extends AbstractForm<T> {
 
     private final FormNode root;
 
-    private List<Conversion> conversionErrors = Collections.emptyList();
-    private Set<ConstraintViolation<T>> violations = Collections.emptySet();
+    private Set<Throwable> conversionErrors = Collections.emptySet();
+    private Set<ConstraintViolation<T>> constraintViolations = Collections.emptySet();
 
     public BindForm(Element parameter, T parameterValue, FormNode root) {
         super(parameter, parameterValue);
@@ -56,11 +56,11 @@ class BindForm<T> extends AbstractForm<T> {
         binder.read(root);
         root.setBinder(binder);
 
-        conversionErrors = new ArrayList<Conversion>();
+        conversionErrors = new HashSet<Throwable>();
         convert(root);
 
-        for (Conversion conversion : conversionErrors) {
-            LOGGER.debug("conversion error cause {}", conversion.getCause().toString());
+        for (Throwable conversionError : conversionErrors) {
+            LOGGER.debug("conversion error cause {}", conversionError.toString());
         }
 
         LOGGER.trace(printTree(root));
@@ -76,17 +76,15 @@ class BindForm<T> extends AbstractForm<T> {
         if (binder.getType() == BinderType.STRING) {
             List<String> values = node.getStringValues();
             Conversion conversion = fromStringList(ref.element, values);
-            node.setConversion(conversion);
             if (conversion.isError()) {
-                conversionErrors.add(conversion);
+                node.setConversionError(conversion.getCause());
+                conversionErrors.add(conversion.getCause());
             }
             else {
                 ref.accessor.set(conversion.getValue());
             }
         }
         else {
-            Conversion conversion = conversionFromElement(ref);
-            node.setConversion(conversion);
             for (FormNode child : node.getChildren()) {
                 convert(child);
             }
@@ -101,14 +99,14 @@ class BindForm<T> extends AbstractForm<T> {
         Validator validator = validatorFactory.getValidator();
 
         if (parameterValue != null) {
-            violations = validator.validate(parameterValue);
+            constraintViolations = validator.validate(parameterValue);
         }
 
-        for (ConstraintViolation<T> violation : violations) {
+        for (ConstraintViolation<T> violation : constraintViolations) {
             LOGGER.debug("{}: {}", violation.getPropertyPath(), violation.getMessage());
         }
 
-        for (ConstraintViolation<T> violation : violations) {
+        for (ConstraintViolation<T> violation : constraintViolations) {
             // parse and normalize the validation property path
             javax.validation.Path validationPath = violation.getPropertyPath();
             String param = validationPath.toString();
@@ -116,7 +114,7 @@ class BindForm<T> extends AbstractForm<T> {
 
             // annotate the form tree with violations
             FormNode node = root.getDefinedChild(path);
-            node.addViolation(violation);
+            node.addConstraintViolation(violation);
         }
 
         LOGGER.trace(printTree(root));
@@ -135,7 +133,7 @@ class BindForm<T> extends AbstractForm<T> {
         if (conversionErrors.size() > 0) {
             return true;
         }
-        if (violations.size() > 0) {
+        if (constraintViolations.size() > 0) {
             return true;
         }
         if (!errors.isEmpty()) {
@@ -145,13 +143,13 @@ class BindForm<T> extends AbstractForm<T> {
     }
 
     @Override
-    public List<Conversion> getConversionErrors() {
+    public Set<Throwable> getConversionErrors() {
         return conversionErrors;
     }
 
     @Override
-    public Set<ConstraintViolation<T>> getViolations() {
-        return violations;
+    public Set<ConstraintViolation<T>> getConstraintViolations() {
+        return constraintViolations;
     }
 
     // -- Field methods
@@ -160,49 +158,61 @@ class BindForm<T> extends AbstractForm<T> {
     public Field getField(final String param) {
         final Path path = Path.createPath(param);
         final FormNode node = root.getDefinedChild(path);
-        final Conversion binding = node.getConversion();
+
+        final Binder binder = node.getBinder();
+        final ElementRef ref = (binder != null) ? binder.getElementRef() : ElementRef.NULL_REF;
+        final Element element = ref.element;
+        final Object elementValue = ref.accessor.get();
 
         return new Field() {
 
             @Override
-            public String getName() {
-                return param;
+            public Element getElement() {
+                if (ref != ElementRef.NULL_REF) {
+                    return element;
+                }
+                else {
+                    return null;
+                }
             }
 
             @Override
             public Object getObjectValue() {
-                if (binding == null) {
+                if (ref != ElementRef.NULL_REF) {
+                    return elementValue;
+                }
+                else {
                     return null;
                 }
-
-                return binding.getValue();
             }
 
             @Override
             public String getValue() {
-                if (binding == null) {
-                    return null;
-                }
-
-                if (binding.isError()) {
-                    return Utils.getFirst(node.getStringValues());
+                if (ref != ElementRef.NULL_REF) {
+                    if (node.isError()) {
+                        return Utils.getFirst(node.getStringValues());
+                    }
+                    else {
+                        return toStringValue(element, elementValue);
+                    }
                 }
                 else {
-                    return toStringValue(binding);
+                    return null;
                 }
             }
 
             @Override
             public List<String> getValues() {
-                if (binding == null) {
-                    return null;
-                }
-
-                if (binding.isError()) {
-                    return node.getStringValues();
+                if (ref != ElementRef.NULL_REF) {
+                    if (node.isError()) {
+                        return node.getStringValues();
+                    }
+                    else {
+                        return toStringList(element, elementValue);
+                    }
                 }
                 else {
-                    return toStringList(binding);
+                    return Collections.emptyList();
                 }
             }
 
@@ -218,13 +228,13 @@ class BindForm<T> extends AbstractForm<T> {
             }
 
             @Override
-            public Conversion getConversion() {
-                return binding;
+            public Throwable getConversionError() {
+                return node.getConversionError();
             }
 
             @Override
-            public Set<ConstraintViolation<?>> getViolations() {
-                return node.getViolations();
+            public Set<ConstraintViolation<?>> getConstraintViolations() {
+                return node.getConstraintViolations();
             }
 
             @Override
@@ -250,14 +260,11 @@ class BindForm<T> extends AbstractForm<T> {
 
             @Override
             public String getConversionError() {
-                Conversion binding = node.getConversion();
-                if (binding == null) {
-                    return null;
-                }
+                Throwable conversionError = node.getConversionError();
 
-                if (binding.isError()) {
+                if (conversionError != null) {
                     String stringValue = Utils.getFirst(node.getStringValues());
-                    return getConversionErrorMessage(binding, stringValue);
+                    return getConversionErrorMessage(stringValue);
                 }
                 return null;
             }
@@ -269,10 +276,10 @@ class BindForm<T> extends AbstractForm<T> {
 
             @Override
             public List<String> getValidationErrors() {
-                Set<ConstraintViolation<?>> violations = node.getViolations();
+                Set<ConstraintViolation<?>> constraintViolations = node.getConstraintViolations();
 
                 List<String> messages = new ArrayList<String>();
-                for (ConstraintViolation<?> violation : violations) {
+                for (ConstraintViolation<?> violation : constraintViolations) {
                     messages.add(violation.getMessage());
                 }
                 return messages;
@@ -291,10 +298,10 @@ class BindForm<T> extends AbstractForm<T> {
         };
     }
 
-    private final static String CONVERSION_ERROR_MESSAGE_TEMPLATE = "cannot convert value '%s' to '%s'";
+    private final static String CONVERSION_ERROR_MESSAGE_TEMPLATE = "invalid value '%s'";
 
-    private static String getConversionErrorMessage(Conversion conversion, String value) {
-        return String.format(CONVERSION_ERROR_MESSAGE_TEMPLATE, value, conversion.getRawType().getSimpleName());
+    private static String getConversionErrorMessage(String value) {
+        return String.format(CONVERSION_ERROR_MESSAGE_TEMPLATE, value);
     }
 
 }

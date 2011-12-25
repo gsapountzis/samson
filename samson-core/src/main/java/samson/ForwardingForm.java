@@ -1,18 +1,14 @@
-package samson.example.scalate.model;
+package samson;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
-
-import samson.Conversion;
-import samson.JForm;
 
 public class ForwardingForm<T> implements JForm<T> {
 
     protected final JForm<T> delegate;
 
-    ForwardingForm(JForm<T> delegate) {
+    public ForwardingForm(JForm<T> delegate) {
         this.delegate = delegate;
     }
 
@@ -27,13 +23,18 @@ public class ForwardingForm<T> implements JForm<T> {
     }
 
     @Override
-    public List<Conversion> getConversionErrors() {
+    public Set<Throwable> getConversionErrors() {
         return delegate.getConversionErrors();
     }
 
     @Override
-    public Set<ConstraintViolation<T>> getViolations() {
-        return delegate.getViolations();
+    public Set<ConstraintViolation<T>> getConstraintViolations() {
+        return delegate.getConstraintViolations();
+    }
+
+    @Override
+    public String getPath() {
+        return delegate.getPath();
     }
 
     @Override
@@ -54,11 +55,6 @@ public class ForwardingForm<T> implements JForm<T> {
     @Override
     public JForm<?> index(int index) {
         return delegate.index(index);
-    }
-
-    @Override
-    public String getPath() {
-        return delegate.getPath();
     }
 
     @Override

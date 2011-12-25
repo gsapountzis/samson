@@ -46,8 +46,6 @@ import javax.validation.ConstraintViolation;
  */
 public interface JForm<T> {
 
-    // -- Form
-
     /**
      * Get the underlying Java object in a type-safe way.
      */
@@ -58,11 +56,14 @@ public interface JForm<T> {
      */
     boolean hasErrors();
 
-    List<Conversion> getConversionErrors();
+    Set<Throwable> getConversionErrors();
 
-    Set<ConstraintViolation<T>> getViolations();
+    Set<ConstraintViolation<T>> getConstraintViolations();
 
-    // -- Path
+    /**
+     * Get the root path of the sub-form.
+     */
+    String getPath();
 
     /**
      * Get the sub-form rooted at path.
@@ -74,10 +75,6 @@ public interface JForm<T> {
     JForm<?> index(String index);
 
     JForm<?> index(int index);
-
-    String getPath();
-
-    // -- Field
 
     /**
      * Get the field value for the root object of the form.
@@ -109,7 +106,7 @@ public interface JForm<T> {
      */
     public static interface Field {
 
-        String getName();
+        Element getElement();
 
         Object getObjectValue();
 
@@ -119,9 +116,9 @@ public interface JForm<T> {
 
         boolean isError();
 
-        Conversion getConversion();
+        Throwable getConversionError();
 
-        Set<ConstraintViolation<?>> getViolations();
+        Set<ConstraintViolation<?>> getConstraintViolations();
 
         Messages getMessages();
 
@@ -138,7 +135,7 @@ public interface JForm<T> {
 
         List<String> getValidationInfos();
 
-        List<String> getValidationErrors(); /* Violations */
+        List<String> getValidationErrors(); /* ConstraintViolations */
 
         List<String> getInfos();
 
