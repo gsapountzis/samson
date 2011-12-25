@@ -40,20 +40,14 @@ class BindForm<T> extends AbstractForm<T> {
     public JForm<T> apply() {
         Binder binder = binderFactory.getBinder(parameterRef, root.hasChildren());
         if (binder != Binder.NULL_BINDER) {
+            BinderType binderType = binder.getType();
+
             binder.read(root);
             root.setBinder(binder);
 
             convert();
 
-            /*
-             * validation of standard types (primitives, string, list, map) actually requires
-             * method validation (in addition to bean validation), we validate for strings
-             * in case of user-defined types that may be beans
-             */
-            BinderType binderType = binder.getType();
-            if (binderType == BinderType.STRING || binderType == BinderType.BEAN) {
-                validate();
-            }
+            validate(binderType);
         }
         return this;
     }
@@ -70,7 +64,14 @@ class BindForm<T> extends AbstractForm<T> {
         LOGGER.trace(printTree(root));
     }
 
-    private void validate() {
+    /**
+     * Validate form value.
+     * <p>
+     * Validation of parameter with standard types (primitives, string, list,
+     * map) actually requires method validation. We validate for beans as
+     * expected and strings in case of user-defined types that may be beans.
+     */
+    private void validate(BinderType binderType) {
         if (JForm.CONF_DISABLE_VALIDATION) {
             return;
         }
@@ -78,6 +79,10 @@ class BindForm<T> extends AbstractForm<T> {
             return;
         }
         if (parameterValue == null) {
+            return;
+        }
+
+        if ((binderType != BinderType.STRING) && (binderType != BinderType.BEAN)) {
             return;
         }
 
