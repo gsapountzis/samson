@@ -13,10 +13,6 @@ import com.sun.jersey.spi.StringReader;
 
 class JerseyConverters {
 
-    public static boolean isNullOrEmpty(String s) {
-        return (s == null || s.isEmpty());
-    }
-
     public static class StringConverter implements Converter<String> {
 
         @Override
@@ -45,7 +41,7 @@ class JerseyConverters {
             }
             catch(ExtractorContainerException ex) {
                 // handle empty as null, return default value
-                if (isNullOrEmpty(string)) {
+                if (Utils.isNullOrEmpty(string)) {
                     return delegate.fromString(null);
                 }
                 else {

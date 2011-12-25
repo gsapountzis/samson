@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -16,6 +15,8 @@ import com.sun.jersey.spi.StringReader;
 import com.sun.jersey.spi.StringReaderWorkers;
 
 class JerseyConverterPredicate {
+
+    private static Annotation[] EMPTY_ANNOTATIONS = new Annotation[0];
 
     private StringReaderWorkers stringReaderProvider;
     private MultivaluedParameterExtractorProvider extractorProvider;
@@ -30,18 +31,17 @@ class JerseyConverterPredicate {
 
     private final ConcurrentMap<Integer, Boolean> resultCache = new ConcurrentHashMap<Integer, Boolean>();
 
-    private static int hashCode(Type type, Class<?> rawType, Annotation annotations[]) {
+    private static int hashCode(Type type, Class<?> rawType) {
         final int prime = 31;
         int result = 1;
-        result = prime * result + Arrays.hashCode(annotations);
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         result = prime * result + ((rawType == null) ? 0 : rawType.hashCode());
         return result;
     }
 
-    public boolean isStringType(Type type, Class<?> rawType, Annotation annotations[]) {
+    public boolean isStringType(Type type, Class<?> rawType) {
 
-        int hashCode = hashCode(type, rawType, annotations);
+        int hashCode = hashCode(type, rawType);
 
         // drop memo ?
         Boolean memo = resultCache.get(hashCode);
@@ -51,10 +51,10 @@ class JerseyConverterPredicate {
             if (isStringTypeByClass(rawType)) {
                 result = true;
             }
-            else if (isStringTypeByReader(type, rawType, annotations)) {
+            else if (isStringTypeByReader(type, rawType)) {
                 result = true;
             }
-            else if (isStringTypeByExtractor(type, rawType, annotations)) {
+            else if (isStringTypeByExtractor(type, rawType)) {
                 result = true;
             }
 
@@ -93,9 +93,9 @@ class JerseyConverterPredicate {
         return false;
     }
 
-    private boolean isStringTypeByReader(Type type, Class<?> rawType, Annotation annotations[]) {
+    private boolean isStringTypeByReader(Type type, Class<?> rawType) {
 
-        StringReader<?> stringReader = stringReaderProvider.getStringReader(rawType, type, annotations);
+        StringReader<?> stringReader = stringReaderProvider.getStringReader(rawType, type, EMPTY_ANNOTATIONS);
         if (stringReader != null) {
             return true;
         }
@@ -103,12 +103,9 @@ class JerseyConverterPredicate {
         return false;
     }
 
-    private boolean isStringTypeByExtractor(Type type, Class<?> rawType, Annotation annotations[]) {
-        if (annotations == null) {
-            annotations = new Annotation[0];
-        }
+    private boolean isStringTypeByExtractor(Type type, Class<?> rawType) {
 
-        Parameter parameter = new Parameter(annotations, null, null, null, type, rawType);
+        Parameter parameter = new Parameter(EMPTY_ANNOTATIONS, null, null, null, type, rawType);
 
         MultivaluedParameterExtractor extractor = extractorProvider.get(parameter);
         if (extractor != null) {

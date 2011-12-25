@@ -1,7 +1,5 @@
 package samson.jersey.convert;
 
-import static samson.jersey.convert.JerseyMultivaluedConverters.PARAMETER_NAME;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Date;
@@ -29,6 +27,8 @@ import com.sun.jersey.spi.StringReaderWorkers;
 
 public class JerseyConverterProvider implements ConverterProvider {
 
+    public static final String PARAMETER_NAME = "name";
+
     private final JerseyConverterPredicate stringTypePredicate;
     private StringReaderWorkers srw;
     private MultivaluedParameterExtractorProvider mpep;
@@ -52,8 +52,8 @@ public class JerseyConverterProvider implements ConverterProvider {
     // -- Conversion Predicate
 
     @Override
-    public boolean canConvert(Type type, Class<?> rawType, Annotation annotations[]) {
-        return stringTypePredicate.isStringType(type, rawType, annotations);
+    public boolean canConvert(Type type, Class<?> rawType) {
+        return stringTypePredicate.isStringType(type, rawType);
     }
 
     // -- Converter

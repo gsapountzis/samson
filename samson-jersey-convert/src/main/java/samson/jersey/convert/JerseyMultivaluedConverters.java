@@ -1,7 +1,5 @@
 package samson.jersey.convert;
 
-import static samson.jersey.convert.JerseyConverters.isNullOrEmpty;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,11 +14,9 @@ import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParamet
 
 class JerseyMultivaluedConverters {
 
-    public static final String PARAMETER_NAME = "name";
-
     private static Form form(List<String> stringList) {
         Form form = new Form();
-        form.put(PARAMETER_NAME, stringList);
+        form.put(JerseyConverterProvider.PARAMETER_NAME, stringList);
         return form;
     }
 
@@ -42,7 +38,7 @@ class JerseyMultivaluedConverters {
                 // handle empty as null, return default value
                 List<String> nullStringList = new ArrayList<String>(stringList.size());
                 for (String s : stringList) {
-                    nullStringList.add(isNullOrEmpty(s) ? null : s);
+                    nullStringList.add(Utils.isNullOrEmpty(s) ? null : s);
                 }
                 try {
                     return (T) delegate.extract(form(nullStringList));
