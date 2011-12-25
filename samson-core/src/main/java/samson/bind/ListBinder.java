@@ -28,6 +28,7 @@ class ListBinder extends Binder {
         Annotation[] annotations = ref.element.annotations;
         ListTcp listTcp = new ListTcp(ref.element.tcp);
         List<?> list = (List<?>) ref.accessor.get();
+
         if (list == null) {
             list = listTcp.createInstance();
             ref.accessor.set(list);
@@ -49,12 +50,14 @@ class ListBinder extends Binder {
     }
 
     @Override
-    public ElementRef getElementRef(String name) {
+    public ElementRef readChildRef(String childName) {
         Annotation[] annotations = ref.element.annotations;
         ListTcp listTcp = new ListTcp(ref.element.tcp);
         List<?> list = (List<?>) ref.accessor.get();
 
-        return getElementRef(annotations, listTcp, list, name);
+        ElementRef childRef = getElementRef(annotations, listTcp, list, childName);
+
+        return childRef;
     }
 
     private ElementRef getElementRef(Annotation[] annotations, ListTcp listTcp, List<?> list, String stringIndex) {

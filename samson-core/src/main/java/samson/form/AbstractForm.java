@@ -21,6 +21,7 @@ import samson.bind.BinderFactory;
 import samson.convert.ConverterException;
 import samson.convert.ConverterProvider;
 import samson.convert.MultivaluedConverter;
+import samson.form.Property.Node;
 import samson.form.Property.Path;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
@@ -30,20 +31,9 @@ abstract class AbstractForm<T> implements JForm<T> {
     protected final AbstractForm<T> form = this;
 
     protected final Element parameter;
-    protected final ElementAccessor parameterAccessor = new ElementAccessor() {
+    protected final ElementAccessor parameterAccessor;
+    protected final ElementRef parameterRef;
 
-        @Override
-        public Object get() {
-            return form.parameterValue;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void set(Object value) {
-            form.parameterValue = (T) value;
-        }
-
-    };
     protected T parameterValue;
 
     protected ConverterProvider converterProvider;
@@ -51,8 +41,24 @@ abstract class AbstractForm<T> implements JForm<T> {
     protected ValidatorFactory validatorFactory;
 
     public AbstractForm(Element parameter, T parameterValue) {
-        this.parameter = parameter;
         this.parameterValue = parameterValue;
+
+        this.parameter = parameter;
+        this.parameterAccessor = new ElementAccessor() {
+
+            @Override
+            public Object get() {
+                return form.parameterValue;
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public void set(Object value) {
+                form.parameterValue = (T) value;
+            }
+
+        };
+        this.parameterRef = new ElementRef(parameter, parameterAccessor);
     }
 
     public void setConverterProvider(ConverterProvider converterProvider) {
@@ -189,9 +195,9 @@ abstract class AbstractForm<T> implements JForm<T> {
             }
 
             private String getDefaultConversionInfo() {
-                ElementRef ref = getElementRef(param);
-                if (ref != ElementRef.NULL_REF) {
-                    String message = ref.element.tcp.c.getSimpleName();
+                Element element = getConversionElement(param);
+                if (element != null) {
+                    String message = element.tcp.c.getSimpleName();
                     return message;
                 }
                 else {
@@ -219,18 +225,29 @@ abstract class AbstractForm<T> implements JForm<T> {
     }
 
     protected ElementRef getElementRef(String param) {
-        ElementRef ref = new ElementRef(parameter, parameterAccessor);
+        ElementRef ref = parameterRef;
 
-        Property.Path path = Property.Path.createPath(param);
-        for (Property.Node node : path) {
+        Path path = Path.createPath(param);
+        for (Node node : path) {
+            String childName = node.getName();
+
             Binder binder = binderFactory.getBinder(ref, true);
-            ref = binder.getElementRef(node.getName());
+            ref = binder.readChildRef(childName);
             if (ref == ElementRef.NULL_REF) {
-                return ElementRef.NULL_REF;
+                return null;
             }
         }
-
         return ref;
+    }
+
+    private Element getConversionElement(String param) {
+        ElementRef ref = getElementRef(param);
+        if (ref != null) {
+            return ref.element;
+        }
+        else {
+            return null;
+        }
     }
 
     private ElementDescriptor getValidationElement(String param) {

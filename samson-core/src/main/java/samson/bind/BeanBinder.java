@@ -14,6 +14,7 @@ class BeanBinder extends Binder {
     public void read(BinderNode<?> node) {
         BeanTcp beanTcp = factory.getBeanTcp(ref.element.tcp);
         Object bean = ref.accessor.get();
+
         if (bean == null) {
             bean = beanTcp.createInstance();
             ref.accessor.set(bean);
@@ -35,13 +36,16 @@ class BeanBinder extends Binder {
     }
 
     @Override
-    public ElementRef getElementRef(String name) {
+    public ElementRef readChildRef(String childName) {
         BeanTcp beanTcp = factory.getBeanTcp(ref.element.tcp);
         Object bean = ref.accessor.get();
 
-        if (beanTcp.hasProperty(name)) {
-            BeanProperty property = beanTcp.getProperty(name);
-            return new ElementRef(property, property.createAccessor(bean));
+        if (beanTcp.hasProperty(childName)) {
+            BeanProperty property = beanTcp.getProperty(childName);
+
+            ElementRef childRef = new ElementRef(property, property.createAccessor(bean));
+
+            return childRef;
         }
         else {
             return ElementRef.NULL_REF;

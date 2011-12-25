@@ -30,6 +30,7 @@ class MapBinder extends Binder {
         Annotation[] annotations = ref.element.annotations;
         MapTcp mapTcp = new MapTcp(ref.element.tcp);
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
+
         if (map == null) {
             map = mapTcp.createInstance();
             ref.accessor.set(map);
@@ -51,12 +52,14 @@ class MapBinder extends Binder {
     }
 
     @Override
-    public ElementRef getElementRef(String name) {
+    public ElementRef readChildRef(String childName) {
         Annotation[] annotations = ref.element.annotations;
         MapTcp mapTcp = new MapTcp(ref.element.tcp);
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
 
-        return getElementRef(annotations, mapTcp, map, name);
+        ElementRef childRef = getElementRef(annotations, mapTcp, map, childName);
+
+        return childRef;
     }
 
     private ElementRef getElementRef(Annotation[] annotations, MapTcp mapTcp, Map<?,?> map, String stringKey) {

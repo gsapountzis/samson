@@ -13,7 +13,7 @@ class StringBinder extends Binder {
     }
 
     @Override
-    public ElementRef getElementRef(String name) {
+    public ElementRef readChildRef(String childName) {
         return ElementRef.NULL_REF;
     }
 

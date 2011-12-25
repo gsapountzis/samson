@@ -40,12 +40,10 @@ class BindForm<T> extends AbstractForm<T> {
     }
 
     public JForm<T> apply() {
-        ElementRef ref = new ElementRef(parameter, parameterAccessor);
+        ElementRef ref = parameterRef;
 
         Binder binder = binderFactory.getBinder(ref, root.hasChildren());
-        BinderType binderType = binder.getType();
-        if (binderType != BinderType.NULL) {
-
+        if (binder != Binder.NULL_BINDER) {
             binder.read(root);
             root.setBinder(binder);
 
@@ -56,6 +54,7 @@ class BindForm<T> extends AbstractForm<T> {
              * method validation (in addition to bean validation), we validate for strings
              * in case of user-defined types that may be beans
              */
+            BinderType binderType = binder.getType();
             if (binderType == BinderType.STRING || binderType == BinderType.BEAN) {
                 validate();
             }

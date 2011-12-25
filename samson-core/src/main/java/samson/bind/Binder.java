@@ -22,21 +22,21 @@ public abstract class Binder {
         return ref;
     }
 
-    public abstract ElementRef getElementRef(String name);
-
     public abstract void read(BinderNode<?> node);
 
 //  public abstract void write(BinderNode<?> node);
 
+    public abstract ElementRef readChildRef(String childName);
+
     public static final Binder NULL_BINDER = new Binder(null, BinderType.NULL, ElementRef.NULL_REF) {
 
         @Override
-        public ElementRef getElementRef(String name) {
-            return ElementRef.NULL_REF;
+        public void read(BinderNode<?> node) {
         }
 
         @Override
-        public void read(BinderNode<?> node) {
+        public ElementRef readChildRef(String childName) {
+            return ElementRef.NULL_REF;
         }
 
     };
