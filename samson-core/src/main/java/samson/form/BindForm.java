@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import samson.Element;
 import samson.JForm;
 import samson.bind.Binder;
+import samson.convert.ConverterException;
 import samson.form.Property.Path;
 import samson.metadata.ElementRef;
 
@@ -27,7 +28,7 @@ class BindForm<T> extends AbstractForm<T> {
 
     private final FormNode root;
 
-    private Set<Throwable> conversionErrors = Collections.emptySet();
+    private Set<ConverterException> conversionErrors = Collections.emptySet();
     private Set<ConstraintViolation<T>> constraintViolations = Collections.emptySet();
 
     public BindForm(Element parameter, T parameterValue, FormNode root) {
@@ -57,10 +58,10 @@ class BindForm<T> extends AbstractForm<T> {
     private void convert() {
         root.convertTree(form);
 
-        conversionErrors = new HashSet<Throwable>();
+        conversionErrors = new HashSet<ConverterException>();
         root.conversionErrors(conversionErrors);
 
-        for (Throwable conversionError : conversionErrors) {
+        for (ConverterException conversionError : conversionErrors) {
             LOGGER.debug("conversion error cause {}", conversionError.toString());
         }
 
@@ -123,7 +124,7 @@ class BindForm<T> extends AbstractForm<T> {
     }
 
     @Override
-    public Set<Throwable> getConversionErrors() {
+    public Set<ConverterException> getConversionErrors() {
         return conversionErrors;
     }
 
@@ -173,7 +174,7 @@ class BindForm<T> extends AbstractForm<T> {
             }
 
             @Override
-            public Throwable getConversionError() {
+            public ConverterException getConversionError() {
                 return node.getConversionError();
             }
 
@@ -205,9 +206,9 @@ class BindForm<T> extends AbstractForm<T> {
 
             @Override
             public String getConversionError() {
-                Throwable conversionError = node.getConversionError();
+                boolean error = node.isConversionError();
 
-                if (conversionError != null) {
+                if (error) {
                     String stringValue = Utils.getFirst(node.getStringValues());
                     return getConversionErrorMessage(stringValue);
                 }

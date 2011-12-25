@@ -14,6 +14,7 @@ import samson.Element;
 import samson.bind.Binder;
 import samson.bind.BinderNode;
 import samson.bind.BinderType;
+import samson.convert.ConverterException;
 import samson.form.Property.Node;
 import samson.form.Property.Path;
 import samson.metadata.ElementRef;
@@ -28,7 +29,7 @@ public class FormNode implements BinderNode<FormNode> {
 
     private List<String> stringValues;
 
-    private Throwable conversionError;
+    private ConverterException conversionError;
 
     private Set<ConstraintViolation<?>> constraintViolations;
 
@@ -126,7 +127,7 @@ public class FormNode implements BinderNode<FormNode> {
         return (conversionError != null);
     }
 
-    public Throwable getConversionError() {
+    public ConverterException getConversionError() {
         return conversionError;
     }
 
@@ -225,7 +226,7 @@ public class FormNode implements BinderNode<FormNode> {
         }
     }
 
-    public void conversionErrors(Set<Throwable> conversionErrors) {
+    public void conversionErrors(Set<ConverterException> conversionErrors) {
         if (isConversionError()) {
             conversionErrors.add(conversionError);
         }

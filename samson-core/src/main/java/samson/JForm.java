@@ -5,6 +5,8 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
+import samson.convert.ConverterException;
+
 /**
  * Facade over the binding and validation results that is compatible with the
  * JAX-RS programming model.
@@ -56,7 +58,7 @@ public interface JForm<T> {
      */
     boolean hasErrors();
 
-    Set<Throwable> getConversionErrors();
+    Set<ConverterException> getConversionErrors();
 
     Set<ConstraintViolation<T>> getConstraintViolations();
 
@@ -116,7 +118,7 @@ public interface JForm<T> {
 
         boolean isError();
 
-        Throwable getConversionError();
+        ConverterException getConversionError();
 
         Set<ConstraintViolation<?>> getConstraintViolations();
 

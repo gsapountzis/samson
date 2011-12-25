@@ -280,8 +280,7 @@ abstract class AbstractForm<T> implements JForm<T> {
                 return Conversion.fromValue(value);
             }
             catch (ConverterException ex) {
-                Throwable cause = ex.getCause();
-                return Conversion.fromError(cause);
+                return Conversion.fromError(ex);
             }
         }
         else {

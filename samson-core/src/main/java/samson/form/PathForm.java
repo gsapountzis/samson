@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 
 import samson.JForm;
+import samson.convert.ConverterException;
 
 class PathForm implements JForm<Object> {
 
@@ -29,7 +30,7 @@ class PathForm implements JForm<Object> {
     }
 
     @Override
-    public Set<Throwable> getConversionErrors() {
+    public Set<ConverterException> getConversionErrors() {
         throw new UnsupportedOperationException();
     }
 

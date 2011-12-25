@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 
 import samson.Element;
+import samson.convert.ConverterException;
 import samson.metadata.ElementRef;
 
 /**
@@ -26,7 +27,7 @@ class WrapForm<T> extends AbstractForm<T> {
     }
 
     @Override
-    public Set<Throwable> getConversionErrors() {
+    public Set<ConverterException> getConversionErrors() {
         return Collections.emptySet();
     }
 
@@ -89,7 +90,7 @@ class WrapForm<T> extends AbstractForm<T> {
             }
 
             @Override
-            public Throwable getConversionError() {
+            public ConverterException getConversionError() {
                 return null;
             }
 

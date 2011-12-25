@@ -4,6 +4,8 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
+import samson.convert.ConverterException;
+
 public class ForwardingForm<T> implements JForm<T> {
 
     protected final JForm<T> delegate;
@@ -23,7 +25,7 @@ public class ForwardingForm<T> implements JForm<T> {
     }
 
     @Override
-    public Set<Throwable> getConversionErrors() {
+    public Set<ConverterException> getConversionErrors() {
         return delegate.getConversionErrors();
     }
 

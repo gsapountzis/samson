@@ -1,5 +1,7 @@
 package samson.form;
 
+import samson.convert.ConverterException;
+
 /**
  * Data type conversion result: Either[Cause, Value]
  */
@@ -7,16 +9,16 @@ class Conversion {
 
     /** An error occured while setting the value to the target object */
     private final boolean error;
-    private final Throwable cause;
+    private final ConverterException cause;
     private final Object value;
 
-    private Conversion(boolean error, Throwable cause, Object value) {
+    private Conversion(boolean error, ConverterException cause, Object value) {
         this.error = error;
         this.cause = cause;
         this.value = value;
     }
 
-    public static Conversion fromError(Throwable cause) {
+    public static Conversion fromError(ConverterException cause) {
         return new Conversion(true, cause, null);
     }
 
@@ -28,7 +30,7 @@ class Conversion {
         return error;
     }
 
-    public Throwable getCause() {
+    public ConverterException getCause() {
         return cause;
     }
 

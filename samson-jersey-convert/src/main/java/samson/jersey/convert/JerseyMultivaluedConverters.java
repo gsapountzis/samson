@@ -51,7 +51,7 @@ class JerseyMultivaluedConverters {
                     // do nothing
                 }
 
-                throw new ConverterException(ex.getCause());
+                throw new ConverterException(ex.getMessage(), ex.getCause());
             }
         }
 
