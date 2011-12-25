@@ -16,7 +16,17 @@ object Functions {
 
   def isNullOrEmpty(s: String) = (s == null || s.isEmpty)
 
-  def messages(field: Field) = {
+  def infos(field: Field) = {
+    val messages = field.getMessages()
+
+    val conversionInfo = List(messages.getConversionInfo);
+    val validationInfos = messages.getValidationInfos.asScala.toList;
+    val infos = messages.getInfos.asScala.toList;
+
+    (conversionInfo ++ validationInfos ++ infos).filter(!isNullOrEmpty(_)).mkString(", ")
+  }
+
+  def errors(field: Field) = {
     val messages = field.getMessages()
 
     val conversionError = Option(messages.getConversionError);
@@ -25,6 +35,8 @@ object Functions {
 
     conversionError.getOrElse((validationErrors ++ errors).filter(!isNullOrEmpty(_)).mkString(", "))
   }
+
+  def messages(field: Field) = errors(field);
 
   def multiError(fields: Field*) = fields.map(_.isError).reduce(_ || _)
 

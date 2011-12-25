@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -179,11 +180,6 @@ abstract class AbstractForm<T> implements JForm<T> {
         return root;
     }
 
-    private String normalParam(String param) {
-        // TODO: e.g. user[username] to user.username
-        return param;
-    }
-
     String getDefaultConversionInfo(String param) {
         Element element = getConversionElement(param);
         if (element != null) {
@@ -196,18 +192,32 @@ abstract class AbstractForm<T> implements JForm<T> {
     }
 
     List<String> getDefaultValidationInfos(String param) {
-        ElementDescriptor element = getValidationElement(param);
+        List<String> messages = new ArrayList<String>();
+        ElementDescriptorTuple element = getValidationElement(param);
         if (element != null) {
-            List<String> messages = new ArrayList<String>();
+            getDefaultValidationInfos(messages, element.type);
+            getDefaultValidationInfos(messages, element.decl);
+        }
+        return messages;
+    }
+
+    private void getDefaultValidationInfos(List<String> messages, ElementDescriptor element) {
+        if (element != null) {
             for (ConstraintDescriptor<?> constraint : element.getConstraintDescriptors()) {
                 Annotation annotation = constraint.getAnnotation();
                 String message = annotation.annotationType().getSimpleName();
                 messages.add(message);
             }
-            return messages;
         }
-        else {
-            return Collections.emptyList();
+    }
+
+    private static class ElementDescriptorTuple {
+        final ElementDescriptor type;
+        final ElementDescriptor decl;
+
+        ElementDescriptorTuple(ElementDescriptor type, ElementDescriptor decl) {
+            this.type = type;
+            this.decl = decl;
         }
     }
 
@@ -218,24 +228,43 @@ abstract class AbstractForm<T> implements JForm<T> {
         return node.getElement();
     }
 
-    private ElementDescriptor getValidationElement(String param) {
+    private ElementDescriptorTuple getValidationElement(String param) {
         Validator validator = validatorFactory.getValidator();
-        Class<?> clazz = parameter.tcp.c;
 
-        if (Utils.isNullOrEmpty(param)) {
+        Path path = Path.createPath(param);
+        FormNode root = formPath(path);
+        FormNode node = root.getDefinedChild(path);
+        Element element = node.getElement();
+
+        if (element != null) {
+            Class<?> clazz = element.tcp.c;
             BeanDescriptor bean = validator.getConstraintsForClass(clazz);
-            return bean;
-        }
-        else {
-            String normalParam = normalParam(param);
-            if (normalParam != null) {
-                BeanDescriptor bean = validator.getConstraintsForClass(clazz);
-                PropertyDescriptor property = bean.getConstraintsForProperty(normalParam);
-                return property;
+
+            int length = path.size();
+            if (length == 0) {
+                return new ElementDescriptorTuple(bean, /* method parameter */ null);
             }
             else {
-                return null;
+                FormNode parent = root;
+                Iterator<Node> iter = path.iterator();
+                for (int i = 0; i < length - 1; i++) {
+                    parent = parent.getChild(iter.next());
+                }
+                FormNode child = parent.getChild(iter.next());
+                if (child != node) {
+                    throw new IllegalStateException();
+                }
+
+                Element parentElement = parent.getElement();
+                Class<?> parentClass = parentElement.tcp.c;
+                BeanDescriptor parentBean = validator.getConstraintsForClass(parentClass);
+                PropertyDescriptor property = parentBean.getConstraintsForProperty(child.getName());
+
+                return new ElementDescriptorTuple(bean, property);
             }
+        }
+        else {
+            return null;
         }
     }
 
