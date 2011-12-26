@@ -6,7 +6,7 @@
     <groupId>com.github.gsapountzis.samson</groupId>
     <artifactId>samson</artifactId>
     <packaging>pom</packaging>
-    <version>0.3</version>
+    <version>0.3-SNAPSHOT</version>
     <name>Samson</name>
 
     <modules>
@@ -31,6 +31,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
+
+    <scm>
+        <connection>scm:git:git://github.com/gsapountzis/samson.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:gsapountzis/samson.git</developerConnection>
+        <url>https://github.com/gsapountzis/samson/tree/master</url>
+    </scm>
 
     <dependencyManagement>
         <dependencies>
