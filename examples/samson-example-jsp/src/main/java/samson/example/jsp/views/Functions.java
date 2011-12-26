@@ -26,7 +26,7 @@ public class Functions {
         Messages messages = field.getMessages();
 
         String conversionError = messages.getConversionError();
-        if (!(conversionError == null || conversionError.isEmpty())) {
+        if (!isNullOrEmpty(conversionError)) {
             return conversionError;
         }
         else {
@@ -43,6 +43,10 @@ public class Functions {
         }
     }
 
+    private static boolean isNullOrEmpty(String s) {
+        return (s == null || s.isEmpty());
+    }
+
     private static String join(List<String> list) {
         return join(null, list, ", ");
     }
@@ -54,21 +58,19 @@ public class Functions {
     private static String join(String string, List<String> list, String separator) {
         StringBuilder sb = new StringBuilder();
 
-        if (!(string == null || string.isEmpty())) {
+        if (!isNullOrEmpty(string)) {
             sb.append(string);
-            if (!(list == null || list.isEmpty())) {
+            if (!list.isEmpty()) {
                 sb.append(separator);
             }
         }
 
-        if (list != null) {
-            Iterator<String> iter = list.iterator();
-            if (iter.hasNext()) {
+        Iterator<String> iter = list.iterator();
+        if (iter.hasNext()) {
+            sb.append(iter.next());
+            while (iter.hasNext()) {
+                sb.append(separator);
                 sb.append(iter.next());
-                while (iter.hasNext()) {
-                    sb.append(separator);
-                    sb.append(iter.next());
-                }
             }
         }
 
