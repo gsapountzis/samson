@@ -92,7 +92,7 @@ public class BinderFactory {
             }
         }
         else {
-            boolean isStringType = converterProvider.canConvert(tcp.t, tcp.c);
+            boolean isStringType = converterProvider.isConvertible(tcp.t, tcp.c);
             if (!isStringType) {
                 LOGGER.warn("String-based type {} does not have an extractor", clazz);
                 type = BinderType.NULL;

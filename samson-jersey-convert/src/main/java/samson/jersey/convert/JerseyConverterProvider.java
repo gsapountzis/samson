@@ -52,7 +52,7 @@ public class JerseyConverterProvider implements ConverterProvider {
     // -- Conversion Predicate
 
     @Override
-    public boolean canConvert(Type type, Class<?> rawType) {
+    public boolean isConvertible(Type type, Class<?> rawType) {
         return stringTypePredicate.isStringType(type, rawType);
     }
 
