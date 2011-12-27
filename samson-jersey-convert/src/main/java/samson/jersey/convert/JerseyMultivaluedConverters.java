@@ -20,7 +20,7 @@ class JerseyMultivaluedConverters {
         return form;
     }
 
-    public static class JerseyMultivaluedConverter<T> implements MultivaluedConverter<T> {
+    public static abstract class JerseyMultivaluedConverter<T> implements MultivaluedConverter<T> {
 
         final MultivaluedParameterExtractor delegate;
 
@@ -49,11 +49,6 @@ class JerseyMultivaluedConverters {
 
                 throw new ConverterException(ex.getMessage(), ex.getCause());
             }
-        }
-
-        @Override
-        public List<String> toStringList(T object) {
-            throw new UnsupportedOperationException();
         }
 
     }

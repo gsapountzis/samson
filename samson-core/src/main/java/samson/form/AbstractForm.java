@@ -74,62 +74,10 @@ abstract class AbstractForm<T> implements JForm<T> {
         this.validatorFactory = validatorFactory;
     }
 
-    @Override
-    public T get() {
-        return parameterValue;
-    }
-
-    // -- Path
-
-    @Override
-    public JForm<?> path(String path) {
-        return new PathForm(this, path);
-    }
-
-    @Override
-    public JForm<?> dot(String property) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JForm<?> index(String index) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public JForm<?> index(int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getPath() {
-        return null;
-    }
-
     // -- Messages
 
     final Map<Path, List<String>> infos = new HashMap<Path, List<String>>();
     final Map<Path, List<String>> errors = new HashMap<Path, List<String>>();
-
-    @Override
-    public void info(String msg) {
-        info(null, msg);
-    }
-
-    @Override
-    public void info(String path, String msg) {
-        message(infos, path, msg);
-    }
-
-    @Override
-    public void error(String msg) {
-        error(null, msg);
-    }
-
-    @Override
-    public void error(String path, String msg) {
-        message(errors, path, msg);
-    }
 
     static void message(Map<Path, List<String>> level, String param, String msg) {
         Path path = Path.createPath(param);
@@ -154,6 +102,50 @@ abstract class AbstractForm<T> implements JForm<T> {
         }
     }
 
+    // -- Form
+
+    @Override
+    public T get() {
+        return parameterValue;
+    }
+
+    @Override
+    public List<String> getInfos() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<String> getErrors() {
+        throw new UnsupportedOperationException();
+    }
+
+    // -- Path
+
+    @Override
+    public String getPath() {
+        return null;
+    }
+
+    @Override
+    public JForm<?> path(String path) {
+        return new PathForm(this, path);
+    }
+
+    @Override
+    public JForm<?> dot(String property) {
+        return new PathForm(this, property);
+    }
+
+    @Override
+    public JForm<?> index(String index) {
+        return new PathForm(this, "[" + index + "]");
+    }
+
+    @Override
+    public JForm<?> index(int index) {
+        return index(Integer.toString(index));
+    }
+
     // -- Field
 
     @Override
@@ -161,9 +153,31 @@ abstract class AbstractForm<T> implements JForm<T> {
         return getField(null);
     }
 
+    abstract Field getField(final String param);
+
     @Override
     public Messages getMessages() {
         return getMessages(null);
+    }
+
+    abstract Messages getMessages(final String param);
+
+    @Override
+    public void info(String msg) {
+        info(null, msg);
+    }
+
+    public void info(String path, String msg) {
+        message(infos, path, msg);
+    }
+
+    @Override
+    public void error(String msg) {
+        error(null, msg);
+    }
+
+    public void error(String path, String msg) {
+        message(errors, path, msg);
     }
 
     FormNode formPath(Path path) {
@@ -179,6 +193,8 @@ abstract class AbstractForm<T> implements JForm<T> {
 
         return root;
     }
+
+    // -- Default Messages
 
     String getDefaultConversionInfo(String param) {
         Element element = getConversionElement(param);

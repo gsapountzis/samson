@@ -3,18 +3,22 @@ package samson.example.scalate.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import samson.ForwardingForm;
 import samson.JForm;
+import samson.form.ForwardingForm;
 
 public class OrderForm extends ForwardingForm<Order> {
 
     private final JForm<Order> orderForm;
     private final JForm<?> itemsForm;
 
-    public OrderForm(JForm<Order> delegate) {
-        super(delegate);
-        this.orderForm = delegate;
-        this.itemsForm = orderForm.path("items");
+    public OrderForm(JForm<Order> orderForm) {
+        this.orderForm = orderForm;
+        this.itemsForm = orderForm.dot("items");
+    }
+
+    @Override
+    protected JForm<Order> delegate() {
+        return orderForm;
     }
 
     /**

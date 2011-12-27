@@ -8,95 +8,89 @@ import javax.validation.ConstraintViolation;
 import samson.JForm;
 import samson.convert.ConverterException;
 
-class PathForm implements JForm<Object> {
+public abstract class ForwardingForm<T> implements JForm<T> {
 
-    private final AbstractForm<?> delegate;
-    private final String path;
-
-    PathForm(AbstractForm<?> delegate, String path) {
-        this.delegate = delegate;
-        this.path = path;
-    }
+    protected abstract JForm<T> delegate();
 
     // -- Form
 
     @Override
-    public Object get() {
-        throw new UnsupportedOperationException();
+    public T get() {
+        return delegate().get();
     }
 
     @Override
     public boolean hasErrors() {
-        throw new UnsupportedOperationException();
+        return delegate().hasErrors();
     }
 
     @Override
     public Set<ConverterException> getConversionErrors() {
-        throw new UnsupportedOperationException();
+        return delegate().getConversionErrors();
     }
 
     @Override
-    public Set<ConstraintViolation<Object>> getConstraintViolations() {
-        throw new UnsupportedOperationException();
+    public Set<ConstraintViolation<T>> getConstraintViolations() {
+        return delegate().getConstraintViolations();
     }
 
     @Override
     public List<String> getInfos() {
-        throw new UnsupportedOperationException();
+        return delegate().getInfos();
     }
 
     @Override
     public List<String> getErrors() {
-        throw new UnsupportedOperationException();
+        return delegate().getErrors();
     }
 
     // -- Path
 
     @Override
     public String getPath() {
-        return path;
+        return delegate().getPath();
     }
 
     @Override
     public JForm<?> path(String path) {
-        return new PathForm(delegate, path);
+        return delegate().path(path);
     }
 
     @Override
     public JForm<?> dot(String property) {
-        return new PathForm(delegate, path + "." + property);
+        return delegate().dot(property);
     }
 
     @Override
     public JForm<?> index(String index) {
-        return new PathForm(delegate, path + "[" + index + "]");
+        return delegate().index(index);
     }
 
     @Override
     public JForm<?> index(int index) {
-        return index(Integer.toString(index));
+        return delegate().index(index);
     }
 
     // -- Field
 
     @Override
     public Field getField() {
-        return delegate.getField(path);
+        return delegate().getField();
     }
 
     @Override
     public Messages getMessages() {
-        return delegate.getMessages(path);
+        return delegate().getMessages();
     }
 
     @Override
     public void info(String msg) {
-        delegate.info(path, msg);
+        delegate().info(msg);
     }
 
     @Override
     public void error(String msg) {
-        delegate.error(path, msg);
+        delegate().error(msg);
     }
 
 }

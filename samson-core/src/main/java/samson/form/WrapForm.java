@@ -23,6 +23,9 @@ class WrapForm<T> extends AbstractForm<T> {
 
     @Override
     public boolean hasErrors() {
+        if (!errors.isEmpty()) {
+            return true;
+        }
         return false;
     }
 
@@ -68,6 +71,9 @@ class WrapForm<T> extends AbstractForm<T> {
 
             @Override
             public boolean isError() {
+                if (errors.containsKey(path)) {
+                    return true;
+                }
                 return false;
             }
 

@@ -49,62 +49,85 @@ import samson.convert.ConverterException;
 public interface JForm<T> {
 
     /**
-     * Get the underlying Java object in a type-safe way.
+     * Get the underlying object in a type-safe way.
      */
     T get();
 
     /**
-     * Returns <code>true<code> if the form tree has any error.
+     * Returns <code>true<code> if the form has any error.
      */
     boolean hasErrors();
 
+    /**
+     * Get all the conversion errors of the form.
+     */
     Set<ConverterException> getConversionErrors();
 
+    /**
+     * Get all the constraint violations of the form.
+     */
     Set<ConstraintViolation<T>> getConstraintViolations();
 
     /**
-     * Get the sub-form rooted at path.
+     * Get all the info messages of the form.
+     */
+    List<String> getInfos();
+
+    /**
+     * Get all the error messages of the form.
+     */
+    List<String> getErrors();
+
+    /**
+     * Get the root path of the form.
+     */
+    String getPath();
+
+    /**
+     * Get the form rooted at path.
      */
     JForm<?> path(String path);
 
+    /**
+     * Get the form for a child property.
+     */
     JForm<?> dot(String property);
 
+    /**
+     * Get the form for a child index.
+     */
     JForm<?> index(String index);
 
-    JForm<?> index(int index);
-
     /**
-     * Get the root path of the sub-form.
+     * Get the form for a child index.
      */
-    String getPath();
+    JForm<?> index(int index);
 
     /**
      * Get the field value for the root object of the form.
      */
     Field getField();
 
-    Field getField(String path);
-
     /**
      * Get the messages for the root object of the form.
      */
     Messages getMessages();
 
-    Messages getMessages(String path);
-
+    /**
+     * Add an info message for the root object of the form.
+     */
     void info(String msg);
 
-    void info(String path, String msg);
-
+    /**
+     * Add an error message for the root object of the form.
+     */
     void error(String msg);
-
-    void error(String path, String msg);
 
     /**
      * Form node value.
      * <p>
-     * The node can be either a field (leaf node) or a sub-form (tree of nodes).
-     * In the case of a tree, the value corresponds to the <em>root</em> object.
+     * The node can be either a field (leaf node) or a form (tree of nodes). In
+     * the case of a tree, the value corresponds to the <em>root</em> object.
      */
     public static interface Field {
 
