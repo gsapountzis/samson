@@ -2,6 +2,7 @@ package samson.form;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.validation.ValidatorFactory;
 
@@ -104,8 +105,9 @@ class FormBuilder<T> implements JFormBuilder<T> {
 
         FormNode unnamedRoot = new FormNode(Node.createPrefix(null));
 
-        for (String param : params.keySet()) {
-            List<String> values = params.get(param);
+        for (Entry<String, List<String>> entry : params.entrySet()) {
+            String param = entry.getKey();
+            List<String> values = entry.getValue();
 
             Path path = Path.createPath(param);
             if (!path.isEmpty()) {
