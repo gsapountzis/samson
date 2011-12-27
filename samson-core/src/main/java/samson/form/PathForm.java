@@ -87,7 +87,7 @@ class PathForm implements JForm<Object> {
 
     @Override
     public Messages getMessages() {
-        return delegate.getMessages(path);
+        return delegate.getField(path);
     }
 
     @Override

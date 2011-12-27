@@ -140,7 +140,7 @@ class Form<T> implements JForm<T> {
 
     @Override
     public Messages getMessages() {
-        return getMessages(null);
+        return getField(null);
     }
 
     @Override
@@ -159,10 +159,6 @@ class Form<T> implements JForm<T> {
         Path path = Path.createPath(param);
         FormNode node = root.getDefinedChild(path);
         return new FormField(form, path, node);
-    }
-
-    Messages getMessages(String param) {
-        return getField(param);
     }
 
     void info(String param, String msg) {
