@@ -9,12 +9,12 @@ class StringBinder extends Binder {
     }
 
     @Override
-    public void read(BinderNode<?> node) {
+    public ElementRef getChildRef(String name) {
+        throw new IllegalStateException();
     }
 
     @Override
-    public void readComposite(BinderNode<?> node) {
-        throw new IllegalStateException();
+    public void read(BinderNode<?> node) {
     }
 
 }

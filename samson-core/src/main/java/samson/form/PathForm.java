@@ -10,10 +10,10 @@ import samson.convert.ConverterException;
 
 class PathForm implements JForm<Object> {
 
-    private final AbstractForm<?> delegate;
+    private final Form<?> delegate;
     private final String path;
 
-    PathForm(AbstractForm<?> delegate, String path) {
+    PathForm(Form<?> delegate, String path) {
         this.delegate = delegate;
         this.path = path;
     }
@@ -31,7 +31,7 @@ class PathForm implements JForm<Object> {
     }
 
     @Override
-    public Set<ConverterException> getConversionErrors() {
+    public Set<ConverterException> getConversionFailures() {
         throw new UnsupportedOperationException();
     }
 

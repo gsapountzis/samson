@@ -28,7 +28,7 @@ class BeanBinder extends Binder {
         for (BinderNode<?> child : node.getChildren()) {
             String propertyName = child.getName();
 
-            ElementRef childRef = getElementRef(beanTcp, bean, propertyName);
+            ElementRef childRef = getChildRef(beanTcp, bean, propertyName);
             if (childRef == ElementRef.NULL_REF)
                 continue;
 
@@ -41,32 +41,16 @@ class BeanBinder extends Binder {
     }
 
     @Override
-    public void readComposite(BinderNode<?> node) {
+    public ElementRef getChildRef(String name) {
         BeanTcp beanTcp = factory.getBeanTcp(ref.element.tcp);
         Object bean = ref.accessor.get();
 
-        for (BinderNode<?> child : node.getChildren()) {
-            String propertyName = child.getName();
+        ElementRef childRef = getChildRef(beanTcp, bean, name);
 
-            ElementRef childRef = getElementRef(beanTcp, bean, propertyName);
-            if (childRef == ElementRef.NULL_REF)
-                continue;
-
-            if (child.hasChildren()) {
-                Binder binder = factory.getBinder(childRef, true);
-                if (binder != Binder.NULL_BINDER) {
-                    binder.readComposite(child);
-                    child.setBinder(binder);
-                }
-            }
-            else {
-                Binder binder = new StringBinder(childRef);
-                child.setBinder(binder);
-            }
-        }
+        return childRef;
     }
 
-    private ElementRef getElementRef(BeanTcp beanTcp, Object bean, String propertyName) {
+    private ElementRef getChildRef(BeanTcp beanTcp, Object bean, String propertyName) {
         if (beanTcp.hasProperty(propertyName)) {
             BeanProperty property = beanTcp.getProperty(propertyName);
             return new ElementRef(property, property.createAccessor(bean));

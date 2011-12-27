@@ -61,7 +61,7 @@ public interface JForm<T> {
     /**
      * Get all the conversion errors of the form.
      */
-    Set<ConverterException> getConversionErrors();
+    Set<ConverterException> getConversionFailures();
 
     /**
      * Get all the constraint violations of the form.
@@ -141,7 +141,7 @@ public interface JForm<T> {
 
         boolean isError();
 
-        ConverterException getConversionError();
+        ConverterException getConversionFailure();
 
         Set<ConstraintViolation<?>> getConstraintViolations();
 

@@ -39,7 +39,7 @@ class MapBinder extends Binder {
         for (BinderNode<?> child : node.getChildren()) {
             String stringKey = child.getName();
 
-            ElementRef childRef = getElementRef(annotations, mapTcp, map, stringKey);
+            ElementRef childRef = getChildRef(annotations, mapTcp, map, stringKey);
             if (childRef == ElementRef.NULL_REF)
                 continue;
 
@@ -52,33 +52,17 @@ class MapBinder extends Binder {
     }
 
     @Override
-    public void readComposite(BinderNode<?> node) {
+    public ElementRef getChildRef(String name) {
         Annotation[] annotations = ref.element.annotations;
         MapTcp mapTcp = new MapTcp(ref.element.tcp);
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
 
-        for (BinderNode<?> child : node.getChildren()) {
-            String stringKey = child.getName();
+        ElementRef childRef = getChildRef(annotations, mapTcp, map, name);
 
-            ElementRef childRef = getElementRef(annotations, mapTcp, map, stringKey);
-            if (childRef == ElementRef.NULL_REF)
-                continue;
-
-            if (child.hasChildren()) {
-                Binder binder = factory.getBinder(childRef, true);
-                if (binder != Binder.NULL_BINDER) {
-                    binder.readComposite(child);
-                    child.setBinder(binder);
-                }
-            }
-            else {
-                Binder binder = new StringBinder(childRef);
-                child.setBinder(binder);
-            }
-        }
+        return childRef;
     }
 
-    private ElementRef getElementRef(Annotation[] annotations, MapTcp mapTcp, Map<?,?> map, String stringKey) {
+    private ElementRef getChildRef(Annotation[] annotations, MapTcp mapTcp, Map<?,?> map, String stringKey) {
         Object key = getKey(mapTcp.getKeyTcp(), stringKey);
         if (key != null) {
             Element valueElement = mapTcp.createValueElement(annotations, stringKey);

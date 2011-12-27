@@ -1,7 +1,7 @@
 package samson.form;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -10,7 +10,6 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-import samson.Element;
 import samson.bind.Binder;
 import samson.bind.BinderNode;
 import samson.bind.BinderType;
@@ -20,25 +19,20 @@ import samson.form.Property.Path;
 import samson.metadata.ElementRef;
 
 public class FormNode implements BinderNode<FormNode> {
-
-    private final Node node;
-
     private Binder binder;
 
+    private final Node node;
     private Map<Node, FormNode> children;
 
     private List<String> stringValues;
-
-    private ConverterException conversionError;
-
-    private Set<ConstraintViolation<?>> constraintViolations;
+    private ConverterException conversionError = null;
+    private Set<ConstraintViolation<?>> constraintViolations = new LinkedHashSet<ConstraintViolation<?>>();
+    private List<String> infos = new ArrayList<String>();
+    private List<String> errors = new ArrayList<String>();
 
     public FormNode(Node node) {
         this.node = node;
         this.children = new LinkedHashMap<Node, FormNode>();
-
-        this.conversionError = null;
-        this.constraintViolations = new LinkedHashSet<ConstraintViolation<?>>();
     }
 
     // -- Binder
@@ -115,12 +109,12 @@ public class FormNode implements BinderNode<FormNode> {
 
     // -- Decorations
 
-    public List<String> getStringValues() {
-        return stringValues;
-    }
-
     public void setStringValues(List<String> values) {
         this.stringValues = values;
+    }
+
+    public List<String> getStringValues() {
+        return stringValues;
     }
 
     public boolean isConversionError() {
@@ -139,12 +133,28 @@ public class FormNode implements BinderNode<FormNode> {
         constraintViolations.add(constraintViolation);
     }
 
+    public List<String> getInfos() {
+        return infos;
+    }
+
+    public List<String> getErrors() {
+        return errors;
+    }
+
+    public void info(String msg) {
+        infos.add(msg);
+    }
+
+    public void error(String msg) {
+        errors.add(msg);
+    }
+
     // -- Node Computations
 
-    public void convert(AbstractForm<?> form) {
+    public void convert(Form<?> form) {
         if (binder != null) {
             if (binder.getType() == BinderType.STRING) {
-                ElementRef ref = binder.getElementRef();
+                ElementRef ref = binder.getRef();
                 Conversion conversion = form.fromStringList(ref.element, stringValues);
                 if (conversion.isError()) {
                     conversionError = conversion.getCause();
@@ -156,61 +166,14 @@ public class FormNode implements BinderNode<FormNode> {
         }
     }
 
-    public Element getElement() {
-        if (binder != null) {
-            ElementRef ref = binder.getElementRef();
-            return ref.element;
-        }
-        else {
-            return null;
-        }
-    }
-
-    public Object getObjectValue() {
-        if (binder != null) {
-            ElementRef ref = binder.getElementRef();
-            return ref.accessor.get();
-        }
-        else {
-            return null;
-        }
-    }
-
-    public String getValue(AbstractForm<?> form) {
-        if (isConversionError()) {
-            return Utils.getFirst(stringValues);
-        }
-        else {
-            if (binder != null) {
-                ElementRef ref = binder.getElementRef();
-                return form.toStringValue(ref.element, ref.accessor.get());
-            }
-            else {
-                return null;
-            }
-        }
-    }
-
-    public List<String> getValues(AbstractForm<?> form) {
-        if (isConversionError()) {
-            return stringValues;
-        }
-        else {
-            if (binder != null) {
-                ElementRef ref = binder.getElementRef();
-                return form.toStringList(ref.element, ref.accessor.get());
-            }
-            else {
-                return Collections.emptyList();
-            }
-        }
-    }
-
     public boolean isError() {
         if (isConversionError()) {
             return true;
         }
-        if (constraintViolations.size() > 0) {
+        if (!constraintViolations.isEmpty()) {
+            return true;
+        }
+        if (!errors.isEmpty()) {
             return true;
         }
         return false;
@@ -218,21 +181,11 @@ public class FormNode implements BinderNode<FormNode> {
 
     // -- Tree Computations (visitor / functional)
 
-    public void convertTree(AbstractForm<?> form) {
+    public void convertTree(Form<?> form) {
         convert(form);
 
         for (FormNode child : children.values()) {
             child.convertTree(form);
-        }
-    }
-
-    public void conversionErrors(Set<ConverterException> conversionErrors) {
-        if (isConversionError()) {
-            conversionErrors.add(conversionError);
-        }
-
-        for (FormNode child : children.values()) {
-            child.conversionErrors(conversionErrors);
         }
     }
 
@@ -248,6 +201,16 @@ public class FormNode implements BinderNode<FormNode> {
         }
 
         return false;
+    }
+
+    public void conversionErrors(Set<ConverterException> conversionErrors) {
+        if (isConversionError()) {
+            conversionErrors.add(conversionError);
+        }
+
+        for (FormNode child : children.values()) {
+            child.conversionErrors(conversionErrors);
+        }
     }
 
     public void printTree(StringBuilder sb, int indent) {

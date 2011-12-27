@@ -25,8 +25,8 @@ public abstract class ForwardingForm<T> implements JForm<T> {
     }
 
     @Override
-    public Set<ConverterException> getConversionErrors() {
-        return delegate().getConversionErrors();
+    public Set<ConverterException> getConversionFailures() {
+        return delegate().getConversionFailures();
     }
 
     @Override

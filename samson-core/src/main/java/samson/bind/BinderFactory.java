@@ -60,9 +60,14 @@ public class BinderFactory {
     }
 
     private BinderType getBinderType(TypeClassPair tcp, boolean composite) {
+        BinderType type = BinderType.NULL;
+
+        if (tcp == null) {
+            return BinderType.NULL;
+        }
+
         final Class<?> clazz = tcp.c;
 
-        BinderType type = BinderType.NULL;
         if (composite) {
             if (List.class.isAssignableFrom(clazz)) {
                 type = BinderType.LIST;

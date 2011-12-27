@@ -44,6 +44,28 @@ public class Property {
             return path;
         }
 
+        public Path parent() {
+            if (isEmpty()) {
+                throw new IllegalArgumentException();
+            }
+            int size = nodes.size();
+
+            Path path = new Path();
+            for (int i = 0; i < (size - 1); i++) {
+                path.nodes.add(nodes.get(i));
+            }
+            return path;
+        }
+
+        public Node child() {
+            if (isEmpty()) {
+                throw new IllegalArgumentException();
+            }
+            int size = nodes.size();
+
+            return nodes.get(size - 1);
+        }
+
         public boolean isEmpty() {
             return nodes.isEmpty();
         }

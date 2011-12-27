@@ -37,7 +37,7 @@ class ListBinder extends Binder {
         for (BinderNode<?> child : node.getChildren()) {
             String stringIndex = child.getName();
 
-            ElementRef childRef = getElementRef(annotations, listTcp, list, stringIndex);
+            ElementRef childRef = getChildRef(annotations, listTcp, list, stringIndex);
             if (childRef == ElementRef.NULL_REF)
                 continue;
 
@@ -50,33 +50,17 @@ class ListBinder extends Binder {
     }
 
     @Override
-    public void readComposite(BinderNode<?> node) {
+    public ElementRef getChildRef(String name) {
         Annotation[] annotations = ref.element.annotations;
         ListTcp listTcp = new ListTcp(ref.element.tcp);
         List<?> list = (List<?>) ref.accessor.get();
 
-        for (BinderNode<?> child : node.getChildren()) {
-            String stringIndex = child.getName();
+        ElementRef childRef = getChildRef(annotations, listTcp, list, name);
 
-            ElementRef childRef = getElementRef(annotations, listTcp, list, stringIndex);
-            if (childRef == ElementRef.NULL_REF)
-                continue;
-
-            if (child.hasChildren()) {
-                Binder binder = factory.getBinder(childRef, true);
-                if (binder != Binder.NULL_BINDER) {
-                    binder.readComposite(child);
-                    child.setBinder(binder);
-                }
-            }
-            else {
-                Binder binder = new StringBinder(childRef);
-                child.setBinder(binder);
-            }
-        }
+        return childRef;
     }
 
-    private ElementRef getElementRef(Annotation[] annotations, ListTcp listTcp, List<?> list, String stringIndex) {
+    private ElementRef getChildRef(Annotation[] annotations, ListTcp listTcp, List<?> list, String stringIndex) {
         int index = getIndex(stringIndex);
         if (index >= 0 && index < JForm.CONF_MAX_LIST_SIZE) {
             Element itemElement = listTcp.createItemElement(annotations, stringIndex);

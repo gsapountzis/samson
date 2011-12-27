@@ -18,25 +18,25 @@ public abstract class Binder {
         return type;
     }
 
-    public ElementRef getElementRef() {
+    public ElementRef getRef() {
         return ref;
     }
+
+    public abstract ElementRef getChildRef(String name);
 
     public abstract void read(BinderNode<?> node);
 
 //  public abstract void write(BinderNode<?> node);
 
-    public abstract void readComposite(BinderNode<?> node);
-
     public static final Binder NULL_BINDER = new Binder(null, BinderType.NULL, ElementRef.NULL_REF) {
 
         @Override
-        public void read(BinderNode<?> node) {
+        public ElementRef getChildRef(String name) {
+            return ElementRef.NULL_REF;
         }
 
         @Override
-        public void readComposite(BinderNode<?> node) {
-            throw new IllegalStateException();
+        public void read(BinderNode<?> node) {
         }
 
     };

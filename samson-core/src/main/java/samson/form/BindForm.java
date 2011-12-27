@@ -1,10 +1,6 @@
 package samson.form;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -19,21 +15,12 @@ import samson.bind.BinderType;
 import samson.convert.ConverterException;
 import samson.form.Property.Path;
 
-/**
- * Binding form.
- */
-class BindForm<T> extends AbstractForm<T> {
+class BindForm<T> extends Form<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BindForm.class);
 
-    private final FormNode root;
-
-    private Set<ConverterException> conversionErrors = Collections.emptySet();
-    private Set<ConstraintViolation<T>> constraintViolations = Collections.emptySet();
-
-    public BindForm(Element parameter, T parameterValue, FormNode root) {
-        super(parameter, parameterValue);
-        this.root = root;
+    public BindForm(FormNode root, Element parameter, T parameterValue) {
+        super(root, parameter, parameterValue);
         LOGGER.trace(printTree(root));
     }
 
@@ -109,146 +96,6 @@ class BindForm<T> extends AbstractForm<T> {
         StringBuilder sb = new StringBuilder("\n");
         root.printTree(sb, 0);
         return sb.toString();
-    }
-
-    // -- Form methods
-
-    @Override
-    public boolean hasErrors() {
-        if (conversionErrors.size() > 0) {
-            return true;
-        }
-        if (constraintViolations.size() > 0) {
-            return true;
-        }
-        if (!errors.isEmpty()) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public Set<ConverterException> getConversionErrors() {
-        return conversionErrors;
-    }
-
-    @Override
-    public Set<ConstraintViolation<T>> getConstraintViolations() {
-        return constraintViolations;
-    }
-
-    // -- Field methods
-
-    @Override
-    public Field getField(final String param) {
-        final Path path = Path.createPath(param);
-        final FormNode node = root.getDefinedChild(path);
-
-        return new Field() {
-
-            @Override
-            public Element getElement() {
-                return node.getElement();
-            }
-
-            @Override
-            public Object getObjectValue() {
-                return node.getObjectValue();
-            }
-
-            @Override
-            public String getValue() {
-                return node.getValue(form);
-            }
-
-            @Override
-            public List<String> getValues() {
-                return node.getValues(form);
-            }
-
-            @Override
-            public boolean isError() {
-                if (node.isError()) {
-                    return true;
-                }
-                if (errors.containsKey(path)) {
-                    return true;
-                }
-                return false;
-            }
-
-            @Override
-            public ConverterException getConversionError() {
-                return node.getConversionError();
-            }
-
-            @Override
-            public Set<ConstraintViolation<?>> getConstraintViolations() {
-                return node.getConstraintViolations();
-            }
-
-            @Override
-            public Messages getMessages() {
-                return form.getMessages(param);
-            }
-
-        };
-    }
-
-    @Override
-    public Messages getMessages(final String param) {
-        final Path path = Path.createPath(param);
-        final FormNode node = root.getDefinedChild(path);
-
-        return new Messages() {
-
-            @Override
-            public String getConversionInfo() {
-                return getDefaultConversionInfo(param);
-            }
-
-            @Override
-            public String getConversionError() {
-                boolean error = node.isConversionError();
-                if (error) {
-                    String stringValue = Utils.getFirst(node.getStringValues());
-                    return getConversionErrorMessage(stringValue);
-                }
-                return null;
-            }
-
-            @Override
-            public List<String> getValidationInfos() {
-                return getDefaultValidationInfos(param);
-            }
-
-            @Override
-            public List<String> getValidationErrors() {
-                Set<ConstraintViolation<?>> constraintViolations = node.getConstraintViolations();
-                List<String> messages = new ArrayList<String>();
-                for (ConstraintViolation<?> violation : constraintViolations) {
-                    messages.add(violation.getMessage());
-                }
-                return messages;
-            }
-
-            @Override
-            public List<String> getInfos() {
-                return getMessages(infos, param);
-            }
-
-            @Override
-            public List<String> getErrors() {
-                return getMessages(errors, param);
-            }
-
-        };
-    }
-
-    private final static String CONVERSION_ERROR_MESSAGE_TEMPLATE = "invalid value '%s'";
-
-    private static String getConversionErrorMessage(String value) {
-        return String.format(CONVERSION_ERROR_MESSAGE_TEMPLATE, value);
     }
 
 }
