@@ -2,6 +2,7 @@ package samson.form;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -31,13 +32,12 @@ class Form<T> implements JForm<T> {
 
     protected T parameterValue;
 
+    /** compute hasErrors online */
+    protected boolean hasErrors = false;
+
     protected ConverterProvider converterProvider;
     protected BinderFactory binderFactory;
     protected ValidatorFactory validatorFactory;
-
-    protected Set<ConverterException> conversionErrors = Collections.emptySet();
-    protected Set<ConstraintViolation<T>> constraintViolations = Collections.emptySet();
-    protected boolean hasError = false;
 
     Form(FormNode root, Element parameter, T parameterValue) {
         this.root = root;
@@ -108,35 +108,26 @@ class Form<T> implements JForm<T> {
 
     @Override
     public boolean hasErrors() {
-        if (!conversionErrors.isEmpty()) {
-            return true;
-        }
-        if (!constraintViolations.isEmpty()) {
-            return true;
-        }
-        if (hasError) {
-            return true;
-        }
-        return false;
+        return hasErrors;
     }
 
     @Override
-    public Set<ConverterException> getConversionFailures() {
-        return conversionErrors;
-    }
-
-    @Override
-    public Set<ConstraintViolation<T>> getConstraintViolations() {
-        return constraintViolations;
-    }
-
-    @Override
-    public List<String> getInfos() {
+    public Map<String, ConverterException> getConversionFailures() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<String> getErrors() {
+    public Map<String, Set<ConstraintViolation<T>>> getConstraintViolations() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Map<String, List<String>> getInfos() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Map<String, List<String>> getErrors() {
         throw new UnsupportedOperationException();
     }
 
@@ -181,7 +172,7 @@ class Form<T> implements JForm<T> {
     }
 
     void error(String param, String msg) {
-        hasError = true;
+        hasErrors = true;
 
         Path path = Path.createPath(param);
         FormNode node = root.getDefinedChild(path);

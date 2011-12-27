@@ -1,6 +1,7 @@
 package samson;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -61,22 +62,22 @@ public interface JForm<T> {
     /**
      * Get all the conversion errors of the form.
      */
-    Set<ConverterException> getConversionFailures();
+    Map<String, ConverterException> getConversionFailures();
 
     /**
      * Get all the constraint violations of the form.
      */
-    Set<ConstraintViolation<T>> getConstraintViolations();
+    Map<String, Set<ConstraintViolation<T>>> getConstraintViolations();
 
     /**
      * Get all the info messages of the form.
      */
-    List<String> getInfos();
+    Map<String, List<String>> getInfos();
 
     /**
      * Get all the error messages of the form.
      */
-    List<String> getErrors();
+    Map<String, List<String>> getErrors();
 
     /**
      * Get the root path of the form.

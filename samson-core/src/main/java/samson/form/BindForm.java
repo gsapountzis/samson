@@ -1,6 +1,7 @@
 package samson.form;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -42,11 +43,15 @@ class BindForm<T> extends Form<T> {
     private void convert() {
         root.convertTree(form);
 
-        conversionErrors = new HashSet<ConverterException>();
+        Set<ConverterException> conversionErrors = new HashSet<ConverterException>();
         root.conversionErrors(conversionErrors);
 
+        if (!conversionErrors.isEmpty()) {
+            hasErrors = true;
+        }
+
         for (ConverterException conversionError : conversionErrors) {
-            LOGGER.debug("conversion error cause {}", conversionError.toString());
+            LOGGER.debug("{} : {}", null, conversionError.toString());
         }
         LOGGER.trace(printTree(root));
     }
@@ -74,7 +79,11 @@ class BindForm<T> extends Form<T> {
         }
 
         Validator validator = validatorFactory.getValidator();
-        constraintViolations = validator.validate(parameterValue);
+        Set<ConstraintViolation<T>> constraintViolations = validator.validate(parameterValue);
+
+        if (!constraintViolations.isEmpty()) {
+            hasErrors = true;
+        }
 
         for (ConstraintViolation<T> violation : constraintViolations) {
             LOGGER.debug("{}: {}", violation.getPropertyPath(), violation.getMessage());

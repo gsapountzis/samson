@@ -150,7 +150,7 @@ class FormField implements Field, Messages {
         return node.getErrors();
     }
 
-    // -- Default Infos
+    // -- Default Messages
 
     private String getDefaultConversionInfo() {
         if (ref != ElementRef.NULL_REF) {
