@@ -40,7 +40,7 @@ class BeanIntrospector {
         if (!Modifier.isPublic(modifiers)) {
             Errors.nonPublicClass(clazz);
         }
-
+/*
         if (Modifier.isAbstract(modifiers)) {
             if (Modifier.isInterface(modifiers)) {
                 Errors.interfaceClass(clazz);
@@ -48,7 +48,7 @@ class BeanIntrospector {
                 Errors.abstractClass(clazz);
             }
         }
-
+*/
         if (clazz.getEnclosingClass() != null && !Modifier.isStatic(modifiers)) {
             Errors.innerClass(clazz);
         }

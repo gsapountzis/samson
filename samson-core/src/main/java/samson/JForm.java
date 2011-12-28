@@ -169,18 +169,22 @@ public interface JForm<T> {
 
     }
 
-    /**
-     * Configuration: disable bean validation
-     */
-    static final boolean CONF_DISABLE_VALIDATION = false;
+    public static class Configuration {
 
-    /**
-     * Configuration: maximum list size
-     * <p>
-     * This is to prevent DoS attacks. For example the attacker could just set
-     * the list index to (2<sup>32</sup> - 1) and cause the allocation of more
-     * than 4GB of memory.
-     */
-    static final int CONF_MAX_LIST_SIZE = 256;
+        /**
+         * Disable bean validation
+         */
+        public static final boolean DISABLE_VALIDATION = false;
+
+        /**
+         * Maximum list size
+         * <p>
+         * This is to prevent DoS attacks. For example the attacker could just set
+         * the list index to (2<sup>32</sup> - 1) and cause the allocation of more
+         * than 4GB of memory.
+         */
+        public static final int MAX_LIST_SIZE = 256;
+
+    }
 
 }

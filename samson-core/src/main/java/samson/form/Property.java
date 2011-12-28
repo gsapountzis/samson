@@ -44,11 +44,11 @@ public class Property {
             return path;
         }
 
-        public Path parent() {
-            if (isEmpty()) {
+        public Path head() {
+            int size = nodes.size();
+            if (size == 0) {
                 throw new IllegalArgumentException();
             }
-            int size = nodes.size();
 
             Path path = new Path();
             for (int i = 0; i < (size - 1); i++) {
@@ -57,11 +57,11 @@ public class Property {
             return path;
         }
 
-        public Node child() {
-            if (isEmpty()) {
+        public Node tail() {
+            int size = nodes.size();
+            if (size == 0) {
                 throw new IllegalArgumentException();
             }
-            int size = nodes.size();
 
             return nodes.get(size - 1);
         }
@@ -204,7 +204,9 @@ public class Property {
         public String toString() {
             StringBuilder sb = new StringBuilder();
             if (prefix) {
-                sb.append(name);
+                if (name != null) {
+                    sb.append(name);
+                }
             }
             else {
                 if (dot)

@@ -31,9 +31,7 @@ class Form<T> implements JForm<T> {
     protected final ElementRef parameterRef;
 
     protected T parameterValue;
-
-    /** compute hasErrors online */
-    protected boolean hasErrors = false;
+    protected boolean hasErrors;
 
     protected ConverterProvider converterProvider;
     protected BinderFactory binderFactory;
@@ -41,6 +39,7 @@ class Form<T> implements JForm<T> {
 
     Form(FormNode root, Element parameter, T parameterValue) {
         this.root = root;
+
         this.parameter = parameter;
         this.parameterValue = parameterValue;
         this.parameterAccessor = new ElementAccessor() {
@@ -180,7 +179,7 @@ class Form<T> implements JForm<T> {
     ElementRef getPathElementRef(Path path) {
         ElementRef ref = parameterRef;
         for (Node node : path) {
-            Binder binder = binderFactory.getBinder(ref, true);
+            Binder binder = binderFactory.getBinder(ref, true, false);
             ref = binder.getChildRef(node.getName());
         }
         return ref;

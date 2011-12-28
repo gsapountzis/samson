@@ -60,7 +60,7 @@ class PathForm implements JForm<Object> {
 
     @Override
     public JForm<?> path(String path) {
-        return new PathForm(delegate, path);
+        return delegate.path(path);
     }
 
     @Override

@@ -1,6 +1,11 @@
 package samson.form;
 
-import java.util.HashSet;
+import static samson.JForm.Configuration.DISABLE_VALIDATION;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -15,6 +20,7 @@ import samson.bind.Binder;
 import samson.bind.BinderType;
 import samson.convert.ConverterException;
 import samson.form.Property.Path;
+import samson.metadata.ElementRef;
 
 class BindForm<T> extends Form<T> {
 
@@ -29,31 +35,61 @@ class BindForm<T> extends Form<T> {
         Binder binder = binderFactory.getBinder(parameterRef, root.hasChildren());
         if (binder != Binder.NULL_BINDER) {
             BinderType binderType = binder.getType();
-
             binder.read(root);
             root.setBinder(binder);
-
             convert();
-
             validate(binderType);
         }
         return this;
     }
 
     private void convert() {
-        root.convertTree(form);
-
-        Set<ConverterException> conversionErrors = new HashSet<ConverterException>();
-        root.conversionErrors(conversionErrors);
+        Map<String, ConverterException> conversionErrors = new HashMap<String, ConverterException>();
+        convert(root, "", conversionErrors);
 
         if (!conversionErrors.isEmpty()) {
             hasErrors = true;
         }
 
-        for (ConverterException conversionError : conversionErrors) {
-            LOGGER.debug("{} : {}", null, conversionError.toString());
+        for (Entry<String, ConverterException> entry : conversionErrors.entrySet()) {
+            String param = entry.getKey();
+            ConverterException conversionError = entry.getValue();
+            LOGGER.debug("{} : {}", param, conversionError);
         }
         LOGGER.trace(printTree(root));
+    }
+
+    private void convert(FormNode node, String parent, Map<String, ConverterException> conversionErrors) {
+        convertNode(node);
+
+        String path = parent + node.getNode();
+        if (node.isConversionError()) {
+            conversionErrors.put(path, node.getConversionError());
+        }
+
+        for (FormNode child : node.getChildren()) {
+            convert(child, path, conversionErrors);
+        }
+    }
+
+    private void convertNode(FormNode node) {
+        Binder binder = node.getBinder();
+        if (binder != null) {
+            if (binder.getType() == BinderType.STRING) {
+                ElementRef ref = binder.getRef();
+                List<String> stringValues = node.getStringValues();
+
+                Conversion conversion = form.fromStringList(ref.element, stringValues);
+                if (conversion != null) {
+                    if (conversion.isError()) {
+                        node.setConversionError(conversion.getCause());
+                    }
+                    else {
+                        ref.accessor.set(conversion.getValue());
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -64,7 +100,7 @@ class BindForm<T> extends Form<T> {
      * expected and strings in case of user-defined types that may be beans.
      */
     private void validate(BinderType binderType) {
-        if (JForm.CONF_DISABLE_VALIDATION) {
+        if (DISABLE_VALIDATION) {
             return;
         }
         if (validatorFactory == null) {

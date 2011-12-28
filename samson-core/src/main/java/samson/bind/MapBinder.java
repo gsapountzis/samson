@@ -38,16 +38,11 @@ class MapBinder extends Binder {
 
         for (BinderNode<?> child : node.getChildren()) {
             String stringKey = child.getName();
-
             ElementRef childRef = getChildRef(annotations, mapTcp, map, stringKey);
-            if (childRef == ElementRef.NULL_REF)
-                continue;
 
             Binder binder = factory.getBinder(childRef, child.hasChildren());
-            if (binder != Binder.NULL_BINDER) {
-                binder.read(child);
-                child.setBinder(binder);
-            }
+            binder.read(child);
+            child.setBinder(binder);
         }
     }
 
@@ -58,7 +53,6 @@ class MapBinder extends Binder {
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
 
         ElementRef childRef = getChildRef(annotations, mapTcp, map, name);
-
         return childRef;
     }
 

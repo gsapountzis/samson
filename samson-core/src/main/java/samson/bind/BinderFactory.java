@@ -40,7 +40,11 @@ public class BinderFactory {
     }
 
     public Binder getBinder(ElementRef ref, boolean composite) {
-        BinderType type = getBinderType(ref.element.tcp, composite);
+        return getBinder(ref, composite, true);
+    }
+
+    public Binder getBinder(ElementRef ref, boolean composite, boolean validate) {
+        BinderType type = getBinderType(ref.element.tcp, ref.accessor.get(), composite, validate);
 
         if (type == BinderType.STRING) {
             return new StringBinder(ref);
@@ -59,7 +63,7 @@ public class BinderFactory {
         }
     }
 
-    private BinderType getBinderType(TypeClassPair tcp, boolean composite) {
+    private BinderType getBinderType(TypeClassPair tcp, Object instance, boolean composite, boolean validate) {
         BinderType type = BinderType.NULL;
 
         if (tcp == null) {
@@ -83,24 +87,32 @@ public class BinderFactory {
             type = BinderType.STRING;
         }
 
-        if (composite) {
-            // we require no-arg constructor for non-abstract beans
-            if (type == BinderType.BEAN) {
-                final int modifiers = clazz.getModifiers();
-                if (!Modifier.isAbstract(modifiers)) {
-                    Constructor<?> constructor = ReflectionHelper.getNoargConstructor(clazz);
-                    if (constructor == null) {
-                        LOGGER.warn("Composite type {} does not have a no-arg constructor", clazz);
-                        type = BinderType.NULL;
+        if (validate) {
+            if (composite) {
+                if (type == BinderType.BEAN) {
+                    final int modifiers = clazz.getModifiers();
+                    if (Modifier.isAbstract(modifiers)) {
+                        if (instance == null) {
+                            LOGGER.warn("{} cannot be instantiated", clazz);
+                            type = BinderType.NULL;
+                        }
+                    }
+                    else {
+                        // we require no-arg constructor for non-abstract beans
+                        Constructor<?> constructor = ReflectionHelper.getNoargConstructor(clazz);
+                        if (constructor == null) {
+                            LOGGER.warn("{} does not have a no-arg constructor", clazz);
+                            type = BinderType.NULL;
+                        }
                     }
                 }
             }
-        }
-        else {
-            boolean isStringType = converterProvider.isConvertible(tcp.t, tcp.c);
-            if (!isStringType) {
-                LOGGER.warn("String-based type {} cannot be converted", clazz);
-                type = BinderType.NULL;
+            else {
+                boolean isStringType = converterProvider.isConvertible(tcp.t, tcp.c);
+                if (!isStringType) {
+                    LOGGER.warn("{} cannot be converted", clazz);
+                    type = BinderType.NULL;
+                }
             }
         }
 

@@ -170,7 +170,7 @@ public class ListBinderTest {
     }
 
     public static class SetBeanFormBean {
-        Set<ItemBean> set;
+        public Set<ItemBean> set;
     }
 
     @Test

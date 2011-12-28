@@ -1,5 +1,7 @@
 package samson.bind;
 
+import static samson.JForm.Configuration.MAX_LIST_SIZE;
+
 import java.lang.annotation.Annotation;
 import java.util.List;
 
@@ -7,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import samson.Element;
-import samson.JForm;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
 import samson.metadata.ListTcp;
@@ -36,16 +37,11 @@ class ListBinder extends Binder {
 
         for (BinderNode<?> child : node.getChildren()) {
             String stringIndex = child.getName();
-
             ElementRef childRef = getChildRef(annotations, listTcp, list, stringIndex);
-            if (childRef == ElementRef.NULL_REF)
-                continue;
 
             Binder binder = factory.getBinder(childRef, child.hasChildren());
-            if (binder != Binder.NULL_BINDER) {
-                binder.read(child);
-                child.setBinder(binder);
-            }
+            binder.read(child);
+            child.setBinder(binder);
         }
     }
 
@@ -56,13 +52,12 @@ class ListBinder extends Binder {
         List<?> list = (List<?>) ref.accessor.get();
 
         ElementRef childRef = getChildRef(annotations, listTcp, list, name);
-
         return childRef;
     }
 
     private ElementRef getChildRef(Annotation[] annotations, ListTcp listTcp, List<?> list, String stringIndex) {
         int index = getIndex(stringIndex);
-        if (index >= 0 && index < JForm.CONF_MAX_LIST_SIZE) {
+        if (index >= 0 && index < MAX_LIST_SIZE) {
             Element itemElement = listTcp.createItemElement(annotations, stringIndex);
             ElementAccessor itemAccessor = ListTcp.createItemAccessor(list, index);
             return new ElementRef(itemElement, itemAccessor);

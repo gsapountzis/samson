@@ -204,8 +204,8 @@ class FormField implements Field, Messages {
                 return new ElementDescriptorTuple(bean, /* method parameter */ null);
             }
             else {
-                Path parent = path.parent();
-                Node child = path.child();
+                Path parent = path.head();
+                Node child = path.tail();
                 ElementRef parentRef = form.getPathElementRef(parent);
 
                 TypeClassPair parentTcp = parentRef.element.tcp;
@@ -220,7 +220,7 @@ class FormField implements Field, Messages {
         }
     }
 
-    private final static String CONVERSION_ERROR_MESSAGE_TEMPLATE = "invalid value '%s'";
+    private static final String CONVERSION_ERROR_MESSAGE_TEMPLATE = "invalid value '%s'";
 
     private static String getConversionErrorMessage(String value) {
         return String.format(CONVERSION_ERROR_MESSAGE_TEMPLATE, value);

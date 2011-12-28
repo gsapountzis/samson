@@ -27,16 +27,11 @@ class BeanBinder extends Binder {
 
         for (BinderNode<?> child : node.getChildren()) {
             String propertyName = child.getName();
-
             ElementRef childRef = getChildRef(beanTcp, bean, propertyName);
-            if (childRef == ElementRef.NULL_REF)
-                continue;
 
             Binder binder = factory.getBinder(childRef, child.hasChildren());
-            if (binder != Binder.NULL_BINDER) {
-                binder.read(child);
-                child.setBinder(binder);
-            }
+            binder.read(child);
+            child.setBinder(binder);
         }
     }
 
@@ -46,7 +41,6 @@ class BeanBinder extends Binder {
         Object bean = ref.accessor.get();
 
         ElementRef childRef = getChildRef(beanTcp, bean, name);
-
         return childRef;
     }
 

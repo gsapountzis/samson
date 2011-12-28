@@ -12,11 +12,9 @@ import javax.validation.ConstraintViolation;
 
 import samson.bind.Binder;
 import samson.bind.BinderNode;
-import samson.bind.BinderType;
 import samson.convert.ConverterException;
 import samson.form.Property.Node;
 import samson.form.Property.Path;
-import samson.metadata.ElementRef;
 
 public class FormNode implements BinderNode<FormNode> {
     private Binder binder;
@@ -125,6 +123,10 @@ public class FormNode implements BinderNode<FormNode> {
         return conversionError;
     }
 
+    public void setConversionError(ConverterException conversionError) {
+        this.conversionError = conversionError;
+    }
+
     public Set<ConstraintViolation<?>> getConstraintViolations() {
         return constraintViolations;
     }
@@ -151,21 +153,6 @@ public class FormNode implements BinderNode<FormNode> {
 
     // -- Node Computations
 
-    public void convert(Form<?> form) {
-        if (binder != null) {
-            if (binder.getType() == BinderType.STRING) {
-                ElementRef ref = binder.getRef();
-                Conversion conversion = form.fromStringList(ref.element, stringValues);
-                if (conversion.isError()) {
-                    conversionError = conversion.getCause();
-                }
-                else {
-                    ref.accessor.set(conversion.getValue());
-                }
-            }
-        }
-    }
-
     public boolean isError() {
         if (isConversionError()) {
             return true;
@@ -181,14 +168,6 @@ public class FormNode implements BinderNode<FormNode> {
 
     // -- Tree Computations (visitor / functional)
 
-    public void convertTree(Form<?> form) {
-        convert(form);
-
-        for (FormNode child : children.values()) {
-            child.convertTree(form);
-        }
-    }
-
     public boolean hasErrors() {
         if (isError()) {
             return true;
@@ -201,16 +180,6 @@ public class FormNode implements BinderNode<FormNode> {
         }
 
         return false;
-    }
-
-    public void conversionErrors(Set<ConverterException> conversionErrors) {
-        if (isConversionError()) {
-            conversionErrors.add(conversionError);
-        }
-
-        for (FormNode child : children.values()) {
-            child.conversionErrors(conversionErrors);
-        }
     }
 
     public void printTree(StringBuilder sb, int indent) {
