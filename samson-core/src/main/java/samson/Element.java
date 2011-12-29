@@ -10,12 +10,12 @@ public class Element {
 
     public static final Element NULL_ELEMENT = new Element(new Annotation[0], null, null);
 
-    public final Annotation[] annotations; /* immutable */
+    public final Annotation[] annotations;  // immutable
     public final TypeClassPair tcp;
-    public final String name;
 
-    public final boolean encoded;
-    public final String defaultValue;
+    public final String name;               // @FormParam("...") @QueryParam("...")
+    public final boolean encoded;           // @Encoded
+    public final String defaultValue;       // @DefaultValue("...")
 
     public Element(Annotation[] annotations, TypeClassPair tcp, String name) {
         this(annotations, tcp, name, false, null);
@@ -28,8 +28,8 @@ public class Element {
     public Element(Annotation[] annotations, TypeClassPair tcp, String name, boolean encoded, String defaultValue) {
         this.annotations = annotations;
         this.tcp = tcp;
-        this.name = name;
 
+        this.name = name;
         this.encoded = encoded;
         this.defaultValue = defaultValue;
     }
