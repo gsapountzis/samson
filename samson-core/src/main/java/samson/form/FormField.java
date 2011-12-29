@@ -11,29 +11,26 @@ import javax.validation.Validator;
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.ElementDescriptor;
-import javax.validation.metadata.PropertyDescriptor;
 
 import samson.Element;
 import samson.JForm.Field;
 import samson.JForm.Messages;
 import samson.TypeClassPair;
 import samson.convert.ConverterException;
-import samson.form.Property.Node;
-import samson.form.Property.Path;
 import samson.metadata.ElementRef;
 
 class FormField implements Field, Messages {
 
     private final Form<?> form;
-    private final Path path;
-    private final FormNode node;
+    private final ElementRef parentRef;
     private final ElementRef ref;
+    private final FormNode node;
 
-    FormField(Form<?> form, Path path, FormNode node) {
+    FormField(Form<?> form, ElementRef parentRef, ElementRef ref, FormNode node) {
         this.form = form;
-        this.path = path;
+        this.parentRef = parentRef;
+        this.ref = ref;
         this.node = node;
-        this.ref = form.getPathElementRef(path);
     }
 
     // -- Field
@@ -164,12 +161,33 @@ class FormField implements Field, Messages {
     }
 
     private List<String> getDefaultValidationInfos() {
-        List<String> messages = new ArrayList<String>();
-        ElementDescriptorTuple element = getPathValidationElement();
-        if (element != null) {
-            getDefaultValidationInfos(messages, element.type);
-            getDefaultValidationInfos(messages, element.decl);
+        Validator validator = form.getValidator();
+
+        ElementDescriptor decl = null;
+        if (parentRef != ElementRef.NULL_REF) {
+            // should check for method parameter vs. bean property below
+            if (parentRef == ElementRef.NULL_REF) {
+                // method parameter
+                decl = null;
+            }
+            else {
+                // bean property
+                TypeClassPair parentTcp = parentRef.element.tcp;
+                BeanDescriptor parentBean = validator.getConstraintsForClass(parentTcp.c);
+                // should use property name below, not element.name which comes from JAX-RS annotations
+                decl = parentBean.getConstraintsForProperty(ref.element.name);
+            }
         }
+
+        BeanDescriptor type = null;
+        if (ref != ElementRef.NULL_REF) {
+            TypeClassPair tcp = ref.element.tcp;
+            type = validator.getConstraintsForClass(tcp.c);
+        }
+
+        List<String> messages = new ArrayList<String>();
+        getDefaultValidationInfos(messages, decl);
+        getDefaultValidationInfos(messages, type);
         return messages;
     }
 
@@ -180,43 +198,6 @@ class FormField implements Field, Messages {
                 String message = annotation.annotationType().getSimpleName();
                 messages.add(message);
             }
-        }
-    }
-
-    private static class ElementDescriptorTuple {
-        final ElementDescriptor type;
-        final ElementDescriptor decl;
-
-        ElementDescriptorTuple(ElementDescriptor type, ElementDescriptor decl) {
-            this.type = type;
-            this.decl = decl;
-        }
-    }
-
-    private ElementDescriptorTuple getPathValidationElement() {
-        if (ref != ElementRef.NULL_REF) {
-            Validator validator = form.getValidator();
-
-            TypeClassPair tcp = ref.element.tcp;
-            BeanDescriptor bean = validator.getConstraintsForClass(tcp.c);
-
-            if (path.isEmpty()) {
-                return new ElementDescriptorTuple(bean, /* method parameter */ null);
-            }
-            else {
-                Path parent = path.head();
-                Node child = path.tail();
-                ElementRef parentRef = form.getPathElementRef(parent);
-
-                TypeClassPair parentTcp = parentRef.element.tcp;
-                BeanDescriptor parentBean = validator.getConstraintsForClass(parentTcp.c);
-                PropertyDescriptor property = parentBean.getConstraintsForProperty(child.getName());
-
-                return new ElementDescriptorTuple(bean, property);
-            }
-        }
-        else {
-            return null;
         }
     }
 

@@ -152,14 +152,6 @@ class Form<T> implements JForm<T> {
         error(null, msg);
     }
 
-    // -- Field Path
-
-    FormField getField(String param) {
-        Path path = Path.createPath(param);
-        FormNode node = root.getDefinedChild(path);
-        return new FormField(form, path, node);
-    }
-
     void info(String param, String msg) {
         Path path = Path.createPath(param);
         FormNode node = root.getDefinedChild(path);
@@ -174,20 +166,43 @@ class Form<T> implements JForm<T> {
         node.error(msg);
     }
 
-    // -- Callbacks
+    // -- Path Field
 
-    ElementRef getPathElementRef(Path path) {
-        ElementRef ref = parameterRef;
-        for (Node node : path) {
-            Binder binder = binderFactory.getBinder(ref, true, false);
-            ref = binder.getChildRef(node.getName());
+    FormField getField(String param) {
+        Path path = Path.createPath(param);
+
+        ElementRef parentRef;
+        ElementRef ref;
+
+        if (path.isEmpty()) {
+            parentRef = ElementRef.NULL_REF;
+            ref = parameterRef;
         }
-        return ref;
+        else {
+            Path parent = path.head();
+            Node child = path.tail();
+
+            Binder parentBinder = getPathBinder(parent);
+            parentRef = parentBinder.getRef();
+            ref = parentBinder.getChildRef(child.getName());
+        }
+
+        FormNode node = root.getDefinedChild(path);
+
+        return new FormField(form, parentRef, ref, node);
     }
 
-    Validator getValidator() {
-        return validatorFactory.getValidator();
+    private Binder getPathBinder(Path path) {
+        ElementRef ref = parameterRef;
+        Binder binder = binderFactory.getBinder(ref, true, false);
+        for (Node node : path) {
+            ref = binder.getChildRef(node.getName());
+            binder = binderFactory.getBinder(ref, true, false);
+        }
+        return binder;
     }
+
+    // -- Callbacks for access to conversion, validation services
 
     String toStringValue(Element element, Object value) {
         return Utils.getFirst(toStringList(element, value));
@@ -230,6 +245,10 @@ class Form<T> implements JForm<T> {
         else {
             return null;
         }
+    }
+
+    Validator getValidator() {
+        return validatorFactory.getValidator();
     }
 
 }
