@@ -17,7 +17,7 @@ import samson.form.Property.Node;
 import samson.form.Property.Path;
 
 public class FormNode implements BinderNode<FormNode> {
-    private Binder binder;
+    private Binder binder = Binder.NULL_BINDER;
 
     private final Node node;
     private Map<Node, FormNode> children;

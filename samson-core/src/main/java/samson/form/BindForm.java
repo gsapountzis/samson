@@ -74,19 +74,17 @@ class BindForm<T> extends Form<T> {
 
     private void convertNode(FormNode node) {
         Binder binder = node.getBinder();
-        if (binder != null) {
-            if (binder.getType() == BinderType.STRING) {
-                ElementRef ref = binder.getRef();
-                List<String> stringValues = node.getStringValues();
+        if (binder.getType() == BinderType.STRING) {
+            ElementRef ref = binder.getRef();
+            List<String> stringValues = node.getStringValues();
 
-                Conversion conversion = form.fromStringList(ref.element, stringValues);
-                if (conversion != null) {
-                    if (conversion.isError()) {
-                        node.setConversionError(conversion.getCause());
-                    }
-                    else {
-                        ref.accessor.set(conversion.getValue());
-                    }
+            Conversion conversion = form.fromStringList(ref.element, stringValues);
+            if (conversion != null) {
+                if (conversion.isError()) {
+                    node.setConversionError(conversion.getCause());
+                }
+                else {
+                    ref.accessor.set(conversion.getValue());
                 }
             }
         }

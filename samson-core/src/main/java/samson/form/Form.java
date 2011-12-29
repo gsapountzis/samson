@@ -210,6 +210,11 @@ class Form<T> implements JForm<T> {
 
     List<String> toStringList(Element element, Object value) {
 
+        // check for null element
+        if (element.tcp == null) {
+            return Collections.emptyList();
+        }
+
         @SuppressWarnings("unchecked")
         MultivaluedConverter<Object> extractor = (MultivaluedConverter<Object>) converterProvider.getMultivalued(
                 element.tcp.t,
@@ -225,6 +230,11 @@ class Form<T> implements JForm<T> {
     }
 
     Conversion fromStringList(Element element, List<String> values) {
+
+        // check for null element
+        if (element.tcp == null) {
+            return null;
+        }
 
         MultivaluedConverter<?> extractor = converterProvider.getMultivalued(
                 element.tcp.t,

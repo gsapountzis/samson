@@ -2,7 +2,6 @@ package samson.form;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -37,22 +36,12 @@ class FormField implements Field, Messages {
 
     @Override
     public Element getElement() {
-        if (ref != ElementRef.NULL_REF) {
-            return ref.element;
-        }
-        else {
-            return null;
-        }
+        return ref.element;
     }
 
     @Override
     public Object getObjectValue() {
-        if (ref != ElementRef.NULL_REF) {
-            return ref.accessor.get();
-        }
-        else {
-            return null;
-        }
+        return ref.accessor.get();
     }
 
     @Override
@@ -61,12 +50,7 @@ class FormField implements Field, Messages {
             return Utils.getFirst(node.getStringValues());
         }
         else {
-            if (ref != ElementRef.NULL_REF) {
-                return form.toStringValue(ref.element, ref.accessor.get());
-            }
-            else {
-                return null;
-            }
+            return form.toStringValue(ref.element, ref.accessor.get());
         }
     }
 
@@ -76,12 +60,7 @@ class FormField implements Field, Messages {
             return node.getStringValues();
         }
         else {
-            if (ref != ElementRef.NULL_REF) {
-                return form.toStringList(ref.element, ref.accessor.get());
-            }
-            else {
-                return Collections.emptyList();
-            }
+            return form.toStringList(ref.element, ref.accessor.get());
         }
     }
 

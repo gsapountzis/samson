@@ -44,6 +44,12 @@ public class BinderFactory {
     }
 
     public Binder getBinder(ElementRef ref, boolean composite, boolean validate) {
+
+        // check for null element
+        if (ref.element.tcp == null) {
+            return Binder.NULL_BINDER;
+        }
+
         BinderType type = getBinderType(ref.element.tcp, composite);
 
         if (validate) {
@@ -68,10 +74,6 @@ public class BinderFactory {
     }
 
     private BinderType getBinderType(TypeClassPair tcp, boolean composite) {
-        if (tcp == null) {
-            return BinderType.NULL;
-        }
-
         final Class<?> clazz = tcp.c;
 
         BinderType type = BinderType.NULL;
@@ -94,10 +96,6 @@ public class BinderFactory {
     }
 
     private BinderType validateBinderType(BinderType type, TypeClassPair tcp, Object instance, boolean composite) {
-        if (tcp == null) {
-            return BinderType.NULL;
-        }
-
         final Class<?> clazz = tcp.c;
 
         if (composite) {
