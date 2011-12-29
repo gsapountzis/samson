@@ -44,7 +44,11 @@ public class BinderFactory {
     }
 
     public Binder getBinder(ElementRef ref, boolean composite, boolean validate) {
-        BinderType type = getBinderType(ref.element.tcp, ref.accessor.get(), composite, validate);
+        BinderType type = getBinderType(ref.element.tcp, composite);
+
+        if (validate) {
+            type = validateBinderType(type, ref.element.tcp, ref.accessor.get(), composite);
+        }
 
         if (type == BinderType.STRING) {
             return new StringBinder(ref);
@@ -63,15 +67,14 @@ public class BinderFactory {
         }
     }
 
-    private BinderType getBinderType(TypeClassPair tcp, Object instance, boolean composite, boolean validate) {
-        BinderType type = BinderType.NULL;
-
+    private BinderType getBinderType(TypeClassPair tcp, boolean composite) {
         if (tcp == null) {
             return BinderType.NULL;
         }
 
         final Class<?> clazz = tcp.c;
 
+        BinderType type = BinderType.NULL;
         if (composite) {
             if (List.class.isAssignableFrom(clazz)) {
                 type = BinderType.LIST;
@@ -87,32 +90,40 @@ public class BinderFactory {
             type = BinderType.STRING;
         }
 
-        if (validate) {
-            if (composite) {
-                if (type == BinderType.BEAN) {
-                    final int modifiers = clazz.getModifiers();
-                    if (Modifier.isAbstract(modifiers)) {
-                        if (instance == null) {
-                            LOGGER.warn("{} cannot be instantiated", clazz);
-                            type = BinderType.NULL;
-                        }
+        return type;
+    }
+
+    private BinderType validateBinderType(BinderType type, TypeClassPair tcp, Object instance, boolean composite) {
+        if (tcp == null) {
+            return BinderType.NULL;
+        }
+
+        final Class<?> clazz = tcp.c;
+
+        if (composite) {
+            if (type == BinderType.BEAN) {
+                final int modifiers = clazz.getModifiers();
+                if (Modifier.isAbstract(modifiers)) {
+                    if (instance == null) {
+                        LOGGER.warn("{} cannot be instantiated", clazz);
+                        type = BinderType.NULL;
                     }
-                    else {
-                        // we require no-arg constructor for non-abstract beans
-                        Constructor<?> constructor = ReflectionHelper.getNoargConstructor(clazz);
-                        if (constructor == null) {
-                            LOGGER.warn("{} does not have a no-arg constructor", clazz);
-                            type = BinderType.NULL;
-                        }
+                }
+                else {
+                    // we require no-arg constructor for non-abstract beans
+                    Constructor<?> constructor = ReflectionHelper.getNoargConstructor(clazz);
+                    if (constructor == null) {
+                        LOGGER.warn("{} does not have a no-arg constructor", clazz);
+                        type = BinderType.NULL;
                     }
                 }
             }
-            else {
-                boolean isStringType = converterProvider.isConvertible(tcp.t, tcp.c);
-                if (!isStringType) {
-                    LOGGER.warn("{} cannot be converted", clazz);
-                    type = BinderType.NULL;
-                }
+        }
+        else {
+            boolean isStringType = converterProvider.isConvertible(tcp.t, tcp.c);
+            if (!isStringType) {
+                LOGGER.warn("{} cannot be converted", clazz);
+                type = BinderType.NULL;
             }
         }
 
