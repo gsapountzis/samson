@@ -1,5 +1,7 @@
 package samson.form;
 
+import static samson.Configuration.CONVERSION_ERROR_MESSAGE_TEMPLATE;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -179,8 +181,6 @@ class FormField implements Field, Messages {
             }
         }
     }
-
-    private static final String CONVERSION_ERROR_MESSAGE_TEMPLATE = "invalid value '%s'";
 
     private static String getConversionErrorMessage(String value) {
         return String.format(CONVERSION_ERROR_MESSAGE_TEMPLATE, value);

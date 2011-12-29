@@ -1,6 +1,6 @@
 package samson.form;
 
-import static samson.JForm.Configuration.DISABLE_VALIDATION;
+import static samson.Configuration.DISABLE_VALIDATION;
 
 import java.util.HashMap;
 import java.util.List;

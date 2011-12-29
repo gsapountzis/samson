@@ -1,6 +1,6 @@
 package samson.bind;
 
-import static samson.JForm.Configuration.MAX_LIST_SIZE;
+import static samson.Configuration.MAX_LIST_SIZE;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
