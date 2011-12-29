@@ -60,22 +60,12 @@ public interface JForm<T> {
     boolean hasErrors();
 
     /**
-     * Get all the conversion errors of the form.
-     */
-    Map<String, ConverterException> getConversionFailures();
-
-    /**
-     * Get all the constraint violations of the form.
-     */
-    Map<String, Set<ConstraintViolation<T>>> getConstraintViolations();
-
-    /**
-     * Get all the info messages of the form.
+     * Convenient method for getting all the info messages of the form.
      */
     Map<String, List<String>> getInfos();
 
     /**
-     * Get all the error messages of the form.
+     * Convenient method for getting all the error (conversion, validation, user) messages of the form.
      */
     Map<String, List<String>> getErrors();
 

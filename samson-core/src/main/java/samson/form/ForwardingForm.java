@@ -2,12 +2,8 @@ package samson.form;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
 
 import samson.JForm;
-import samson.convert.ConverterException;
 
 public abstract class ForwardingForm<T> implements JForm<T> {
 
@@ -23,16 +19,6 @@ public abstract class ForwardingForm<T> implements JForm<T> {
     @Override
     public boolean hasErrors() {
         return delegate().hasErrors();
-    }
-
-    @Override
-    public Map<String, ConverterException> getConversionFailures() {
-        return delegate().getConversionFailures();
-    }
-
-    @Override
-    public Map<String, Set<ConstraintViolation<T>>> getConstraintViolations() {
-        return delegate().getConstraintViolations();
     }
 
     @Override

@@ -2,12 +2,8 @@ package samson.form;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
 
 import samson.JForm;
-import samson.convert.ConverterException;
 
 class PathForm implements JForm<Object> {
 
@@ -28,16 +24,6 @@ class PathForm implements JForm<Object> {
 
     @Override
     public boolean hasErrors() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map<String, ConverterException> getConversionFailures() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map<String, Set<ConstraintViolation<Object>>> getConstraintViolations() {
         throw new UnsupportedOperationException();
     }
 

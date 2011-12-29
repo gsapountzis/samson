@@ -3,9 +3,7 @@ package samson.form;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
@@ -108,16 +106,6 @@ class Form<T> implements JForm<T> {
     @Override
     public boolean hasErrors() {
         return hasErrors;
-    }
-
-    @Override
-    public Map<String, ConverterException> getConversionFailures() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Map<String, Set<ConstraintViolation<T>>> getConstraintViolations() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
