@@ -4,27 +4,35 @@ import java.util.List;
 import java.util.Map;
 
 import samson.JForm;
+import samson.form.Property.Path;
+import samson.metadata.ElementRef;
 
 class PathForm implements JForm<Object> {
 
     private final Form<?> delegate;
-    private final String path;
+    private final String param;
 
-    PathForm(Form<?> delegate, String path) {
+    PathForm(Form<?> delegate, String param) {
         this.delegate = delegate;
-        this.path = path;
+        this.param = param;
     }
 
     // -- Form
 
     @Override
     public Object get() {
-        throw new UnsupportedOperationException();
+        Path path = Path.createPath(param);
+        List<ElementRef> refs = delegate.getPathRef(path);
+        int size = refs.size();
+        ElementRef ref = refs.get(size - 1);
+        return ref.accessor.get();
     }
 
     @Override
     public boolean hasErrors() {
-        throw new UnsupportedOperationException();
+        Path path = Path.createPath(param);
+        FormNode node = delegate.getFormNode(path);
+        return node.isTreeError();
     }
 
     @Override
@@ -41,7 +49,7 @@ class PathForm implements JForm<Object> {
 
     @Override
     public String getPath() {
-        return path;
+        return param;
     }
 
     @Override
@@ -51,12 +59,12 @@ class PathForm implements JForm<Object> {
 
     @Override
     public JForm<?> dot(String property) {
-        return new PathForm(delegate, path + "." + property);
+        return new PathForm(delegate, param + "." + property);
     }
 
     @Override
     public JForm<?> index(String index) {
-        return new PathForm(delegate, path + "[" + index + "]");
+        return new PathForm(delegate, param + "[" + index + "]");
     }
 
     @Override
@@ -68,22 +76,22 @@ class PathForm implements JForm<Object> {
 
     @Override
     public Field getField() {
-        return delegate.getField(path);
+        return delegate.getField(param);
     }
 
     @Override
     public Messages getMessages() {
-        return delegate.getField(path);
+        return delegate.getField(param);
     }
 
     @Override
     public void info(String msg) {
-        delegate.info(path, msg);
+        delegate.info(param, msg);
     }
 
     @Override
     public void error(String msg) {
-        delegate.error(path, msg);
+        delegate.error(param, msg);
     }
 
 }

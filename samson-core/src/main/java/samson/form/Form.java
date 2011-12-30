@@ -1,5 +1,6 @@
 package samson.form;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -167,27 +168,34 @@ class Form<T> implements JForm<T> {
             ref = parameterRef;
         }
         else {
-            Path parent = path.head();
-            Node child = path.tail();
+            List<ElementRef> refs = getPathRef(path);
+            int size = refs.size();
 
-            Binder parentBinder = getPathBinder(parent);
-            parentRef = parentBinder.getRef();
-            ref = parentBinder.getChildRef(child.getName());
+            parentRef = refs.get(size - 2);
+            ref = refs.get(size - 1);
         }
 
-        FormNode node = root.getDefinedChild(path);
+        FormNode node = getFormNode(path);
 
         return new FormField(form, parentRef, ref, node);
     }
 
-    private Binder getPathBinder(Path path) {
+    List<ElementRef> getPathRef(Path path) {
+        List<ElementRef> refs = new ArrayList<ElementRef>();
         ElementRef ref = parameterRef;
-        Binder binder = binderFactory.getBinder(ref, true, false);
+        refs.add(ref);
         for (Node node : path) {
-            ref = binder.getChildRef(node.getName());
-            binder = binderFactory.getBinder(ref, true, false);
+            String name = node.getName();
+
+            Binder binder = binderFactory.getBinder(ref, true, false);
+            ref = binder.getChildRef(name);
+            refs.add(ref);
         }
-        return binder;
+        return refs;
+    }
+
+    FormNode getFormNode(Path path) {
+        return root.getDefinedChild(path);
     }
 
     // -- Callbacks for access to conversion, validation services
