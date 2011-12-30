@@ -2,6 +2,7 @@ package samson.form;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -111,12 +112,46 @@ class Form<T> implements JForm<T> {
 
     @Override
     public Map<String, List<String>> getInfos() {
-        throw new UnsupportedOperationException();
+        return getInfos(null);
     }
 
     @Override
     public Map<String, List<String>> getErrors() {
-        throw new UnsupportedOperationException();
+        return getErrors(null);
+    }
+
+    // -- Path Form
+
+    public Object get(String param) {
+        Path path = Path.createPath(param);
+
+        List<ElementRef> refs = getPathRef(path);
+        int size = refs.size();
+        ElementRef ref = refs.get(size - 1);
+
+        return ref.accessor.get();
+    }
+
+    public boolean hasErrors(String param) {
+        Path path = Path.createPath(param);
+        FormNode node = root.getDefinedChild(path);
+        return node.isTreeError();
+    }
+
+    public Map<String, List<String>> getInfos(String param) {
+        Map<String, List<String>> infos = new HashMap<String, List<String>>();
+        Path path = Path.createPath(param);
+        FormNode node = root.getDefinedChild(path);
+        node.getTreeInfos(infos, param);
+        return infos;
+    }
+
+    public Map<String, List<String>> getErrors(String param) {
+        Map<String, List<String>> errors = new HashMap<String, List<String>>();
+        Path path = Path.createPath(param);
+        FormNode node = root.getDefinedChild(path);
+        node.getTreeErrors(errors, param);
+        return errors;
     }
 
     // -- Field
@@ -141,20 +176,6 @@ class Form<T> implements JForm<T> {
         error(null, msg);
     }
 
-    void info(String param, String msg) {
-        Path path = Path.createPath(param);
-        FormNode node = root.getDefinedChild(path);
-        node.info(msg);
-    }
-
-    void error(String param, String msg) {
-        hasErrors = true;
-
-        Path path = Path.createPath(param);
-        FormNode node = root.getDefinedChild(path);
-        node.error(msg);
-    }
-
     // -- Path Field
 
     FormField getField(String param) {
@@ -170,17 +191,30 @@ class Form<T> implements JForm<T> {
         else {
             List<ElementRef> refs = getPathRef(path);
             int size = refs.size();
-
             parentRef = refs.get(size - 2);
             ref = refs.get(size - 1);
         }
 
-        FormNode node = getFormNode(path);
+        FormNode node = root.getDefinedChild(path);
 
         return new FormField(form, parentRef, ref, node);
     }
 
-    List<ElementRef> getPathRef(Path path) {
+    void info(String param, String msg) {
+        Path path = Path.createPath(param);
+        FormNode node = root.getDefinedChild(path);
+        node.info(msg);
+    }
+
+    void error(String param, String msg) {
+        hasErrors = true;
+
+        Path path = Path.createPath(param);
+        FormNode node = root.getDefinedChild(path);
+        node.error(msg);
+    }
+
+    private List<ElementRef> getPathRef(Path path) {
         List<ElementRef> refs = new ArrayList<ElementRef>();
         ElementRef ref = parameterRef;
         refs.add(ref);
@@ -192,10 +226,6 @@ class Form<T> implements JForm<T> {
             refs.add(ref);
         }
         return refs;
-    }
-
-    FormNode getFormNode(Path path) {
-        return root.getDefinedChild(path);
     }
 
     // -- Callbacks for access to conversion, validation services

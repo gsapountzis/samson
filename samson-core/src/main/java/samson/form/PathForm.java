@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import samson.JForm;
-import samson.form.Property.Path;
-import samson.metadata.ElementRef;
 
 class PathForm implements JForm<Object> {
 
@@ -21,28 +19,22 @@ class PathForm implements JForm<Object> {
 
     @Override
     public Object get() {
-        Path path = Path.createPath(param);
-        List<ElementRef> refs = delegate.getPathRef(path);
-        int size = refs.size();
-        ElementRef ref = refs.get(size - 1);
-        return ref.accessor.get();
+        return delegate.get(param);
     }
 
     @Override
     public boolean hasErrors() {
-        Path path = Path.createPath(param);
-        FormNode node = delegate.getFormNode(path);
-        return node.isTreeError();
+        return delegate.hasErrors(param);
     }
 
     @Override
     public Map<String, List<String>> getInfos() {
-        throw new UnsupportedOperationException();
+        return delegate.getInfos(param);
     }
 
     @Override
     public Map<String, List<String>> getErrors() {
-        throw new UnsupportedOperationException();
+        return delegate.getErrors(param);
     }
 
     // -- Path

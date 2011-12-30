@@ -238,6 +238,38 @@ public class FormNode implements BinderNode<FormNode> {
         return false;
     }
 
+    private String getChildParam(String parent, Node child) {
+        return (Utils.isNullOrEmpty(parent) ? "" : parent) + child;
+    }
+
+    public void getTreeInfos(Map<String, List<String>> treeInfos, String param) {
+        if (!infos.isEmpty()) {
+            treeInfos.put(param, infos);
+        }
+
+        for (FormNode child : children.values()) {
+            child.getTreeInfos(treeInfos, getChildParam(param, child.getNode()));
+        }
+    }
+
+    public void getTreeErrors(Map<String, List<String>> treeErrors, String param) {
+        List<String> allErrors = new ArrayList<String>();
+
+        if (isConversionError()) {
+            allErrors.add(getConversionError());
+        }
+        allErrors.addAll(getValidationErrors());
+        allErrors.addAll(errors);
+
+        if (!allErrors.isEmpty()) {
+            treeErrors.put(param, allErrors);
+        }
+
+        for (FormNode child : children.values()) {
+            child.getTreeErrors(treeErrors, getChildParam(param, child.getNode()));
+        }
+    }
+
     public void printTree(StringBuilder sb, int indent) {
         print(sb, indent);
 
