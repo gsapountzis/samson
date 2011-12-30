@@ -2,10 +2,6 @@ package samson.form;
 
 import static samson.Configuration.DISABLE_VALIDATION;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -18,9 +14,7 @@ import samson.Element;
 import samson.JForm;
 import samson.bind.Binder;
 import samson.bind.BinderType;
-import samson.convert.ConverterException;
 import samson.form.Property.Path;
-import samson.metadata.ElementRef;
 
 class BindForm<T> extends Form<T> {
 
@@ -28,7 +22,7 @@ class BindForm<T> extends Form<T> {
 
     public BindForm(FormNode root, Element parameter, T parameterValue) {
         super(root, parameter, parameterValue);
-        LOGGER.trace(printTree(root));
+        LOGGER.trace(printTree());
     }
 
     public JForm<T> apply() {
@@ -37,57 +31,14 @@ class BindForm<T> extends Form<T> {
             BinderType binderType = binder.getType();
             binder.read(root);
             root.setBinder(binder);
-            convert();
+
+            root.convertTree(form);
             validate(binderType);
+
+            hasErrors = root.isTreeError();
+            LOGGER.trace(printTree());
         }
         return this;
-    }
-
-    private void convert() {
-        Map<String, ConverterException> conversionErrors = new HashMap<String, ConverterException>();
-        convert(root, "", conversionErrors);
-
-        if (!conversionErrors.isEmpty()) {
-            hasErrors = true;
-        }
-
-        for (Entry<String, ConverterException> entry : conversionErrors.entrySet()) {
-            String param = entry.getKey();
-            ConverterException conversionError = entry.getValue();
-            LOGGER.debug("{} : {}", param, conversionError);
-        }
-        LOGGER.trace(printTree(root));
-    }
-
-    private void convert(FormNode node, String parent, Map<String, ConverterException> conversionErrors) {
-        convertNode(node);
-
-        String path = parent + node.getNode();
-        if (node.isConversionError()) {
-            conversionErrors.put(path, node.getConversionError());
-        }
-
-        for (FormNode child : node.getChildren()) {
-            convert(child, path, conversionErrors);
-        }
-    }
-
-    private void convertNode(FormNode node) {
-        Binder binder = node.getBinder();
-        if (binder.getType() == BinderType.STRING) {
-            ElementRef ref = binder.getRef();
-            List<String> stringValues = node.getStringValues();
-
-            Conversion conversion = form.fromStringList(ref.element, stringValues);
-            if (conversion != null) {
-                if (conversion.isError()) {
-                    node.setConversionError(conversion.getCause());
-                }
-                else {
-                    ref.accessor.set(conversion.getValue());
-                }
-            }
-        }
     }
 
     /**
@@ -115,13 +66,10 @@ class BindForm<T> extends Form<T> {
         Validator validator = validatorFactory.getValidator();
         Set<ConstraintViolation<T>> constraintViolations = validator.validate(parameterValue);
 
-        if (!constraintViolations.isEmpty()) {
-            hasErrors = true;
-        }
-
         for (ConstraintViolation<T> violation : constraintViolations) {
             LOGGER.debug("{}: {}", violation.getPropertyPath(), violation.getMessage());
         }
+
         for (ConstraintViolation<T> violation : constraintViolations) {
             // parse and normalize the validation property path
             javax.validation.Path validationPath = violation.getPropertyPath();
@@ -132,10 +80,9 @@ class BindForm<T> extends Form<T> {
             FormNode node = root.getDefinedChild(path);
             node.addConstraintViolation(violation);
         }
-        LOGGER.trace(printTree(root));
     }
 
-    private static String printTree(FormNode root) {
+    private String printTree() {
         StringBuilder sb = new StringBuilder("\n");
         root.printTree(sb, 0);
         return sb.toString();

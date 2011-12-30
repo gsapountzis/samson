@@ -1,5 +1,7 @@
 package samson.form;
 
+import static samson.Configuration.CONVERSION_ERROR_MESSAGE_TEMPLATE;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -12,9 +14,11 @@ import javax.validation.ConstraintViolation;
 
 import samson.bind.Binder;
 import samson.bind.BinderNode;
+import samson.bind.BinderType;
 import samson.convert.ConverterException;
 import samson.form.Property.Node;
 import samson.form.Property.Path;
+import samson.metadata.ElementRef;
 
 public class FormNode implements BinderNode<FormNode> {
     private Binder binder = Binder.NULL_BINDER;
@@ -119,12 +123,8 @@ public class FormNode implements BinderNode<FormNode> {
         return (conversionError != null);
     }
 
-    public ConverterException getConversionError() {
+    public ConverterException getConversionFailure() {
         return conversionError;
-    }
-
-    public void setConversionError(ConverterException conversionError) {
-        this.conversionError = conversionError;
     }
 
     public Set<ConstraintViolation<?>> getConstraintViolations() {
@@ -151,7 +151,43 @@ public class FormNode implements BinderNode<FormNode> {
         errors.add(msg);
     }
 
-    // -- Node Computations
+    public String getConversionError() {
+        boolean error = isConversionError();
+        if (error) {
+            String stringValue = Utils.getFirst(stringValues);
+            return getConversionErrorMessage(stringValue);
+        }
+        return null;
+    }
+
+    public List<String> getValidationErrors() {
+        List<String> messages = new ArrayList<String>();
+        for (ConstraintViolation<?> violation : constraintViolations) {
+            messages.add(violation.getMessage());
+        }
+        return messages;
+    }
+
+    private static String getConversionErrorMessage(String value) {
+        return String.format(CONVERSION_ERROR_MESSAGE_TEMPLATE, value);
+    }
+
+    // -- Tree Computations (visitor / functional)
+
+    public void convert(Form<?> form) {
+        if (binder.getType() == BinderType.STRING) {
+            ElementRef ref = binder.getRef();
+            Conversion conversion = form.fromStringList(ref.element, stringValues);
+            if (conversion != null) {
+                if (conversion.isError()) {
+                    conversionError = conversion.getCause();
+                }
+                else {
+                    ref.accessor.set(conversion.getValue());
+                }
+            }
+        }
+    }
 
     public boolean isError() {
         if (isConversionError()) {
@@ -166,24 +202,7 @@ public class FormNode implements BinderNode<FormNode> {
         return false;
     }
 
-    // -- Tree Computations (visitor / functional)
-
-    public boolean hasErrors() {
-        if (isError()) {
-            return true;
-        }
-
-        for (FormNode child : children.values()) {
-            if (child.hasErrors()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public void printTree(StringBuilder sb, int indent) {
-
+    public void print(StringBuilder sb, int indent) {
         boolean error = isConversionError();
         sb.append("[").append(error ? "X" : " ").append("] ");
 
@@ -195,9 +214,38 @@ public class FormNode implements BinderNode<FormNode> {
         }
         String s = node.toString();
         sb.append(s).append("\n");
+    }
+
+    public void convertTree(Form<?> form) {
+        convert(form);
 
         for (FormNode child : children.values()) {
-            child.printTree(sb, indent + s.length());
+            child.convertTree(form);
+        }
+    }
+
+    public boolean isTreeError() {
+        if (isError()) {
+            return true;
+        }
+
+        for (FormNode child : children.values()) {
+            if (child.isTreeError()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void printTree(StringBuilder sb, int indent) {
+        print(sb, indent);
+
+        String s = node.toString();
+        indent += s.length();
+
+        for (FormNode child : children.values()) {
+            child.printTree(sb, indent);
         }
     }
 

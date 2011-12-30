@@ -1,7 +1,5 @@
 package samson.form;
 
-import static samson.Configuration.CONVERSION_ERROR_MESSAGE_TEMPLATE;
-
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +71,7 @@ class FormField implements Field, Messages {
 
     @Override
     public ConverterException getConversionFailure() {
-        return node.getConversionError();
+        return node.getConversionFailure();
     }
 
     @Override
@@ -95,12 +93,7 @@ class FormField implements Field, Messages {
 
     @Override
     public String getConversionError() {
-        boolean error = node.isConversionError();
-        if (error) {
-            String stringValue = Utils.getFirst(node.getStringValues());
-            return getConversionErrorMessage(stringValue);
-        }
-        return null;
+        return node.getConversionError();
     }
 
     @Override
@@ -110,12 +103,7 @@ class FormField implements Field, Messages {
 
     @Override
     public List<String> getValidationErrors() {
-        Set<ConstraintViolation<?>> constraintViolations = node.getConstraintViolations();
-        List<String> messages = new ArrayList<String>();
-        for (ConstraintViolation<?> violation : constraintViolations) {
-            messages.add(violation.getMessage());
-        }
-        return messages;
+        return node.getValidationErrors();
     }
 
     @Override
@@ -180,10 +168,6 @@ class FormField implements Field, Messages {
                 messages.add(message);
             }
         }
-    }
-
-    private static String getConversionErrorMessage(String value) {
-        return String.format(CONVERSION_ERROR_MESSAGE_TEMPLATE, value);
     }
 
 }
