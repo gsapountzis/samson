@@ -20,22 +20,21 @@ class BindForm<T> extends Form<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BindForm.class);
 
-    public BindForm(FormNode root, Element parameter, T parameterValue) {
-        super(root, parameter, parameterValue);
+    BindForm(Element parameter, T value, FormNode root) {
+        super(parameter, value, root);
         LOGGER.trace(printTree());
     }
 
-    public JForm<T> apply() {
-        Binder binder = binderFactory.getBinder(parameterRef, root.hasChildren());
+    JForm<T> apply() {
+        Binder binder = binderFactory.getBinder(rootRef, rootNode.hasChildren());
         if (binder != Binder.NULL_BINDER) {
             BinderType binderType = binder.getType();
-            binder.read(root);
-            root.setBinder(binder);
+            binder.read(rootNode);
+            rootNode.setBinder(binder);
 
-            root.convertTree(form);
+            rootNode.convertTree(form);
             validate(binderType);
 
-            hasErrors = root.isTreeError();
             LOGGER.trace(printTree());
         }
         return this;
@@ -55,7 +54,7 @@ class BindForm<T> extends Form<T> {
         if (validatorFactory == null) {
             return;
         }
-        if (parameterValue == null) {
+        if (rootValue == null) {
             return;
         }
 
@@ -64,7 +63,7 @@ class BindForm<T> extends Form<T> {
         }
 
         Validator validator = validatorFactory.getValidator();
-        Set<ConstraintViolation<T>> constraintViolations = validator.validate(parameterValue);
+        Set<ConstraintViolation<T>> constraintViolations = validator.validate(rootValue);
 
         for (ConstraintViolation<T> violation : constraintViolations) {
             LOGGER.debug("{}: {}", violation.getPropertyPath(), violation.getMessage());
@@ -77,14 +76,14 @@ class BindForm<T> extends Form<T> {
             Path path = Path.createPath(param);
 
             // annotate the form tree with violations
-            FormNode node = root.getDefinedChild(path);
+            FormNode node = rootNode.getDefinedChild(path);
             node.addConstraintViolation(violation);
         }
     }
 
     private String printTree() {
         StringBuilder sb = new StringBuilder("\n");
-        root.printTree(sb, 0);
+        rootNode.printTree(0, sb);
         return sb.toString();
     }
 

@@ -175,7 +175,8 @@ public class FormNode implements BinderNode<FormNode> {
     // -- Tree Computations (visitor / functional)
 
     public void convert(Form<?> form) {
-        if (binder.getType() == BinderType.STRING) {
+        BinderType binderType = binder.getType();
+        if (binderType == BinderType.STRING) {
             ElementRef ref = binder.getRef();
             Conversion conversion = form.fromStringList(ref.element, stringValues);
             if (conversion != null) {
@@ -202,7 +203,7 @@ public class FormNode implements BinderNode<FormNode> {
         return false;
     }
 
-    public void print(StringBuilder sb, int indent) {
+    public void print(int indent, StringBuilder sb) {
         boolean error = isConversionError();
         sb.append("[").append(error ? "X" : " ").append("] ");
 
@@ -242,17 +243,18 @@ public class FormNode implements BinderNode<FormNode> {
         return (Utils.isNullOrEmpty(parent) ? "" : parent) + child;
     }
 
-    public void getTreeInfos(Map<String, List<String>> treeInfos, String param) {
+    public void getTreeInfos(String param, Map<String, List<String>> treeInfos) {
         if (!infos.isEmpty()) {
             treeInfos.put(param, infos);
         }
 
         for (FormNode child : children.values()) {
-            child.getTreeInfos(treeInfos, getChildParam(param, child.getNode()));
+            String childParam = getChildParam(param, child.getNode());
+            child.getTreeInfos(childParam, treeInfos);
         }
     }
 
-    public void getTreeErrors(Map<String, List<String>> treeErrors, String param) {
+    public void getTreeErrors(String param, Map<String, List<String>> treeErrors) {
         List<String> allErrors = new ArrayList<String>();
 
         if (isConversionError()) {
@@ -266,18 +268,19 @@ public class FormNode implements BinderNode<FormNode> {
         }
 
         for (FormNode child : children.values()) {
-            child.getTreeErrors(treeErrors, getChildParam(param, child.getNode()));
+            String childParam = getChildParam(param, child.getNode());
+            child.getTreeErrors(childParam, treeErrors);
         }
     }
 
-    public void printTree(StringBuilder sb, int indent) {
-        print(sb, indent);
+    public void printTree(int indent, StringBuilder sb) {
+        print(indent, sb);
 
         String s = node.toString();
         indent += s.length();
 
         for (FormNode child : children.values()) {
-            child.printTree(sb, indent);
+            child.printTree(indent, sb);
         }
     }
 

@@ -21,15 +21,15 @@ import samson.metadata.ElementRef;
 class FormField implements Field, Messages {
 
     private final Form<?> form;
-    private final ElementRef parentRef;
-    private final ElementRef ref;
     private final FormNode node;
+    private final ElementRef ref;
+    private final Element parentElement;
 
-    FormField(Form<?> form, ElementRef parentRef, ElementRef ref, FormNode node) {
+    FormField(Form<?> form, FormNode node, ElementRef ref, Element parentElement) {
         this.form = form;
-        this.parentRef = parentRef;
-        this.ref = ref;
         this.node = node;
+        this.ref = ref;
+        this.parentElement = parentElement;
     }
 
     // -- Field
@@ -133,15 +133,15 @@ class FormField implements Field, Messages {
         Validator validator = form.getValidator();
 
         ElementDescriptor decl = null;
-        if (parentRef != ElementRef.NULL_REF) {
+        if (parentElement != Element.NULL_ELEMENT) {
             // should check for method parameter vs. bean property below
-            if (parentRef == ElementRef.NULL_REF) {
+            if (parentElement == Element.NULL_ELEMENT) {
                 // method parameter
                 decl = null;
             }
             else {
                 // bean property
-                TypeClassPair parentTcp = parentRef.element.tcp;
+                TypeClassPair parentTcp = parentElement.tcp;
                 BeanDescriptor parentBean = validator.getConstraintsForClass(parentTcp.c);
                 // should use property name below, not element.name which comes from JAX-RS annotations
                 decl = parentBean.getConstraintsForProperty(ref.element.name);

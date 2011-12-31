@@ -84,7 +84,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
     private JForm<T> bind(String path, Map<String, List<String>> params) {
         FormNode root = parse(path, params);
 
-        BindForm<T> form = new BindForm<T>(root, element, instance);
+        BindForm<T> form = new BindForm<T>(element, instance, root);
         form.setConverterProvider(converterProvider);
         form.setBinderFactory(binderFactory);
         form.setValidatorFactory(validatorFactory);
@@ -95,7 +95,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
     JForm<T> wrap() {
         FormNode root = new FormNode(Node.createPrefix(null));
 
-        Form<T> form = new Form<T>(root, element, instance);
+        Form<T> form = new Form<T>(element, instance, root);
         form.setConverterProvider(converterProvider);
         form.setBinderFactory(binderFactory);
         form.setValidatorFactory(validatorFactory);
