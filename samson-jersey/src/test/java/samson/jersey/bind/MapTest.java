@@ -1,4 +1,4 @@
-package samson.jersey;
+package samson.jersey.bind;
 
 import static org.junit.Assert.assertEquals;
 
@@ -54,7 +54,7 @@ public class MapTest {
     }
 
     @Test
-    public void testQueryList() {
+    public void testQueryMap() {
         // ok
         WebApplication w = WebappTestUtils.createWepapp(MapResource.class);
         WebResource r = WebappTestUtils.resource(w);
@@ -89,7 +89,7 @@ public class MapTest {
     }
 
     @Test
-    public void testFormList() {
+    public void testFormMap() {
         // ok
         WebApplication w = WebappTestUtils.createWepapp(MapResource.class);
         WebResource r = WebappTestUtils.resource(w);

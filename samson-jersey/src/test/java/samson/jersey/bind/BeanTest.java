@@ -1,4 +1,4 @@
-package samson.jersey;
+package samson.jersey.bind;
 
 import static org.junit.Assert.assertEquals;
 
