@@ -77,11 +77,10 @@ class BeanIntrospector {
 
         while (c != Object.class) {
             for (final Field f : c.getDeclaredFields()) {
-                if (Modifier.isPublic(f.getModifiers())) {
-                    String name = f.getName();
-                    Tuple t = getTuple(properties, name);
-                    t.field = f;
-                }
+                String name = f.getName();
+
+                Tuple t = getTuple(properties, name);
+                t.field = f;
              }
              c = c.getSuperclass();
         }
@@ -107,12 +106,13 @@ class BeanIntrospector {
         for (AnnotatedMethod am : methodList.hasNumParams(0)) {
             Method m = am.getMethod();
             String name = m.getName();
+            Class<?> returnType = m.getReturnType();
 
             String property = null;
-            if (name.startsWith("get")) {
+            if ((returnType != void.class) && name.startsWith("get")) {
                 property = getPropertyName(name, 3);
             }
-            else if (name.startsWith("is")) {
+            else if ((returnType == boolean.class || returnType == Boolean.class) && name.startsWith("is")) {
                 property = getPropertyName(name, 2);
             }
             if (property != null) {
@@ -141,8 +141,11 @@ class BeanIntrospector {
                 beanProperties.put(name, beanProperty);
             }
             else if (t.field != null) {
-                BeanProperty beanProperty = BeanProperty.fromPublicField(beanClass, name, t.field);
-                beanProperties.put(name, beanProperty);
+                int modifiers = t.field.getModifiers();
+                if (Modifier.isPublic(modifiers)) {
+                    BeanProperty beanProperty = BeanProperty.fromPublicField(beanClass, name, t.field);
+                    beanProperties.put(name, beanProperty);
+                }
             }
         }
         return beanProperties;

@@ -68,11 +68,16 @@ public abstract class BeanProperty extends Element {
 
     public static BeanProperty fromProperty(Class<?> beanClass, String name, Method getter, Method setter, Field field) {
 
-        List<Annotation> list = asList(setter.getAnnotations());
-        mergeAnnotations(list, getter);
+        Annotation[] argAnnotations = setter.getParameterAnnotations()[0];
+
+        List<Annotation> list = asList(argAnnotations);
+        if (getter != null) {
+            mergeAnnotations(list, getter);
+        }
         if (field != null) {
             mergeAnnotations(list, field);
         }
+
         Annotation[] annotations = list.toArray(new Annotation[0]);
 
         TypeClassPair tcp = createTcp(
