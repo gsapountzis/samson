@@ -16,20 +16,19 @@ import samson.JForm.Field;
 import samson.JForm.Messages;
 import samson.TypeClassPair;
 import samson.convert.ConverterException;
+import samson.metadata.BeanProperty;
 import samson.metadata.ElementRef;
 
 class FormField implements Field, Messages {
 
     private final Form<?> form;
-    private final FormNode node;
     private final ElementRef ref;
-    private final Element parentElement;
+    private final FormNode node;
 
-    FormField(Form<?> form, FormNode node, ElementRef ref, Element parentElement) {
+    FormField(Form<?> form, ElementRef ref, FormNode node) {
         this.form = form;
-        this.node = node;
         this.ref = ref;
-        this.parentElement = parentElement;
+        this.node = node;
     }
 
     // -- Field
@@ -133,23 +132,20 @@ class FormField implements Field, Messages {
         Validator validator = form.getValidator();
 
         ElementDescriptor decl = null;
-        if (parentElement != Element.NULL_ELEMENT) {
-            // should check for method parameter vs. bean property below
-            if (parentElement == Element.NULL_ELEMENT) {
-                // method parameter
-                decl = null;
+        ElementDescriptor type = null;
+
+        if (ref != ElementRef.NULL_REF) {
+            Element element = ref.element;
+            if (element instanceof BeanProperty) {
+                BeanProperty beanProperty = (BeanProperty) element;
+                BeanDescriptor bean = validator.getConstraintsForClass(beanProperty.beanClass);
+                decl = bean.getConstraintsForProperty(beanProperty.propertyName);
             }
             else {
-                // bean property
-                TypeClassPair parentTcp = parentElement.tcp;
-                BeanDescriptor parentBean = validator.getConstraintsForClass(parentTcp.c);
-                // should use property name below, not element.name which comes from JAX-RS annotations
-                decl = parentBean.getConstraintsForProperty(ref.element.name);
+                // check for method parameter here
+                decl = null;
             }
-        }
 
-        BeanDescriptor type = null;
-        if (ref != ElementRef.NULL_REF) {
             TypeClassPair tcp = ref.element.tcp;
             type = validator.getConstraintsForClass(tcp.c);
         }
@@ -161,12 +157,13 @@ class FormField implements Field, Messages {
     }
 
     private void getDefaultValidationInfos(List<String> messages, ElementDescriptor element) {
-        if (element != null) {
-            for (ConstraintDescriptor<?> constraint : element.getConstraintDescriptors()) {
-                Annotation annotation = constraint.getAnnotation();
-                String message = annotation.annotationType().getSimpleName();
-                messages.add(message);
-            }
+        if (element == null)
+            return;
+
+        for (ConstraintDescriptor<?> constraint : element.getConstraintDescriptors()) {
+            Annotation annotation = constraint.getAnnotation();
+            String message = annotation.annotationType().getSimpleName();
+            messages.add(message);
         }
     }
 

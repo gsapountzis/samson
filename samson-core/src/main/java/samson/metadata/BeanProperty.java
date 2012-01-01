@@ -1,11 +1,14 @@
 package samson.metadata;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import samson.Element;
 import samson.TypeClassPair;
@@ -13,8 +16,13 @@ import samson.jersey.core.reflection.ReflectionHelper;
 
 public abstract class BeanProperty extends Element {
 
-    private BeanProperty(Annotation[] annotations, TypeClassPair tcp, String name) {
+    public final Class<?> beanClass;
+    public final String propertyName;
+
+    private BeanProperty(Annotation[] annotations, TypeClassPair tcp, Class<?> beanClass, String name) {
         super(annotations, tcp, name);
+        this.beanClass = beanClass;
+        this.propertyName = name;
     }
 
     public ElementAccessor createAccessor(final Object bean) {
@@ -42,7 +50,9 @@ public abstract class BeanProperty extends Element {
 
     abstract void set(Object bean, Object value);
 
-    public static BeanProperty fromPublicField(Class<?> beanClass, Annotation[] annotations, String name, Field field) {
+    public static BeanProperty fromPublicField(Class<?> beanClass, String name, Field field) {
+
+        Annotation[] annotations = field.getAnnotations();
 
         TypeClassPair tcp = createTcp(
                 beanClass,
@@ -55,10 +65,17 @@ public abstract class BeanProperty extends Element {
             throw new IllegalArgumentException("Non-public field");
         }
 
-        return new FieldBeanProperty(annotations, tcp, name, field);
+        return new FieldBeanProperty(annotations, tcp, beanClass, name, field);
     }
 
-    public static BeanProperty fromProperty(Class<?> beanClass, Annotation[] annotations, String name, Method getter, Method setter) {
+    public static BeanProperty fromProperty(Class<?> beanClass, String name, Method getter, Method setter, Field field) {
+
+        List<Annotation> list = asList(setter.getAnnotations());
+        mergeAnnotations(list, getter);
+        if (field != null) {
+            mergeAnnotations(list, field);
+        }
+        Annotation[] annotations = list.toArray(new Annotation[0]);
 
         TypeClassPair tcp = createTcp(
                 beanClass,
@@ -66,15 +83,15 @@ public abstract class BeanProperty extends Element {
                 setter.getParameterTypes()[0],
                 setter.getGenericParameterTypes()[0]);
 
-        return new MethodBeanProperty(annotations, tcp, name, getter, setter);
+        return new MethodBeanProperty(annotations, tcp, beanClass, name, getter, setter);
     }
 
     private static class FieldBeanProperty extends BeanProperty {
 
         private final Field field;
 
-        FieldBeanProperty(Annotation[] annotations, TypeClassPair tcp, String name, Field field) {
-            super(annotations, tcp, name);
+        FieldBeanProperty(Annotation[] annotations, TypeClassPair tcp, Class<?> beanClass, String name, Field field) {
+            super(annotations, tcp, beanClass, name);
             this.field = field;
         }
 
@@ -102,8 +119,8 @@ public abstract class BeanProperty extends Element {
         private final Method getter;
         private final Method setter;
 
-        MethodBeanProperty(Annotation[] annotations, TypeClassPair tcp, String name, Method getter, Method setter) {
-            super(annotations, tcp, name);
+        MethodBeanProperty(Annotation[] annotations, TypeClassPair tcp, Class<?> beanClass, String name, Method getter, Method setter) {
+            super(annotations, tcp, beanClass, name);
             this.getter = getter;
             this.setter = setter;
         }
@@ -140,6 +157,27 @@ public abstract class BeanProperty extends Element {
         ReflectionHelper.ClassTypePair ct = ReflectionHelper.getGenericType(concreteClass, declaringClass, paramClass, paramType);
         TypeClassPair tcp = new TypeClassPair(ct.t, ct.c);
         return tcp;
+    }
+
+    private static void mergeAnnotations(List<Annotation> list, AccessibleObject ao) {
+        for (Annotation a : ao.getAnnotations()) {
+            if (!isAnnotationPresent(list, a))
+                list.add(a);
+        }
+    }
+
+    private static boolean isAnnotationPresent(List<Annotation> annotations, Annotation annotation) {
+        for (Annotation a : annotations) {
+            if (a.annotationType() == annotation.annotationType())
+                return true;
+        }
+        return false;
+    }
+
+    private static <T> List<T> asList(T... ts) {
+        List<T> l = new ArrayList<T>();
+        for (T t : ts) l.add(t);
+        return l;
     }
 
 }

@@ -1,13 +1,9 @@
 package samson.metadata;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -141,48 +137,15 @@ class BeanIntrospector {
             Tuple t = e.getValue();
 
             if ((t.getter != null) && (t.setter != null)) {
-                // merge annotations
-                List<Annotation> list = asList(t.setter.getAnnotations());
-                mergeAnnotations(list, t.getter);
-
-                if (t.field != null) {
-                    mergeAnnotations(list, t.field);
-                }
-
-                Annotation[] annotations = list.toArray(new Annotation[0]);
-
-                BeanProperty beanProperty = BeanProperty.fromProperty(beanClass, annotations, name, t.getter, t.setter);
+                BeanProperty beanProperty = BeanProperty.fromProperty(beanClass, name, t.getter, t.setter, t.field);
                 beanProperties.put(name, beanProperty);
             }
             else if (t.field != null) {
-                Annotation[] annotations = t.field.getAnnotations();
-
-                BeanProperty beanProperty = BeanProperty.fromPublicField(beanClass, annotations, name, t.field);
+                BeanProperty beanProperty = BeanProperty.fromPublicField(beanClass, name, t.field);
                 beanProperties.put(name, beanProperty);
             }
         }
         return beanProperties;
-    }
-
-    private static void mergeAnnotations(List<Annotation> list, AccessibleObject ao) {
-        for (Annotation a : ao.getAnnotations()) {
-            if (!isAnnotationPresent(list, a))
-                list.add(a);
-        }
-    }
-
-    private static boolean isAnnotationPresent(List<Annotation> annotations, Annotation annotation) {
-        for (Annotation a : annotations) {
-            if (a.annotationType() == annotation.annotationType())
-                return true;
-        }
-        return false;
-    }
-
-    private static <T> List<T> asList(T... ts) {
-        List<T> l = new ArrayList<T>();
-        for (T t : ts) l.add(t);
-        return l;
     }
 
 }

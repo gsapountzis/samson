@@ -50,10 +50,9 @@ class Form<T> implements JForm<T> {
             }
 
         };
-        this.rootRef = new ElementRef(element, rootAccessor);
-
+        this.rootRef = new ElementRef(rootElement, rootAccessor);
         this.rootNode = root;
-        this.rootField = new FormField(form, root, rootRef, Element.NULL_ELEMENT);
+        this.rootField = new FormField(form, rootRef, rootNode);
     }
 
     void setConverterProvider(ConverterProvider converterProvider) {

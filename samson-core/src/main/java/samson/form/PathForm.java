@@ -1,6 +1,5 @@
 package samson.form;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,32 +27,24 @@ class PathForm implements JForm<Object> {
             throw new IllegalArgumentException();
         }
 
-        FormNode rootNode = form.getNode();
         ElementRef rootRef = form.getRef();
+        FormNode rootNode = form.getNode();
 
+        ElementRef ref = getPathRef(rootRef, path);
         this.node = rootNode.getDefinedChild(path);
-
-        List<ElementRef> refs = getPathRef(rootRef, path);
-        int size = refs.size();
-        ElementRef ref = refs.get(size - 1);
-        ElementRef parentRef = refs.get(size - 2);
-
-        this.field = new FormField(form, node, ref, parentRef.element);
+        this.field = new FormField(form, ref, node);
     }
 
-    private List<ElementRef> getPathRef(ElementRef rootRef, Path path) {
+    private ElementRef getPathRef(ElementRef rootRef, Path path) {
         BinderFactory binderFactory = form.getBinderFactory();
 
-        List<ElementRef> refs = new ArrayList<ElementRef>();
         ElementRef ref = rootRef;
-        refs.add(ref);
         for (Node node : path) {
             String name = node.getName();
             Binder binder = binderFactory.getBinder(ref, true, false);
             ref = binder.getChildRef(name);
-            refs.add(ref);
         }
-        return refs;
+        return ref;
     }
 
     // -- Path
