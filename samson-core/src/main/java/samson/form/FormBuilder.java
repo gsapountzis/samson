@@ -95,7 +95,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
         FormNode root = parse(path, params);
         LOGGER.trace(printTree(root));
 
-        T value = bind(root);
+        final T value = bind(root);
         LOGGER.trace(printTree(root));
 
         validate(value, root);
