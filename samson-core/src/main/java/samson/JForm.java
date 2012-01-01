@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 
 import samson.convert.ConverterException;
+import samson.metadata.Element;
 
 /**
  * Facade over the binding and validation results that is compatible with the

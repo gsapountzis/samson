@@ -1,4 +1,4 @@
-package samson;
+package samson.metadata;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;

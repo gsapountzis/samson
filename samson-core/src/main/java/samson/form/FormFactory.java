@@ -9,13 +9,13 @@ import javax.validation.ValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import samson.Element;
 import samson.JForm;
 import samson.JFormBuilder;
 import samson.JFormProvider;
-import samson.TypeClassPair;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterProvider;
+import samson.metadata.Element;
+import samson.metadata.TypeClassPair;
 
 public class FormFactory implements JFormProvider {
 

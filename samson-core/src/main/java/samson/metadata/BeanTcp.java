@@ -2,8 +2,6 @@ package samson.metadata;
 
 import java.util.Map;
 
-import samson.TypeClassPair;
-
 public class BeanTcp {
 
     private final TypeClassPair tcp;

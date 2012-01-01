@@ -11,14 +11,14 @@ import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.ElementDescriptor;
 
-import samson.Element;
 import samson.JForm.Field;
 import samson.JForm.Messages;
-import samson.TypeClassPair;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterException;
 import samson.metadata.BeanProperty;
+import samson.metadata.Element;
 import samson.metadata.ElementRef;
+import samson.metadata.TypeClassPair;
 
 class FormField implements Field, Messages {
 

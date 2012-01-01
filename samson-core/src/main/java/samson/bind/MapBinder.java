@@ -6,13 +6,13 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import samson.Element;
-import samson.TypeClassPair;
 import samson.convert.Converter;
 import samson.convert.ConverterException;
+import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
 import samson.metadata.MapTcp;
+import samson.metadata.TypeClassPair;
 
 class MapBinder extends Binder {
 

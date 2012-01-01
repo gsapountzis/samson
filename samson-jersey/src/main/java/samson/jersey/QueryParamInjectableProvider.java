@@ -4,9 +4,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 
-import samson.Element;
 import samson.JForm;
 import samson.JFormProvider;
+import samson.metadata.Element;
 
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.api.model.Parameter;

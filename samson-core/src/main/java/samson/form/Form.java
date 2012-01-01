@@ -7,10 +7,10 @@ import java.util.Map;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import samson.Element;
 import samson.JForm;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterProvider;
+import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
 

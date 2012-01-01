@@ -1,5 +1,7 @@
 package samson;
 
+import samson.metadata.Element;
+
 public interface JFormProvider {
 
     <T> JForm<T> wrap(Class<T> type);

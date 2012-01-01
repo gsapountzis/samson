@@ -15,9 +15,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
 
-import samson.Element;
 import samson.JForm;
 import samson.JFormProvider;
+import samson.metadata.Element;
 
 import com.sun.jersey.api.container.ContainerException;
 import com.sun.jersey.api.representation.Form;

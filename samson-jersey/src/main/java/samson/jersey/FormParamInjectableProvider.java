@@ -7,9 +7,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
-import samson.Element;
 import samson.JForm;
 import samson.JFormProvider;
+import samson.metadata.Element;
 
 import com.sun.jersey.api.container.ContainerException;
 import com.sun.jersey.api.core.HttpContext;

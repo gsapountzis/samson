@@ -4,8 +4,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
-import samson.Element;
-import samson.TypeClassPair;
 import samson.jersey.core.reflection.ReflectionHelper;
 
 public class ListTcp {
