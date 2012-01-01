@@ -1,7 +1,5 @@
 package samson.jersey;
 
-import java.lang.reflect.Type;
-
 import javax.ws.rs.FormParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -11,14 +9,11 @@ import samson.JForm;
 import samson.JFormProvider;
 import samson.metadata.Element;
 
-import com.sun.jersey.api.container.ContainerException;
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.api.core.HttpRequestContext;
 import com.sun.jersey.api.model.Parameter;
 import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.core.header.MediaTypes;
-import com.sun.jersey.core.reflection.ReflectionHelper;
-import com.sun.jersey.core.reflection.ReflectionHelper.TypeClassPair;
 import com.sun.jersey.core.spi.component.ComponentContext;
 import com.sun.jersey.core.spi.component.ComponentScope;
 import com.sun.jersey.server.impl.inject.AbstractHttpContextInjectable;
@@ -87,24 +82,8 @@ public class FormParamInjectableProvider implements InjectableProvider<FormParam
             return null;
         }
 
-        Element element = getArgumentElement(parameter);
+        Element element = Utils.getArgumentElement(componentContext.getAccesibleObject(), parameter);
         return new FormParamInjectable(jForm, element);
-    }
-
-    static Element getArgumentElement(Parameter parameter) {
-        Type type = parameter.getParameterType();
-
-        TypeClassPair tcp = ReflectionHelper.getTypeArgumentAndClass(type);
-        if (tcp == null) {
-            throw new ContainerException("Parameterized type without type arguement");
-        }
-
-        return new Element(
-                parameter.getAnnotations(),
-                tcp.t, tcp.c,
-                parameter.getSourceName(),
-                parameter.isEncoded(),
-                parameter.getDefaultValue());
     }
 
 }

@@ -9,7 +9,6 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.ElementDescriptor;
 
@@ -17,7 +16,6 @@ import samson.JForm.Field;
 import samson.JForm.Messages;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterException;
-import samson.metadata.BeanProperty;
 import samson.metadata.Element;
 import samson.metadata.ElementRef;
 import samson.metadata.TypeClassPair;
@@ -137,24 +135,8 @@ class FormField implements Field, Messages {
 
         Validator validator = validatorFactory.getValidator();
 
-        ElementDescriptor decl = null;
-        ElementDescriptor type = null;
-
-        if (ref != ElementRef.NULL_REF) {
-            Element element = ref.element;
-            if (element instanceof BeanProperty) {
-                BeanProperty property = (BeanProperty) element;
-                BeanDescriptor bean = validator.getConstraintsForClass(property.beanClass);
-                decl = bean.getConstraintsForProperty(property.propertyName);
-            }
-            else {
-                // check for method parameter here
-                decl = null;
-            }
-
-            TypeClassPair tcp = ref.element.tcp;
-            type = validator.getConstraintsForClass(tcp.c);
-        }
+        ElementDescriptor decl = ValidatorExt.getElementDescriptorDecl(validator, ref.element);
+        ElementDescriptor type = ValidatorExt.getElementDescriptorType(validator, ref.element);
 
         List<String> messages = new ArrayList<String>();
         getDefaultValidationInfos(messages, decl);

@@ -2,12 +2,15 @@ package samson.form;
 
 import static samson.Configuration.DISABLE_VALIDATION;
 
+import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.Valid;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
@@ -98,7 +101,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
         final T value = bind(root);
         LOGGER.trace(printTree(root));
 
-        validate(value, root);
+        validate(root, value);
         LOGGER.trace(printTree(root));
 
         return new Form<T>(factory, value, immutableRef(value), root);
@@ -150,14 +153,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
         return (T) accessor.get();
     }
 
-    /**
-     * Validate form value.
-     * <p>
-     * Validation of parameter with standard types (primitives, string, list,
-     * map) actually requires method validation. We validate for beans as
-     * expected and strings in case of user-defined types that may be beans.
-     */
-    private void validate(T value, FormNode root) {
+    private void validate(FormNode root, T value) {
         if (DISABLE_VALIDATION) {
             return;
         }
@@ -167,19 +163,35 @@ class FormBuilder<T> implements JFormBuilder<T> {
             return;
         }
 
-        // XXX drop this with validateProperty / validateParameter
-        if (value == null) {
-            return;
+        Validator validator = validatorFactory.getValidator();
+
+        // TODO declaration point validation
+
+        // TODO enable this check after finishing validateDecl
+        boolean checkValid = false;
+
+        boolean valid = false;
+        if (checkValid) {
+            for (Annotation a : element.annotations) {
+                if (a.annotationType() == Valid.class) {
+                    valid = true;
+                }
+            }
         }
 
-        Validator validator = validatorFactory.getValidator();
-        Set<ConstraintViolation<T>> constraintViolations = validator.validate(value);
+        Set<ConstraintViolation<Object>> typeViolations;
+        if (valid) {
+            typeViolations = Collections.emptySet();
+        }
+        else {
+            typeViolations = ValidatorExt.validateType(validator, element, value);
+        }
 
-        for (ConstraintViolation<T> violation : constraintViolations) {
+        for (ConstraintViolation<Object> violation : typeViolations) {
             LOGGER.debug("{}: {}", violation.getPropertyPath(), violation.getMessage());
         }
 
-        for (ConstraintViolation<T> violation : constraintViolations) {
+        for (ConstraintViolation<Object> violation : typeViolations) {
             // parse and normalize the validation property path
             javax.validation.Path validationPath = violation.getPropertyPath();
             String param = validationPath.toString();

@@ -2,9 +2,6 @@ package samson.jersey.convert;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -48,7 +45,7 @@ class JerseyConverterPredicate {
         if (memo == null) {
             Boolean result = false;
 
-            if (isStringTypeByClass(rawType)) {
+            if (Utils.isBaseType(rawType)) {
                 result = true;
             }
             else if (isStringTypeByReader(type, rawType)) {
@@ -66,31 +63,6 @@ class JerseyConverterPredicate {
             }
         }
         return memo;
-    }
-
-    private boolean isStringTypeByClass(Class<?> clazz) {
-
-        if (clazz == String.class ||
-            clazz == Boolean.class ||
-            clazz == Byte.class ||
-            clazz == Short.class ||
-            clazz == Integer.class ||
-            clazz == Long.class ||
-            clazz == Float.class ||
-            clazz == Double.class ||
-            clazz == BigInteger.class ||
-            clazz == BigDecimal.class)
-        {
-            return true;
-        }
-
-        if (Enum.class.isAssignableFrom(clazz) ||
-            Date.class.isAssignableFrom(clazz))
-        {
-            return true;
-        }
-
-        return false;
     }
 
     private boolean isStringTypeByReader(Type type, Class<?> rawType) {

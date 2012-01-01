@@ -59,7 +59,7 @@ public class QueryParamInjectableProvider implements InjectableProvider<QueryPar
             return null;
         }
 
-        Element element = FormParamInjectableProvider.getArgumentElement(parameter);
+        Element element = Utils.getArgumentElement(componentContext.getAccesibleObject(), parameter);
         return new QueryParamInjectable(jForm, element);
     }
 
