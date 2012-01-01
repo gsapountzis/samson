@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import samson.JForm;
 import samson.bind.Binder;
-import samson.bind.BinderType;
 import samson.form.Property.Path;
 import samson.metadata.Element;
 
@@ -27,13 +26,12 @@ class BindForm<T> extends Form<T> {
 
     JForm<T> apply() {
         Binder binder = binderFactory.getBinder(rootRef, rootNode.hasChildren());
-        if (binder != Binder.NULL_BINDER) {
-            BinderType binderType = binder.getType();
-            binder.read(rootNode);
-            rootNode.setBinder(binder);
-            validate(binderType);
-            LOGGER.trace(printTree());
-        }
+        binder.read(rootNode);
+        rootNode.setBinder(binder);
+        LOGGER.trace(printTree());
+
+        validate();
+        LOGGER.trace(printTree());
         return this;
     }
 
@@ -44,7 +42,7 @@ class BindForm<T> extends Form<T> {
      * map) actually requires method validation. We validate for beans as
      * expected and strings in case of user-defined types that may be beans.
      */
-    private void validate(BinderType binderType) {
+    private void validate() {
         if (DISABLE_VALIDATION) {
             return;
         }
@@ -52,10 +50,6 @@ class BindForm<T> extends Form<T> {
             return;
         }
         if (rootValue == null) {
-            return;
-        }
-
-        if ((binderType != BinderType.STRING) && (binderType != BinderType.BEAN)) {
             return;
         }
 
