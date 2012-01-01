@@ -17,10 +17,6 @@ public abstract class BeanProperty extends Element {
         super(annotations, tcp, name);
     }
 
-    public abstract Object get(Object bean);
-
-    public abstract void set(Object bean, Object value);
-
     public ElementAccessor createAccessor(final Object bean) {
         if (bean == null) {
             return ElementAccessor.NULL_ACCESSOR;
@@ -41,6 +37,10 @@ public abstract class BeanProperty extends Element {
             }
         };
     }
+
+    abstract Object get(Object bean);
+
+    abstract void set(Object bean, Object value);
 
     public static BeanProperty fromPublicField(Class<?> beanClass, Annotation[] annotations, String name, Field field) {
 
