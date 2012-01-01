@@ -39,7 +39,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
         this.initialValue = instance;
     }
 
-    private ElementRef ref(final T value) {
+    private ElementRef immutableRef(final T value) {
         ElementAccessor accessor = new ElementAccessor() {
 
             @Override
@@ -58,7 +58,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
     JForm<T> wrap() {
         FormNode root = new FormNode(Node.createPrefix(null));
 
-        return new Form<T>(factory, initialValue, ref(initialValue), root);
+        return new Form<T>(factory, initialValue, immutableRef(initialValue), root);
     }
 
     @Override
@@ -101,7 +101,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
         validate(value, root);
         LOGGER.trace(printTree(root));
 
-        return new Form<T>(factory, value, ref(value), root);
+        return new Form<T>(factory, value, immutableRef(value), root);
     }
 
     private static FormNode parse(String rootPath, Map<String, List<String>> params) {
