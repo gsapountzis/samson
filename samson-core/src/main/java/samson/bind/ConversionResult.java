@@ -1,4 +1,4 @@
-package samson.form;
+package samson.bind;
 
 import samson.convert.ConverterException;
 

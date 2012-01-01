@@ -31,10 +31,7 @@ class BindForm<T> extends Form<T> {
             BinderType binderType = binder.getType();
             binder.read(rootNode);
             rootNode.setBinder(binder);
-
-            rootNode.convertTree(form);
             validate(binderType);
-
             LOGGER.trace(printTree());
         }
         return this;

@@ -3,15 +3,19 @@ package samson.bind;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import samson.Element;
 import samson.TypeClassPair;
 import samson.convert.Converter;
+import samson.convert.ConverterException;
 import samson.convert.ConverterProvider;
+import samson.convert.MultivaluedConverter;
 import samson.jersey.core.reflection.ReflectionHelper;
 import samson.metadata.BeanMetadata;
 import samson.metadata.BeanMetadataCache;
@@ -57,7 +61,7 @@ public class BinderFactory {
         }
 
         if (type == BinderType.STRING) {
-            return new StringBinder(ref);
+            return new StringBinder(this, ref);
         }
         else if (type == BinderType.LIST) {
             return new ListBinder(this, ref);
@@ -126,6 +130,55 @@ public class BinderFactory {
         }
 
         return type;
+    }
+
+    public ConversionResult fromStringList(Element element, List<String> values) {
+
+        // check for null element
+        if (element.tcp == null) {
+            return null;
+        }
+
+        MultivaluedConverter<?> extractor = converterProvider.getMultivalued(
+                element.tcp.t,
+                element.tcp.c,
+                element.annotations,
+                element.encoded,
+                element.defaultValue);
+
+        if (extractor != null) {
+            try {
+                Object value = extractor.fromStringList(values);
+                return ConversionResult.fromValue(value);
+            }
+            catch (ConverterException ex) {
+                return ConversionResult.fromError(ex);
+            }
+        }
+        else {
+            return null;
+        }
+    }
+
+    public List<String> toStringList(Element element, Object value) {
+
+        // check for null element
+        if (element.tcp == null) {
+            return Collections.emptyList();
+        }
+
+        @SuppressWarnings("unchecked")
+        MultivaluedConverter<Object> extractor = (MultivaluedConverter<Object>) converterProvider.getMultivalued(
+                element.tcp.t,
+                element.tcp.c,
+                element.annotations);
+
+        if (extractor != null) {
+            return extractor.toStringList(value);
+        }
+        else {
+            return Collections.emptyList();
+        }
     }
 
 }

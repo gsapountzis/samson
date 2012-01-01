@@ -1,6 +1,5 @@
 package samson.form;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +10,7 @@ import javax.validation.ValidatorFactory;
 import samson.Element;
 import samson.JForm;
 import samson.bind.BinderFactory;
-import samson.convert.ConverterException;
 import samson.convert.ConverterProvider;
-import samson.convert.MultivaluedConverter;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
 
@@ -162,59 +159,6 @@ class Form<T> implements JForm<T> {
 
     BinderFactory getBinderFactory() {
         return binderFactory;
-    }
-
-    String toStringValue(Element element, Object value) {
-        return Utils.getFirst(toStringList(element, value));
-    }
-
-    List<String> toStringList(Element element, Object value) {
-
-        // check for null element
-        if (element.tcp == null) {
-            return Collections.emptyList();
-        }
-
-        @SuppressWarnings("unchecked")
-        MultivaluedConverter<Object> extractor = (MultivaluedConverter<Object>) converterProvider.getMultivalued(
-                element.tcp.t,
-                element.tcp.c,
-                element.annotations);
-
-        if (extractor != null) {
-            return extractor.toStringList(value);
-        }
-        else {
-            return Collections.emptyList();
-        }
-    }
-
-    ConversionResult fromStringList(Element element, List<String> values) {
-
-        // check for null element
-        if (element.tcp == null) {
-            return null;
-        }
-
-        MultivaluedConverter<?> extractor = converterProvider.getMultivalued(
-                element.tcp.t,
-                element.tcp.c,
-                element.annotations,
-                element.encoded,
-                element.defaultValue);
-
-        if (extractor != null) {
-            try {
-                Object value = extractor.fromStringList(values);
-                return ConversionResult.fromValue(value);
-            }
-            catch (ConverterException ex) {
-                return ConversionResult.fromError(ex);
-            }
-        }
-        else {
-            return null;
-        }
     }
 
     Validator getValidator() {

@@ -15,6 +15,7 @@ import samson.Element;
 import samson.JForm.Field;
 import samson.JForm.Messages;
 import samson.TypeClassPair;
+import samson.bind.BinderFactory;
 import samson.convert.ConverterException;
 import samson.metadata.BeanProperty;
 import samson.metadata.ElementRef;
@@ -45,21 +46,18 @@ class FormField implements Field, Messages {
 
     @Override
     public String getValue() {
-        if (node.isConversionError()) {
-            return Utils.getFirst(node.getStringValues());
-        }
-        else {
-            return form.toStringValue(ref.element, ref.accessor.get());
-        }
+        return Utils.getFirst(getValues());
     }
 
     @Override
     public List<String> getValues() {
+        BinderFactory binderFactory = form.getBinderFactory();
+
         if (node.isConversionError()) {
             return node.getStringValues();
         }
         else {
-            return form.toStringList(ref.element, ref.accessor.get());
+            return binderFactory.toStringList(ref.element, ref.accessor.get());
         }
     }
 

@@ -4,8 +4,8 @@ import samson.metadata.ElementRef;
 
 class StringBinder extends Binder {
 
-    StringBinder(ElementRef ref) {
-        super(null, BinderType.STRING, ref);
+    StringBinder(BinderFactory factory, ElementRef ref) {
+        super(factory, BinderType.STRING, ref);
     }
 
     @Override
@@ -15,6 +15,15 @@ class StringBinder extends Binder {
 
     @Override
     public void read(BinderNode<?> node) {
+        ConversionResult conversion = factory.fromStringList(ref.element, node.getStringValues());
+        if (conversion != null) {
+            if (conversion.isError()) {
+                node.setConversionFailure(conversion.getCause());
+            }
+            else {
+                ref.accessor.set(conversion.getValue());
+            }
+        }
     }
 
 }

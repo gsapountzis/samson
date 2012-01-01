@@ -14,11 +14,9 @@ import javax.validation.ConstraintViolation;
 
 import samson.bind.Binder;
 import samson.bind.BinderNode;
-import samson.bind.BinderType;
 import samson.convert.ConverterException;
 import samson.form.Property.Node;
 import samson.form.Property.Path;
-import samson.metadata.ElementRef;
 
 public class FormNode implements BinderNode<FormNode> {
     private Binder binder = Binder.NULL_BINDER;
@@ -111,20 +109,28 @@ public class FormNode implements BinderNode<FormNode> {
 
     // -- Decorations
 
-    public void setStringValues(List<String> values) {
-        this.stringValues = values;
-    }
-
+    @Override
     public List<String> getStringValues() {
         return stringValues;
     }
 
-    public boolean isConversionError() {
-        return (conversionError != null);
+    @Override
+    public void setStringValues(List<String> values) {
+        this.stringValues = values;
     }
 
+    @Override
     public ConverterException getConversionFailure() {
         return conversionError;
+    }
+
+    @Override
+    public void setConversionFailure(ConverterException conversionError) {
+        this.conversionError = conversionError;
+    }
+
+    public boolean isConversionError() {
+        return (conversionError != null);
     }
 
     public Set<ConstraintViolation<?>> getConstraintViolations() {
@@ -152,8 +158,7 @@ public class FormNode implements BinderNode<FormNode> {
     }
 
     public String getConversionError() {
-        boolean error = isConversionError();
-        if (error) {
+        if (isConversionError()) {
             String stringValue = Utils.getFirst(stringValues);
             return getConversionErrorMessage(stringValue);
         }
@@ -168,27 +173,21 @@ public class FormNode implements BinderNode<FormNode> {
         return messages;
     }
 
+    public List<String> getAllErrors() {
+        List<String> messages = new ArrayList<String>();
+        if (isConversionError()) {
+            messages.add(getConversionError());
+        }
+        messages.addAll(getValidationErrors());
+        messages.addAll(errors);
+        return messages;
+    }
+
     private static String getConversionErrorMessage(String value) {
         return String.format(CONVERSION_ERROR_MESSAGE_TEMPLATE, value);
     }
 
     // -- Tree Computations (visitor / functional)
-
-    public void convert(Form<?> form) {
-        BinderType binderType = binder.getType();
-        if (binderType == BinderType.STRING) {
-            ElementRef ref = binder.getRef();
-            ConversionResult conversion = form.fromStringList(ref.element, stringValues);
-            if (conversion != null) {
-                if (conversion.isError()) {
-                    conversionError = conversion.getCause();
-                }
-                else {
-                    ref.accessor.set(conversion.getValue());
-                }
-            }
-        }
-    }
 
     public boolean isError() {
         if (isConversionError()) {
@@ -201,28 +200,6 @@ public class FormNode implements BinderNode<FormNode> {
             return true;
         }
         return false;
-    }
-
-    public void print(int indent, StringBuilder sb) {
-        boolean error = isConversionError();
-        sb.append("[").append(error ? "X" : " ").append("] ");
-
-        int size = constraintViolations.size();
-        sb.append("[").append((size > 0) ? size : " ").append("] ");
-
-        for (int i = 0; i < indent; i++) {
-            sb.append(" ");
-        }
-        String s = node.toString();
-        sb.append(s).append("\n");
-    }
-
-    public void convertTree(Form<?> form) {
-        convert(form);
-
-        for (FormNode child : children.values()) {
-            child.convertTree(form);
-        }
     }
 
     public boolean isTreeError() {
@@ -255,22 +232,29 @@ public class FormNode implements BinderNode<FormNode> {
     }
 
     public void getTreeErrors(String param, Map<String, List<String>> treeErrors) {
-        List<String> allErrors = new ArrayList<String>();
-
-        if (isConversionError()) {
-            allErrors.add(getConversionError());
-        }
-        allErrors.addAll(getValidationErrors());
-        allErrors.addAll(errors);
-
-        if (!allErrors.isEmpty()) {
-            treeErrors.put(param, allErrors);
+        List<String> errors = getAllErrors();
+        if (!errors.isEmpty()) {
+            treeErrors.put(param, errors);
         }
 
         for (FormNode child : children.values()) {
             String childParam = getChildParam(param, child.getNode());
             child.getTreeErrors(childParam, treeErrors);
         }
+    }
+
+    public void print(int indent, StringBuilder sb) {
+        boolean error = isConversionError();
+        sb.append("[").append(error ? "X" : " ").append("] ");
+
+        int size = constraintViolations.size();
+        sb.append("[").append((size > 0) ? size : " ").append("] ");
+
+        for (int i = 0; i < indent; i++) {
+            sb.append(" ");
+        }
+        String s = node.toString();
+        sb.append(s).append("\n");
     }
 
     public void printTree(int indent, StringBuilder sb) {
