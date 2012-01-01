@@ -24,7 +24,6 @@ public class FormFactory implements JFormProvider {
     private final ParamsProvider formParams;
     private final ParamsProvider queryParams;
 
-    private final ConverterProvider converterProvider;
     private final BinderFactory binderFactory;
     private final ValidatorFactory validatorFactory;
 
@@ -32,7 +31,6 @@ public class FormFactory implements JFormProvider {
         this.formParams = formParams;
         this.queryParams = queryParams;
 
-        this.converterProvider = converterProvider;
         this.binderFactory = new BinderFactory(converterProvider);
 
         ValidatorFactory validatorFactory = null;
@@ -43,6 +41,22 @@ public class FormFactory implements JFormProvider {
             LOGGER.warn("Unable to find validation provider", ex);
         }
         this.validatorFactory = validatorFactory;
+    }
+
+    ParamsProvider getFormParams() {
+        return formParams;
+    }
+
+    ParamsProvider getQueryParams() {
+        return queryParams;
+    }
+
+    BinderFactory getBinderFactory() {
+        return binderFactory;
+    }
+
+    ValidatorFactory getValidatorFactory() {
+        return validatorFactory;
     }
 
     // -- Binding form factory methods
@@ -96,13 +110,7 @@ public class FormFactory implements JFormProvider {
     }
 
     private <T> FormBuilder<T> builder(Element element, T instance) {
-        FormBuilder<T> form = new FormBuilder<T>(element, instance);
-        form.setConverterProvider(converterProvider);
-        form.setBinderFactory(binderFactory);
-        form.setValidatorFactory(validatorFactory);
-
-        form.setFormParamsProvider(formParams);
-        form.setQueryParamsProvider(queryParams);
+        FormBuilder<T> form = new FormBuilder<T>(this, element, instance);
         return form;
     }
 

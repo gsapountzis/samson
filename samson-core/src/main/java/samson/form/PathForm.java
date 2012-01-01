@@ -12,13 +12,16 @@ import samson.metadata.ElementRef;
 
 class PathForm implements JForm<Object> {
 
+    private final FormFactory factory;
+
     private final Form<?> form;
     private final String param;
 
     private final FormNode node;
     private final FormField field;
 
-    PathForm(Form<?> form, String param) {
+    PathForm(FormFactory factory, Form<?> form, String param) {
+        this.factory = factory;
         this.form = form;
         this.param = param;
 
@@ -32,11 +35,11 @@ class PathForm implements JForm<Object> {
 
         ElementRef ref = getPathRef(rootRef, path);
         this.node = rootNode.getDefinedChild(path);
-        this.field = new FormField(form, ref, node);
+        this.field = new FormField(factory, ref, node);
     }
 
     private ElementRef getPathRef(ElementRef rootRef, Path path) {
-        BinderFactory binderFactory = form.getBinderFactory();
+        BinderFactory binderFactory = factory.getBinderFactory();
 
         ElementRef ref = rootRef;
         for (Node node : path) {
@@ -61,12 +64,12 @@ class PathForm implements JForm<Object> {
 
     @Override
     public JForm<?> dot(String property) {
-        return new PathForm(form, param + "." + property);
+        return new PathForm(factory, form, param + "." + property);
     }
 
     @Override
     public JForm<?> index(String index) {
-        return new PathForm(form, param + "[" + index + "]");
+        return new PathForm(factory, form, param + "[" + index + "]");
     }
 
     @Override

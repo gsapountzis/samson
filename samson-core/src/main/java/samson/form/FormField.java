@@ -2,11 +2,13 @@ package samson.form;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.ElementDescriptor;
@@ -22,12 +24,13 @@ import samson.metadata.TypeClassPair;
 
 class FormField implements Field, Messages {
 
-    private final Form<?> form;
+    private final FormFactory factory;
+
     private final ElementRef ref;
     private final FormNode node;
 
-    FormField(Form<?> form, ElementRef ref, FormNode node) {
-        this.form = form;
+    FormField(FormFactory factory, ElementRef ref, FormNode node) {
+        this.factory = factory;
         this.ref = ref;
         this.node = node;
     }
@@ -51,7 +54,7 @@ class FormField implements Field, Messages {
 
     @Override
     public List<String> getValues() {
-        BinderFactory binderFactory = form.getBinderFactory();
+        BinderFactory binderFactory = factory.getBinderFactory();
 
         if (node.isConversionError()) {
             return node.getStringValues();
@@ -127,7 +130,12 @@ class FormField implements Field, Messages {
     }
 
     private List<String> getDefaultValidationInfos() {
-        Validator validator = form.getValidator();
+        ValidatorFactory validatorFactory = factory.getValidatorFactory();
+        if (validatorFactory == null) {
+            return Collections.emptyList();
+        }
+
+        Validator validator = validatorFactory.getValidator();
 
         ElementDescriptor decl = null;
         ElementDescriptor type = null;

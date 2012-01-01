@@ -4,64 +4,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-
 import samson.JForm;
-import samson.bind.BinderFactory;
-import samson.convert.ConverterProvider;
-import samson.metadata.Element;
-import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
 
 class Form<T> implements JForm<T> {
 
-    protected final Form<T> form = this;
-    protected final FormNode rootNode;
-    protected final FormField rootField;
+    private final FormFactory factory;
 
-    protected final Element rootElement;
-    protected final ElementAccessor rootAccessor;
-    protected final ElementRef rootRef;
+    private final T rootValue;
+    private final ElementRef rootRef;
+    private final FormNode rootNode;
+    private final FormField rootField;
 
-    protected T rootValue;
-
-    protected ConverterProvider converterProvider;
-    protected BinderFactory binderFactory;
-    protected ValidatorFactory validatorFactory;
-
-    Form(Element element, T value, FormNode root) {
-        this.rootElement = element;
-        this.rootValue = value;
-        this.rootAccessor = new ElementAccessor() {
-
-            @Override
-            public Object get() {
-                return form.rootValue;
-            }
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public void set(Object value) {
-                form.rootValue = (T) value;
-            }
-
-        };
-        this.rootRef = new ElementRef(rootElement, rootAccessor);
-        this.rootNode = root;
-        this.rootField = new FormField(form, rootRef, rootNode);
-    }
-
-    void setConverterProvider(ConverterProvider converterProvider) {
-        this.converterProvider = converterProvider;
-    }
-
-    void setBinderFactory(BinderFactory binderFactory) {
-        this.binderFactory = binderFactory;
-    }
-
-    void setValidatorFactory(ValidatorFactory validatorFactory) {
-        this.validatorFactory = validatorFactory;
+    Form(FormFactory factory, T rootValue, ElementRef rootRef, FormNode rootNode) {
+        this.factory = factory;
+        this.rootValue = rootValue;
+        this.rootRef = rootRef;
+        this.rootNode = rootNode;
+        this.rootField = new FormField(factory, rootRef, rootNode);
     }
 
     // -- Path
@@ -73,17 +33,17 @@ class Form<T> implements JForm<T> {
 
     @Override
     public JForm<?> path(String path) {
-        return new PathForm(this, path);
+        return new PathForm(factory, this, path);
     }
 
     @Override
     public JForm<?> dot(String property) {
-        return new PathForm(this, property);
+        return new PathForm(factory, this, property);
     }
 
     @Override
     public JForm<?> index(String index) {
-        return new PathForm(this, "[" + index + "]");
+        return new PathForm(factory, this, "[" + index + "]");
     }
 
     @Override
@@ -153,16 +113,6 @@ class Form<T> implements JForm<T> {
     @Override
     public void error(String msg) {
         rootNode.error(msg);
-    }
-
-    // -- Callbacks for access to conversion, validation services
-
-    BinderFactory getBinderFactory() {
-        return binderFactory;
-    }
-
-    Validator getValidator() {
-        return validatorFactory.getValidator();
     }
 
 }
