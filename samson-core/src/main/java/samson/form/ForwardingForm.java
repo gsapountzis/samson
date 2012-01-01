@@ -9,28 +9,6 @@ public abstract class ForwardingForm<T> implements JForm<T> {
 
     protected abstract JForm<T> delegate();
 
-    // -- Form
-
-    @Override
-    public T get() {
-        return delegate().get();
-    }
-
-    @Override
-    public boolean hasErrors() {
-        return delegate().hasErrors();
-    }
-
-    @Override
-    public Map<String, List<String>> getInfos() {
-        return delegate().getInfos();
-    }
-
-    @Override
-    public Map<String, List<String>> getErrors() {
-        return delegate().getErrors();
-    }
-
     // -- Path
 
     @Override
@@ -56,6 +34,28 @@ public abstract class ForwardingForm<T> implements JForm<T> {
     @Override
     public JForm<?> index(int index) {
         return delegate().index(index);
+    }
+
+    // -- Form
+
+    @Override
+    public T get() {
+        return delegate().get();
+    }
+
+    @Override
+    public boolean hasErrors() {
+        return delegate().hasErrors();
+    }
+
+    @Override
+    public Map<String, List<String>> getInfos() {
+        return delegate().getInfos();
+    }
+
+    @Override
+    public Map<String, List<String>> getErrors() {
+        return delegate().getErrors();
     }
 
     // -- Field

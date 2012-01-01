@@ -50,26 +50,6 @@ import samson.convert.ConverterException;
 public interface JForm<T> {
 
     /**
-     * Get the underlying object in a type-safe way.
-     */
-    T get();
-
-    /**
-     * Returns <code>true<code> if the form has any error.
-     */
-    boolean hasErrors();
-
-    /**
-     * Convenient method for getting all the info messages of the form.
-     */
-    Map<String, List<String>> getInfos();
-
-    /**
-     * Convenient method for getting all the error (conversion, validation, user) messages of the form.
-     */
-    Map<String, List<String>> getErrors();
-
-    /**
      * Get the root path of the form.
      */
     String getPath();
@@ -93,6 +73,26 @@ public interface JForm<T> {
      * Get the form for a child index.
      */
     JForm<?> index(int index);
+
+    /**
+     * Get the underlying object in a type-safe way.
+     */
+    T get();
+
+    /**
+     * Returns <code>true<code> if the form has any error.
+     */
+    boolean hasErrors();
+
+    /**
+     * Convenient method for getting all the info messages of the form.
+     */
+    Map<String, List<String>> getInfos();
+
+    /**
+     * Convenient method for getting all the error (conversion, validation, user) messages of the form.
+     */
+    Map<String, List<String>> getErrors();
 
     /**
      * Get the field value for the root object of the form.
