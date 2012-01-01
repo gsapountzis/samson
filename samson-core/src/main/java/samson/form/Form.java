@@ -190,7 +190,7 @@ class Form<T> implements JForm<T> {
         }
     }
 
-    Conversion fromStringList(Element element, List<String> values) {
+    ConversionResult fromStringList(Element element, List<String> values) {
 
         // check for null element
         if (element.tcp == null) {
@@ -207,10 +207,10 @@ class Form<T> implements JForm<T> {
         if (extractor != null) {
             try {
                 Object value = extractor.fromStringList(values);
-                return Conversion.fromValue(value);
+                return ConversionResult.fromValue(value);
             }
             catch (ConverterException ex) {
-                return Conversion.fromError(ex);
+                return ConversionResult.fromError(ex);
             }
         }
         else {

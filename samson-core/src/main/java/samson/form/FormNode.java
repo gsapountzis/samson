@@ -178,7 +178,7 @@ public class FormNode implements BinderNode<FormNode> {
         BinderType binderType = binder.getType();
         if (binderType == BinderType.STRING) {
             ElementRef ref = binder.getRef();
-            Conversion conversion = form.fromStringList(ref.element, stringValues);
+            ConversionResult conversion = form.fromStringList(ref.element, stringValues);
             if (conversion != null) {
                 if (conversion.isError()) {
                     conversionError = conversion.getCause();
