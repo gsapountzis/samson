@@ -92,42 +92,45 @@ class BeanIntrospector {
     }
 
     private static void findSetters(MethodList methodList, Map<String, Tuple> properties) {
-        for (AnnotatedMethod am : methodList.
-                hasReturnType(void.class).
-                hasNumParams(1).
-                nameStartsWith("set")) {
+        for (AnnotatedMethod am : methodList.hasReturnType(void.class).hasNumParams(1)) {
             Method m = am.getMethod();
+            String name = m.getName();
 
-            String name = getPropertyName(m);
-            if (name == null)
-                continue;
-
-            Tuple t = getTuple(properties, name);
-            t.setter = m;
+            String property = null;
+            if (name.startsWith("set")) {
+                property = getPropertyName(name, 3);
+            }
+            if (property != null) {
+                Tuple t = getTuple(properties, property);
+                t.setter = m;
+            }
         }
     }
 
     private static void findGetters(MethodList methodList, Map<String, Tuple> properties) {
-        for (AnnotatedMethod am : methodList.
-                hasNumParams(0).
-                nameStartsWith("get")) {
+        for (AnnotatedMethod am : methodList.hasNumParams(0)) {
             Method m = am.getMethod();
+            String name = m.getName();
 
-            String name = getPropertyName(m);
-            if (name == null)
-                continue;
-
-            Tuple t = getTuple(properties, name);
-            t.getter = m;
+            String property = null;
+            if (name.startsWith("get")) {
+                property = getPropertyName(name, 3);
+            }
+            else if (name.startsWith("is")) {
+                property = getPropertyName(name, 2);
+            }
+            if (property != null) {
+                Tuple t = getTuple(properties, property);
+                t.getter = m;
+            }
         }
     }
 
-    private static String getPropertyName(Method m) {
-        String name = m.getName();
-        if (name.length() < 4) {
+    private static String getPropertyName(String name, int prefix) {
+        if (name.length() < prefix + 1) {
             return null;
         }
-        return Character.toLowerCase(name.charAt(3)) + name.substring(4);
+        return Character.toLowerCase(name.charAt(prefix)) + name.substring(prefix + 1);
     }
 
     private static Map<String, BeanProperty> map(Class<?> beanClass, Map<String, Tuple> properties) {
