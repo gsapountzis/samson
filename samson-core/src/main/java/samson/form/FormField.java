@@ -143,9 +143,9 @@ class FormField implements Field, Messages {
         if (ref != ElementRef.NULL_REF) {
             Element element = ref.element;
             if (element instanceof BeanProperty) {
-                BeanProperty beanProperty = (BeanProperty) element;
-                BeanDescriptor bean = validator.getConstraintsForClass(beanProperty.beanClass);
-                decl = bean.getConstraintsForProperty(beanProperty.propertyName);
+                BeanProperty property = (BeanProperty) element;
+                BeanDescriptor bean = validator.getConstraintsForClass(property.beanClass);
+                decl = bean.getConstraintsForProperty(property.propertyName);
             }
             else {
                 // check for method parameter here
