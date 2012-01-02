@@ -13,7 +13,7 @@ import com.sun.jersey.spi.StringReaderWorkers;
 
 class JerseyConverterPredicate {
 
-    private static Annotation[] EMPTY_ANNOTATIONS = new Annotation[0];
+    private static final Annotation[] EMPTY_ANNOTATIONS = new Annotation[0];
 
     private StringReaderWorkers stringReaderProvider;
     private MultivaluedParameterExtractorProvider extractorProvider;
