@@ -23,31 +23,6 @@ public abstract class BeanProperty extends Element {
         this.propertyName = name;
     }
 
-    public ElementAccessor createAccessor(final Object bean) {
-        if (bean == null) {
-            return ElementAccessor.NULL_ACCESSOR;
-        }
-
-        final BeanProperty property = this;
-
-        return new ElementAccessor() {
-
-            @Override
-            public void set(Object value) {
-                property.set(bean, value);
-            }
-
-            @Override
-            public Object get() {
-                return property.get(bean);
-            }
-        };
-    }
-
-    abstract Object get(Object bean);
-
-    abstract void set(Object bean, Object value);
-
     public static BeanProperty fromPublicField(Class<?> beanClass, String name, Field field) {
 
         Annotation[] annotations = field.getAnnotations();
@@ -88,6 +63,31 @@ public abstract class BeanProperty extends Element {
 
         return new MethodBeanProperty(annotations, tcp, beanClass, name, getter, setter);
     }
+
+    public ElementAccessor createAccessor(final Object bean) {
+        if (bean == null) {
+            return ElementAccessor.NULL_ACCESSOR;
+        }
+
+        final BeanProperty property = this;
+
+        return new ElementAccessor() {
+
+            @Override
+            public void set(Object value) {
+                property.set(bean, value);
+            }
+
+            @Override
+            public Object get() {
+                return property.get(bean);
+            }
+        };
+    }
+
+    abstract Object get(Object bean);
+
+    abstract void set(Object bean, Object value);
 
     private static class FieldBeanProperty extends BeanProperty {
 
@@ -149,7 +149,7 @@ public abstract class BeanProperty extends Element {
                 throw new RuntimeException(ex);
             }
         }
-   }
+    }
 
     private static TypeClassPair createTcp(
             Class<?> concreteClass,

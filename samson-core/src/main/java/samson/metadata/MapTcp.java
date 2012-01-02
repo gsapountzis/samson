@@ -8,12 +8,16 @@ import samson.jersey.core.reflection.ReflectionHelper;
 
 public class MapTcp {
 
+    private final Annotation[] valueAnnotations;
+
     private final TypeClassPair tcp;
     private final TypeClassPair keyTcp;
     private final TypeClassPair valueTcp;
 
-    public MapTcp(TypeClassPair tcp) {
-        this.tcp = tcp;
+    public MapTcp(Element element) {
+        this.valueAnnotations = ListTcp.component(element.annotations);
+
+        this.tcp = element.tcp;
         this.keyTcp = ReflectionHelper.getTypeArgumentAndClass(tcp.t, 0);
         this.valueTcp = ReflectionHelper.getTypeArgumentAndClass(tcp.t, 1);
 
@@ -59,8 +63,8 @@ public class MapTcp {
         }
     }
 
-    public Element createValueElement(Annotation[] annotations, String key) {
-        return new Element(annotations, valueTcp, key);
+    public Element createValueElement(String key) {
+        return new Element(valueAnnotations, valueTcp, key);
     }
 
     public static ElementAccessor createValueAccessor(final Map<?, ?> map, final Object key) {

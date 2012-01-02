@@ -8,11 +8,15 @@ import samson.jersey.core.reflection.ReflectionHelper;
 
 public class ListTcp {
 
+    private final Annotation[] itemAnnotations;
+
     private final TypeClassPair tcp;
     private final TypeClassPair itemTcp;
 
-    public ListTcp(TypeClassPair tcp) {
-        this.tcp = tcp;
+    public ListTcp(Element element) {
+        this.itemAnnotations = component(element.annotations);
+
+        this.tcp = element.tcp;
         this.itemTcp = ReflectionHelper.getTypeArgumentAndClass(tcp.t);
 
         if (itemTcp == null) {
@@ -53,8 +57,8 @@ public class ListTcp {
         }
     }
 
-    public Element createItemElement(Annotation[] annotations, String index) {
-        return new Element(annotations, itemTcp, index);
+    public Element createItemElement(String index) {
+        return new Element(itemAnnotations, itemTcp, index);
     }
 
     public static ElementAccessor createItemAccessor(final List<?> list, final int index) {
@@ -79,4 +83,16 @@ public class ListTcp {
         };
     }
 
+    private static final Annotation[] EMPTY_ANNOTATIONS = new Annotation[0];
+
+    /**
+     * Filter annotations placed on the composite (list / map) that apply to the
+     * component (list element / map entry).
+     * <p>
+     * We could use an annotation whose value is another annotation e.g.
+     * &#064;Component(&#064;NotEmpty).
+     */
+    static Annotation[] component(Annotation[] composite) {
+        return EMPTY_ANNOTATIONS;
+    }
 }

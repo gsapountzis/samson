@@ -1,6 +1,5 @@
 package samson.bind;
 
-import java.lang.annotation.Annotation;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -27,8 +26,7 @@ class MapBinder extends Binder {
      */
     @Override
     public void read(BinderNode<?> node) {
-        Annotation[] annotations = ref.element.annotations;
-        MapTcp mapTcp = new MapTcp(ref.element.tcp);
+        MapTcp mapTcp = new MapTcp(ref.element);
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
 
         if (map == null) {
@@ -38,7 +36,7 @@ class MapBinder extends Binder {
 
         for (BinderNode<?> child : node.getChildren()) {
             String stringKey = child.getName();
-            ElementRef childRef = getChildRef(annotations, mapTcp, map, stringKey);
+            ElementRef childRef = getChildRef(mapTcp, map, stringKey);
 
             Binder binder = factory.getBinder(childRef, child.hasChildren());
             binder.read(child);
@@ -48,18 +46,17 @@ class MapBinder extends Binder {
 
     @Override
     public ElementRef getChildRef(String name) {
-        Annotation[] annotations = ref.element.annotations;
-        MapTcp mapTcp = new MapTcp(ref.element.tcp);
+        MapTcp mapTcp = new MapTcp(ref.element);
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
 
-        ElementRef childRef = getChildRef(annotations, mapTcp, map, name);
+        ElementRef childRef = getChildRef(mapTcp, map, name);
         return childRef;
     }
 
-    private ElementRef getChildRef(Annotation[] annotations, MapTcp mapTcp, Map<?,?> map, String stringKey) {
+    private ElementRef getChildRef(MapTcp mapTcp, Map<?,?> map, String stringKey) {
         Object key = getKey(mapTcp.getKeyTcp(), stringKey);
         if (key != null) {
-            Element valueElement = mapTcp.createValueElement(annotations, stringKey);
+            Element valueElement = mapTcp.createValueElement(stringKey);
             ElementAccessor valueAccessor = MapTcp.createValueAccessor(map, key);
             return new ElementRef(valueElement, valueAccessor);
         }
