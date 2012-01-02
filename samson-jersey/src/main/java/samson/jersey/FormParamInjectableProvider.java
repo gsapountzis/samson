@@ -27,9 +27,11 @@ import com.sun.jersey.spi.inject.ServerSide;
 public class FormParamInjectableProvider implements InjectableProvider<FormParam, Parameter> {
 
     private final JFormProvider jForm;
+    private final MetadataCache cache;
 
-    public FormParamInjectableProvider(@Context JFormProvider jForm) {
+    public FormParamInjectableProvider(@Context JFormProvider jForm, @Context MetadataCache cache) {
         this.jForm = jForm;
+        this.cache = cache;
     }
 
     static class FormParamInjectable extends AbstractHttpContextInjectable<JForm<?>> {
@@ -82,7 +84,7 @@ public class FormParamInjectableProvider implements InjectableProvider<FormParam
             return null;
         }
 
-        Element element = Utils.getArgumentElement(componentContext.getAccesibleObject(), parameter);
+        Element element = cache.getArgumentElement(componentContext.getAccesibleObject(), parameter);
         return new FormParamInjectable(jForm, element);
     }
 

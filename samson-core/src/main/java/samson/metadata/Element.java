@@ -17,21 +17,21 @@ public class Element {
     public final boolean encoded;           // @Encoded
     public final String defaultValue;       // @DefaultValue("...")
 
-    public Element(Annotation[] annotations, TypeClassPair tcp, String name) {
+    Element(Annotation[] annotations, TypeClassPair tcp, String name) {
         this(annotations, tcp, name, false, null);
     }
 
-    public Element(Annotation[] annotations, Type type, Class<?> rawType, String name) {
-        this(annotations, new TypeClassPair(type, rawType), name);
-    }
-
-    public Element(Annotation[] annotations, TypeClassPair tcp, String name, boolean encoded, String defaultValue) {
+    Element(Annotation[] annotations, TypeClassPair tcp, String name, boolean encoded, String defaultValue) {
         this.annotations = annotations;
         this.tcp = tcp;
 
         this.name = name;
         this.encoded = encoded;
         this.defaultValue = defaultValue;
+    }
+
+    public Element(Annotation[] annotations, Type type, Class<?> rawType, String name) {
+        this(annotations, new TypeClassPair(type, rawType), name, false, null);
     }
 
     public Element(Annotation[] annotations, Type type, Class<?> rawType, String name, boolean encoded, String defaultValue) {

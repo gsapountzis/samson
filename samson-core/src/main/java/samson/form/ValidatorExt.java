@@ -30,7 +30,7 @@ public class ValidatorExt {
             }
             else {
                 // check for method parameter here
-                decl = null;
+                throw new UnsupportedOperationException();
             }
         }
 

@@ -21,12 +21,7 @@ public class BeanMetadata {
     }
 
     public BeanProperty getProperty(String propertyName) {
-        BeanProperty property = properties.get(propertyName);
-        if (property == null) {
-            throw new IllegalArgumentException();
-        }
-
-        return property;
+        return properties.get(propertyName);
     }
 
     public Map<String, BeanProperty> getProperties() {

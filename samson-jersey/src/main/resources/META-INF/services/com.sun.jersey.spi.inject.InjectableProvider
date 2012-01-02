@@ -1,3 +1,4 @@
 samson.jersey.JFormProviderInjectableProvider
+samson.jersey.MetadataCacheInjectableProvider
 samson.jersey.QueryParamInjectableProvider
 samson.jersey.FormParamInjectableProvider

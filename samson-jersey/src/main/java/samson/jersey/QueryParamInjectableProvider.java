@@ -22,9 +22,11 @@ import com.sun.jersey.spi.inject.ServerSide;
 public class QueryParamInjectableProvider implements InjectableProvider<QueryParam, Parameter> {
 
     private final JFormProvider jForm;
+    private final MetadataCache cache;
 
-    public QueryParamInjectableProvider(@Context JFormProvider jForm) {
+    public QueryParamInjectableProvider(@Context JFormProvider jForm, @Context MetadataCache cache) {
         this.jForm = jForm;
+        this.cache = cache;
     }
 
     static class QueryParamInjectable extends AbstractHttpContextInjectable<JForm<?>> {
@@ -59,7 +61,7 @@ public class QueryParamInjectableProvider implements InjectableProvider<QueryPar
             return null;
         }
 
-        Element element = Utils.getArgumentElement(componentContext.getAccesibleObject(), parameter);
+        Element element = cache.getArgumentElement(componentContext.getAccesibleObject(), parameter);
         return new QueryParamInjectable(jForm, element);
     }
 

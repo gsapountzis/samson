@@ -15,7 +15,6 @@ import samson.JFormProvider;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterProvider;
 import samson.metadata.Element;
-import samson.metadata.TypeClassPair;
 
 public class FormFactory implements JFormProvider {
 
@@ -105,8 +104,7 @@ public class FormFactory implements JFormProvider {
 
     private <T> Element element(Class<T> type) {
         Annotation[] annotations = new Annotation[0];
-        TypeClassPair tcp = new TypeClassPair(type, type);
-        return new Element(annotations, tcp, null);
+        return new Element(annotations, type, type, null);
     }
 
     private <T> FormBuilder<T> builder(Element element, T instance) {
