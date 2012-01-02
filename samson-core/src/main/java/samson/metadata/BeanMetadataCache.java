@@ -10,17 +10,18 @@ public class BeanMetadataCache {
 
     private final ConcurrentMap<Class<?>, BeanMetadata> cache = new ConcurrentHashMap<Class<?>, BeanMetadata>();
 
-    public BeanMetadata get(final Class<?> clazz) {
-        if (clazz == null) {
+    public BeanMetadata get(final TypeClassPair tcp) {
+        if (tcp == null) {
             return null;
         }
+        final Class<?> clazz = tcp.c;
 
         BeanMetadata bean = cache.get(clazz);
         if (bean == null) {
             final BeanMetadata newBean = Errors.processWithErrors(new Closure<BeanMetadata>() {
                 @Override
                 public BeanMetadata f() {
-                    return BeanIntrospector.createBeanMetadata(clazz);
+                    return BeanIntrospector.createBeanMetadata(tcp);
                 }
             });
 

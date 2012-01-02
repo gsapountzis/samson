@@ -25,7 +25,7 @@ public class ValidatorExt {
         if (element != Element.NULL_ELEMENT) {
             if (element instanceof BeanProperty) {
                 BeanProperty property = (BeanProperty) element;
-                BeanDescriptor bean = validator.getConstraintsForClass(property.beanClass);
+                BeanDescriptor bean = validator.getConstraintsForClass(property.beanTcp.c);
                 decl = bean.getConstraintsForProperty(property.propertyName);
             }
             else {

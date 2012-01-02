@@ -17,7 +17,6 @@ import samson.convert.MultivaluedConverter;
 import samson.jersey.core.reflection.ReflectionHelper;
 import samson.metadata.BeanMetadata;
 import samson.metadata.BeanMetadataCache;
-import samson.metadata.BeanTcp;
 import samson.metadata.Element;
 import samson.metadata.ElementRef;
 import samson.metadata.TypeClassPair;
@@ -34,9 +33,8 @@ public class BinderFactory {
         this.converterProvider = converterProvider;
     }
 
-    public BeanTcp getBeanTcp(TypeClassPair tcp) {
-        BeanMetadata metadata = beanCache.get(tcp.c);
-        return new BeanTcp(tcp, metadata.getProperties());
+    public BeanMetadata getBeanMetadata(TypeClassPair tcp) {
+        return beanCache.get(tcp);
     }
 
     public Converter<?> getConverter(TypeClassPair tcp, Annotation annotations[]) {

@@ -2,6 +2,7 @@ package samson.bind;
 
 import static samson.Configuration.MAX_LIST_SIZE;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,7 +11,8 @@ import org.slf4j.LoggerFactory;
 import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
-import samson.metadata.ListTcp;
+import samson.metadata.ListItem;
+import samson.metadata.TypeClassPair;
 
 class ListBinder extends Binder {
 
@@ -25,17 +27,16 @@ class ListBinder extends Binder {
      */
     @Override
     public void read(BinderNode<?> node) {
-        ListTcp listTcp = new ListTcp(ref.element);
+        ListItem listItem = ListItem.fromList(ref.element);
         List<?> list = (List<?>) ref.accessor.get();
-
         if (list == null) {
-            list = listTcp.createInstance();
+            list = createInstance(ref.element.tcp);
             ref.accessor.set(list);
         }
 
         for (BinderNode<?> child : node.getChildren()) {
             String stringIndex = child.getName();
-            ElementRef childRef = getChildRef(listTcp, list, stringIndex);
+            ElementRef childRef = getChildRef(listItem, list, stringIndex);
 
             Binder binder = factory.getBinder(childRef, child.hasChildren());
             binder.read(child);
@@ -45,18 +46,18 @@ class ListBinder extends Binder {
 
     @Override
     public ElementRef getChildRef(String name) {
-        ListTcp listTcp = new ListTcp(ref.element);
+        ListItem listItem = ListItem.fromList(ref.element);
         List<?> list = (List<?>) ref.accessor.get();
 
-        ElementRef childRef = getChildRef(listTcp, list, name);
+        ElementRef childRef = getChildRef(listItem, list, name);
         return childRef;
     }
 
-    private ElementRef getChildRef(ListTcp listTcp, List<?> list, String stringIndex) {
+    private ElementRef getChildRef(ListItem listItem, List<?> list, String stringIndex) {
         int index = getIndex(stringIndex);
         if (index >= 0 && index < MAX_LIST_SIZE) {
-            Element itemElement = listTcp.createItemElement(stringIndex);
-            ElementAccessor itemAccessor = ListTcp.createItemAccessor(list, index);
+            Element itemElement = listItem.createElement(stringIndex);
+            ElementAccessor itemAccessor = ListItem.createAccessor(list, index);
             return new ElementRef(itemElement, itemAccessor);
         }
         else {
@@ -70,6 +71,31 @@ class ListBinder extends Binder {
             return Integer.parseInt(stringIndex);
         } catch (NumberFormatException ex) {
             return -1;
+        }
+    }
+
+    public static List<?> createInstance(TypeClassPair tcp) {
+        Class<?> listClass = tcp.c;
+
+        if (!List.class.isAssignableFrom(listClass)) {
+            throw new IllegalArgumentException();
+        }
+
+        if (listClass.isInterface()) {
+            if (listClass == List.class) {
+                listClass = ArrayList.class;
+            }
+            else {
+                throw new RuntimeException("Unknown list interface");
+            }
+        }
+
+        try {
+            return (List<?>) listClass.newInstance();
+        } catch (InstantiationException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
         }
     }
 

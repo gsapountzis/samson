@@ -4,16 +4,29 @@ import java.util.Map;
 
 public class BeanMetadata {
 
-    private final Class<?> beanClass;
+    private final TypeClassPair tcp;
     private final Map<String, BeanProperty> properties;
 
-    public BeanMetadata(Class<?> beanClass, Map<String, BeanProperty> properties) {
-        this.beanClass = beanClass;
+    public BeanMetadata(TypeClassPair tcp, Map<String, BeanProperty> properties) {
+        this.tcp = tcp;
         this.properties = properties;
     }
 
-    public Class<?> getBeanClass() {
-        return beanClass;
+    public TypeClassPair getTcp() {
+        return tcp;
+    }
+
+    public boolean hasProperty(String propertyName) {
+        return properties.containsKey(propertyName);
+    }
+
+    public BeanProperty getProperty(String propertyName) {
+        BeanProperty property = properties.get(propertyName);
+        if (property == null) {
+            throw new IllegalArgumentException();
+        }
+
+        return property;
     }
 
     public Map<String, BeanProperty> getProperties() {

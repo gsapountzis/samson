@@ -14,21 +14,21 @@ import samson.jersey.core.reflection.ReflectionHelper;
 
 public abstract class BeanProperty extends Element {
 
-    public final Class<?> beanClass;
+    public final TypeClassPair beanTcp;
     public final String propertyName;
 
-    private BeanProperty(Annotation[] annotations, TypeClassPair tcp, Class<?> beanClass, String name) {
+    private BeanProperty(Annotation[] annotations, TypeClassPair tcp, TypeClassPair beanTcp, String name) {
         super(annotations, tcp, name);
-        this.beanClass = beanClass;
+        this.beanTcp = beanTcp;
         this.propertyName = name;
     }
 
-    public static BeanProperty fromPublicField(Class<?> beanClass, String name, Field field) {
+    public static BeanProperty fromPublicField(TypeClassPair beanTcp, String name, Field field) {
 
         Annotation[] annotations = field.getAnnotations();
 
         TypeClassPair tcp = createTcp(
-                beanClass,
+                beanTcp.c,
                 field.getDeclaringClass(),
                 field.getType(),
                 field.getGenericType());
@@ -38,10 +38,10 @@ public abstract class BeanProperty extends Element {
             throw new IllegalArgumentException("Non-public field");
         }
 
-        return new FieldBeanProperty(annotations, tcp, beanClass, name, field);
+        return new FieldBeanProperty(annotations, tcp, beanTcp, name, field);
     }
 
-    public static BeanProperty fromProperty(Class<?> beanClass, String name, Method getter, Method setter, Field field) {
+    public static BeanProperty fromProperty(TypeClassPair beanTcp, String name, Method getter, Method setter, Field field) {
 
         Annotation[] argAnnotations = setter.getParameterAnnotations()[0];
 
@@ -56,12 +56,12 @@ public abstract class BeanProperty extends Element {
         Annotation[] annotations = list.toArray(new Annotation[0]);
 
         TypeClassPair tcp = createTcp(
-                beanClass,
+                beanTcp.c,
                 setter.getDeclaringClass(),
                 setter.getParameterTypes()[0],
                 setter.getGenericParameterTypes()[0]);
 
-        return new MethodBeanProperty(annotations, tcp, beanClass, name, getter, setter);
+        return new MethodBeanProperty(annotations, tcp, beanTcp, name, getter, setter);
     }
 
     public ElementAccessor createAccessor(final Object bean) {
@@ -93,8 +93,8 @@ public abstract class BeanProperty extends Element {
 
         private final Field field;
 
-        FieldBeanProperty(Annotation[] annotations, TypeClassPair tcp, Class<?> beanClass, String name, Field field) {
-            super(annotations, tcp, beanClass, name);
+        FieldBeanProperty(Annotation[] annotations, TypeClassPair tcp, TypeClassPair beanTcp, String name, Field field) {
+            super(annotations, tcp, beanTcp, name);
             this.field = field;
         }
 
@@ -122,8 +122,8 @@ public abstract class BeanProperty extends Element {
         private final Method getter;
         private final Method setter;
 
-        MethodBeanProperty(Annotation[] annotations, TypeClassPair tcp, Class<?> beanClass, String name, Method getter, Method setter) {
-            super(annotations, tcp, beanClass, name);
+        MethodBeanProperty(Annotation[] annotations, TypeClassPair tcp, TypeClassPair beanTcp, String name, Method getter, Method setter) {
+            super(annotations, tcp, beanTcp, name);
             this.getter = getter;
             this.setter = setter;
         }

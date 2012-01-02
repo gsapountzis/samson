@@ -3,9 +3,10 @@ package samson.bind;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import samson.metadata.BeanMetadata;
 import samson.metadata.BeanProperty;
-import samson.metadata.BeanTcp;
 import samson.metadata.ElementRef;
+import samson.metadata.TypeClassPair;
 
 class BeanBinder extends Binder {
 
@@ -17,17 +18,16 @@ class BeanBinder extends Binder {
 
     @Override
     public void read(BinderNode<?> node) {
-        BeanTcp beanTcp = factory.getBeanTcp(ref.element.tcp);
+        BeanMetadata metadata = factory.getBeanMetadata(ref.element.tcp);
         Object bean = ref.accessor.get();
-
         if (bean == null) {
-            bean = beanTcp.createInstance();
+            bean = createInstance(ref.element.tcp);
             ref.accessor.set(bean);
         }
 
         for (BinderNode<?> child : node.getChildren()) {
             String propertyName = child.getName();
-            ElementRef childRef = getChildRef(beanTcp, bean, propertyName);
+            ElementRef childRef = getChildRef(metadata, bean, propertyName);
 
             Binder binder = factory.getBinder(childRef, child.hasChildren());
             binder.read(child);
@@ -37,21 +37,33 @@ class BeanBinder extends Binder {
 
     @Override
     public ElementRef getChildRef(String name) {
-        BeanTcp beanTcp = factory.getBeanTcp(ref.element.tcp);
+        BeanMetadata metadata = factory.getBeanMetadata(ref.element.tcp);
         Object bean = ref.accessor.get();
 
-        ElementRef childRef = getChildRef(beanTcp, bean, name);
+        ElementRef childRef = getChildRef(metadata, bean, name);
         return childRef;
     }
 
-    private ElementRef getChildRef(BeanTcp beanTcp, Object bean, String propertyName) {
-        if (beanTcp.hasProperty(propertyName)) {
-            BeanProperty property = beanTcp.getProperty(propertyName);
+    private ElementRef getChildRef(BeanMetadata metadata, Object bean, String propertyName) {
+        if (metadata.hasProperty(propertyName)) {
+            BeanProperty property = metadata.getProperty(propertyName);
             return new ElementRef(property, property.createAccessor(bean));
         }
         else {
             LOGGER.warn("Invalid property name: {}", propertyName);
             return ElementRef.NULL_REF;
+        }
+    }
+
+    public static Object createInstance(TypeClassPair tcp) {
+        Class<?> beanClass = tcp.c;
+
+        try {
+            return beanClass.newInstance();
+        } catch (InstantiationException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
         }
     }
 

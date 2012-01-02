@@ -13,21 +13,22 @@ import samson.jersey.spi.inject.Errors;
 
 class BeanIntrospector {
 
-    static BeanMetadata createBeanMetadata(Class<?> beanClass) {
+    static BeanMetadata createBeanMetadata(TypeClassPair tcp) {
+        final Class<?> clazz = tcp.c;
 
         Map<String, Tuple> properties = new HashMap<String, Tuple>();
 
-        checkClass(beanClass);
+        checkClass(clazz);
 
-        findFields(beanClass, properties);
+        findFields(clazz, properties);
 
-        final MethodList methodList = new MethodList(beanClass);
+        final MethodList methodList = new MethodList(clazz);
 
         findSetters(methodList, properties);
 
         findGetters(methodList, properties);
 
-        return new BeanMetadata(beanClass, map(beanClass, properties));
+        return new BeanMetadata(tcp, map(tcp, properties));
     }
 
     private static void checkClass(Class<?> clazz) {
@@ -129,7 +130,7 @@ class BeanIntrospector {
         return Character.toLowerCase(name.charAt(prefix)) + name.substring(prefix + 1);
     }
 
-    private static Map<String, BeanProperty> map(Class<?> beanClass, Map<String, Tuple> properties) {
+    private static Map<String, BeanProperty> map(TypeClassPair beanTcp, Map<String, Tuple> properties) {
         Map<String, BeanProperty> beanProperties = new HashMap<String, BeanProperty>();
 
         for (Entry<String, Tuple> e : properties.entrySet()) {
@@ -137,13 +138,13 @@ class BeanIntrospector {
             Tuple t = e.getValue();
 
             if ((t.getter != null) && (t.setter != null)) {
-                BeanProperty beanProperty = BeanProperty.fromProperty(beanClass, name, t.getter, t.setter, t.field);
+                BeanProperty beanProperty = BeanProperty.fromProperty(beanTcp, name, t.getter, t.setter, t.field);
                 beanProperties.put(name, beanProperty);
             }
             else if (t.field != null) {
                 int modifiers = t.field.getModifiers();
                 if (Modifier.isPublic(modifiers)) {
-                    BeanProperty beanProperty = BeanProperty.fromPublicField(beanClass, name, t.field);
+                    BeanProperty beanProperty = BeanProperty.fromPublicField(beanTcp, name, t.field);
                     beanProperties.put(name, beanProperty);
                 }
             }
