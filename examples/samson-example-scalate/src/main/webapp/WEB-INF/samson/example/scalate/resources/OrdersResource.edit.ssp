@@ -107,7 +107,7 @@
           val qtyField = itemForm.dot("qty").getField
         %>
 
-        <!--  edit item -->
+        <!--  edit item, "name" attr is filled at submission time  -->
         <div class="order-item-edit clearfix <%= if (multiError(productField, qtyField)) "error" %>">
           <label>&nbsp;</label>
           <div class="input">
@@ -129,7 +129,7 @@
 
       </div>
 
-      <!--  tmpl for new item -->
+      <!--  tmpl for new item, "value" attr is filled at addition time -->
       <div style="display:none">
         <div class="order-item-edit-tmpl clearfix">
           <label>&nbsp;</label>
@@ -148,7 +148,7 @@
         </div>
       </div>
 
-      <!--  add new item -->
+      <!--  add new item, no "name" attr, not submitted with the form -->
       <div class="order-items-new clearfix">
         <label>&nbsp;</label>
         <div class="input">
