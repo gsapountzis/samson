@@ -44,9 +44,6 @@ import samson.metadata.Element;
  * @param <T>
  *            form object type: a primitive, string or string-based type as
  *            defined by the JAX-RS spec or a composite type (bean, list, map).
- *
- * @see javax.ws.rs.QueryParam
- * @see javax.ws.rs.FormParam
  */
 public interface JForm<T> {
 
