@@ -2,15 +2,12 @@ package samson.form;
 
 import static samson.Configuration.DISABLE_VALIDATION;
 
-import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Valid;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
@@ -47,7 +44,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
 
             @Override
             public void set(Object value) {
-                throw new IllegalStateException();
+                throw new IllegalStateException("Immutable reference");
             }
 
             @Override
@@ -165,33 +162,19 @@ class FormBuilder<T> implements JFormBuilder<T> {
 
         Validator validator = validatorFactory.getValidator();
 
-        // TODO declaration point validation
+        // https://hibernate.onjira.com/browse/HV-549
 
-        // TODO enable this check after finishing validateDecl
-        boolean checkValid = false;
+        validateType(validator, root, value);
+    }
 
-        boolean valid = false;
-        if (checkValid) {
-            for (Annotation a : element.annotations) {
-                if (a.annotationType() == Valid.class) {
-                    valid = true;
-                }
-            }
-        }
+    private void validateType(Validator validator, FormNode root, T value) {
+        Set<ConstraintViolation<Object>> violations = ValidatorExt.validateType(validator, element, value);
 
-        Set<ConstraintViolation<Object>> typeViolations;
-        if (valid) {
-            typeViolations = Collections.emptySet();
-        }
-        else {
-            typeViolations = ValidatorExt.validateType(validator, element, value);
-        }
-
-        for (ConstraintViolation<Object> violation : typeViolations) {
+        for (ConstraintViolation<Object> violation : violations) {
             LOGGER.debug("{}: {}", violation.getPropertyPath(), violation.getMessage());
         }
 
-        for (ConstraintViolation<Object> violation : typeViolations) {
+        for (ConstraintViolation<Object> violation : violations) {
             // parse and normalize the validation property path
             javax.validation.Path validationPath = violation.getPropertyPath();
             String param = validationPath.toString();

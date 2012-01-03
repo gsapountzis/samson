@@ -56,11 +56,11 @@ class MetadataCache {
 
         if (ao instanceof Constructor) {
             // constructor injection
-            throw new UnsupportedOperationException();
+            return element;
         }
         else if (ao instanceof Field) {
             // field injection
-            throw new UnsupportedOperationException();
+            return element;
         }
         else if (ao instanceof Method) {
             Method method = (Method) ao;
@@ -80,16 +80,16 @@ class MetadataCache {
                 }
                 else {
                     // setter injection
-                    throw new UnsupportedOperationException();
+                    return element;
                 }
             }
             else {
                 // setter injection
-                throw new UnsupportedOperationException();
+                return element;
             }
         }
         else {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Unknown type of accessible object");
         }
     }
 
@@ -125,7 +125,7 @@ class MetadataCache {
                 }
 
                 if (name != null) {
-                    LOGGER.debug("{}: found parameter with name '{}'", method, name);
+                    LOGGER.trace("{}: found parameter with name '{}'", method, name);
                     if (names.contains(name)) {
                         LOGGER.error("{}: Duplicate parameter name '{}'", method, name);
                         return false;

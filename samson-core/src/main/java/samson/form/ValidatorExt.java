@@ -10,8 +10,12 @@ import javax.validation.Validator;
 import javax.validation.metadata.BeanDescriptor;
 import javax.validation.metadata.ElementDescriptor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import samson.metadata.BeanProperty;
 import samson.metadata.Element;
+import samson.metadata.MethodParameter;
 import samson.metadata.TypeClassPair;
 
 /**
@@ -19,43 +23,41 @@ import samson.metadata.TypeClassPair;
  */
 public class ValidatorExt {
 
-    public static ElementDescriptor getElementDescriptorDecl(Validator validator, Element element) {
-        ElementDescriptor decl = null;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValidatorExt.class);
 
+    public static ElementDescriptor getElementDescriptorDecl(Validator validator, Element element) {
         if (element != Element.NULL_ELEMENT) {
-            if (element instanceof BeanProperty) {
+            if (element instanceof MethodParameter) {
+                throw new UnsupportedOperationException();
+            }
+            else if (element instanceof BeanProperty) {
                 BeanProperty property = (BeanProperty) element;
-                BeanDescriptor bean = validator.getConstraintsForClass(property.beanTcp.c);
-                decl = bean.getConstraintsForProperty(property.propertyName);
+                Class<?> beanType = property.beanTcp.c;
+                String propertyName = property.propertyName;
+
+                BeanDescriptor bean = validator.getConstraintsForClass(beanType);
+                return bean.getConstraintsForProperty(propertyName);
             }
             else {
-                // check for method parameter here
                 throw new UnsupportedOperationException();
             }
         }
-
-        return decl;
+        else {
+            return null;
+        }
     }
 
     public static ElementDescriptor getElementDescriptorType(Validator validator, Element element) {
-        ElementDescriptor type = null;
-
         if (element != Element.NULL_ELEMENT) {
             TypeClassPair tcp = element.tcp;
-            type = validator.getConstraintsForClass(tcp.c);
+            return validator.getConstraintsForClass(tcp.c);
         }
-
-        return type;
+        else {
+            return null;
+        }
     }
 
-    public static Set<ConstraintViolation<?>> validateDecl(Validator validator, Element element) {
-        /*
-         * TODO finish declaration point validation.
-         *
-         * This requires either getting declaration point metadata (method, parameter index)
-         * or (bean class, property name) from jersey or a little help from the validator
-         * (https://hibernate.onjira.com/browse/HV-549).
-         */
+    public static Set<ConstraintViolation<Object>> validateDecl(Validator validator, Element element, Object value) {
         return Collections.emptySet();
     }
 
@@ -64,24 +66,25 @@ public class ValidatorExt {
             return Collections.emptySet();
         }
 
-        Set<ConstraintViolation<Object>> violations = Collections.emptySet();
-
         Class<?> clazz = element.tcp.c;
         if (Utils.isBaseType(clazz)) {
             // do nothing
+            return Collections.emptySet();
         }
         else if (Collection.class.isAssignableFrom(clazz)) {
             // cascade to each item
+            LOGGER.warn("Cannot validate root-level collections");
+            return Collections.emptySet();
         }
         else if (Map.class.isAssignableFrom(clazz)) {
             // cascade to each entry
+            LOGGER.warn("Cannot validate root-level maps");
+            return Collections.emptySet();
         }
         else {
             // bean validation
-            violations = validator.validate(value);
+            return validator.validate(value);
         }
-
-        return violations;
     }
 
 }
