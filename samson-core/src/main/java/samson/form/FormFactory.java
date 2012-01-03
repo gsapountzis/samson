@@ -1,6 +1,7 @@
 package samson.form;
 
-import java.lang.annotation.Annotation;
+import java.util.List;
+import java.util.Map;
 
 import javax.validation.Validation;
 import javax.validation.ValidationException;
@@ -14,7 +15,6 @@ import samson.JFormBuilder;
 import samson.JFormProvider;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterProvider;
-import samson.metadata.Element;
 
 public class FormFactory implements JFormProvider {
 
@@ -42,14 +42,6 @@ public class FormFactory implements JFormProvider {
         this.validatorFactory = validatorFactory;
     }
 
-    ParamsProvider getFormParams() {
-        return formParams;
-    }
-
-    ParamsProvider getQueryParams() {
-        return queryParams;
-    }
-
     BinderFactory getBinderFactory() {
         return binderFactory;
     }
@@ -58,58 +50,68 @@ public class FormFactory implements JFormProvider {
         return validatorFactory;
     }
 
-    // -- Binding form factory methods
+    // -- Path
 
-    @Override
-    public <T> JFormBuilder<T> bind(Class<T> type) {
-        return bind(element(type), null);
+    private FormBuilder builder(String path) {
+        return new FormBuilder(this, path);
     }
 
     @Override
-    public <T> JFormBuilder<T> bind(Class<T> type, T instance) {
-        return bind(element(type), instance);
+    public JFormBuilder path() {
+        return builder(null);
     }
 
     @Override
-    public JFormBuilder<?> bind(Element element) {
-        return bind(element, null);
+    public JFormBuilder path(String path) {
+        return builder(path);
     }
 
-    private <T> JFormBuilder<T> bind(Element element, T instance) {
-        return builder(element, instance);
+    // -- Params
+
+    private FormBuilder builder(String path, Map<String, List<String>> params) {
+        return new FormBuilder(this, path, params);
     }
 
-    // -- Wrapping form factory methods
+    @Override
+    public JFormBuilder params(Map<String, List<String>> params) {
+        return builder(null, params);
+    }
+
+    @Override
+    public JFormBuilder params(String path, Map<String, List<String>> params) {
+        return builder(path, params);
+    }
+
+    @Override
+    public JFormBuilder form() {
+        return builder(null, formParams.get());
+    }
+
+    @Override
+    public JFormBuilder form(String path) {
+        return builder(path, formParams.get());
+    }
+
+    @Override
+    public JFormBuilder query() {
+        return builder(null, queryParams.get());
+    }
+
+    @Override
+    public JFormBuilder query(String path) {
+        return builder(path, queryParams.get());
+    }
+
+    // -- Wrap
 
     @Override
     public <T> JForm<T> wrap(Class<T> type) {
-        return wrap(element(type), null);
+        return builder(null).wrap(type);
     }
 
     @Override
     public <T> JForm<T> wrap(Class<T> type, T instance) {
-        return wrap(element(type), instance);
-    }
-
-    @Override
-    public JForm<?> wrap(Element element) {
-        return wrap(element, null);
-    }
-
-    private <T> JForm<T> wrap(Element element, T instance) {
-        return builder(element, instance).wrap();
-    }
-
-    // -- Helpers
-
-    private <T> Element element(Class<T> type) {
-        Annotation[] annotations = new Annotation[0];
-        return new Element(annotations, type, type, null);
-    }
-
-    private <T> FormBuilder<T> builder(Element element, T instance) {
-        FormBuilder<T> form = new FormBuilder<T>(this, element, instance);
-        return form;
+        return builder(null).wrap(type, instance);
     }
 
 }

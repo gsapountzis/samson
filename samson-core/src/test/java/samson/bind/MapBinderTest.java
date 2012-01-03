@@ -37,7 +37,7 @@ public class MapBinderTest {
         form.add("bean.map[two]", "2");
         form.add("bean.map[three]", "3");
 
-        Map<String, String> map = jForm.bind(MapFormBean.class).params("bean", form).get().map;
+        Map<String, String> map = jForm.params("bean", form).bind(MapFormBean.class).get().map;
 
         assertEquals(3, map.size());
         assertEquals("0", map.get("zero"));
@@ -60,7 +60,7 @@ public class MapBinderTest {
         form.add("bean.map[two].a", "2"); // key parsing error
         form.add("bean.map[3].a", "3");
 
-        Map<Integer, ItemBean> map = jForm.bind(MapBeanFormBean.class).params("bean", form).get().map;
+        Map<Integer, ItemBean> map = jForm.params("bean", form).bind(MapBeanFormBean.class).get().map;
 
         assertEquals(2, map.size());
         assertEquals(0, map.get(0).a);

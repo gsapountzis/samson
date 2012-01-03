@@ -1,20 +1,17 @@
 package samson;
 
-import java.util.List;
-import java.util.Map;
+import samson.metadata.Element;
 
-public interface JFormBuilder<T> {
+public interface JFormBuilder {
 
-    JForm<T> params(Map<String, List<String>> params);
+    <T> JForm<T> wrap(Class<T> type);
 
-    JForm<T> params(String path, Map<String, List<String>> params);
+    <T> JForm<T> wrap(Class<T> type, T instance);
 
-    JForm<T> form();
+    <T> JForm<T> bind(Class<T> type);
 
-    JForm<T> form(String path);
+    <T> JForm<T> bind(Class<T> type, T instance);
 
-    JForm<T> query();
-
-    JForm<T> query(String path);
+    JForm<?> bind(Element element);
 
 }

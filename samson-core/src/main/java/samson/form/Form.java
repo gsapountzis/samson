@@ -5,30 +5,35 @@ import java.util.List;
 import java.util.Map;
 
 import samson.JForm;
+import samson.bind.Binder;
+import samson.bind.BinderFactory;
+import samson.form.Property.Node;
+import samson.form.Property.Path;
 import samson.metadata.ElementRef;
 
 class Form<T> implements JForm<T> {
 
     private final FormFactory factory;
 
-    private final T rootValue;
-    private final ElementRef rootRef;
-    private final FormNode rootNode;
-    private final FormField rootField;
+    private final T value;
+    private final ElementRef ref;
+    private final FormNode node;
+    private final FormField field;
 
-    Form(FormFactory factory, T rootValue, ElementRef rootRef, FormNode rootNode) {
+    Form(FormFactory factory, T value, ElementRef ref, FormNode node) {
         this.factory = factory;
-        this.rootValue = rootValue;
-        this.rootRef = rootRef;
-        this.rootNode = rootNode;
-        this.rootField = new FormField(factory, rootRef, rootNode);
+
+        this.value = value;
+        this.ref = ref;
+        this.node = node;
+        this.field = new FormField(factory, ref, node);
     }
 
     // -- Path
 
     @Override
     public String getPath() {
-        return null;
+        return node.getName();
     }
 
     @Override
@@ -38,12 +43,26 @@ class Form<T> implements JForm<T> {
 
     @Override
     public JForm<?> dot(String property) {
+        String path = getPath();
+        if (Utils.isNullOrEmpty(path)) {
+            // do nothing
+        }
+        else {
+            property = path + "." + property;
+        }
         return new PathForm(factory, this, property);
     }
 
     @Override
     public JForm<?> index(String index) {
-        return new PathForm(factory, this, "[" + index + "]");
+        String path = getPath();
+        if (Utils.isNullOrEmpty(path)) {
+            // do nothing
+        }
+        else {
+            index = path + "[" + index + "]";
+        }
+        return new PathForm(factory, this, index);
     }
 
     @Override
@@ -51,43 +70,61 @@ class Form<T> implements JForm<T> {
         return index(Integer.toString(index));
     }
 
+    private Path child(Path path) {
+        String rootPath = getPath();
+        if (Utils.isNullOrEmpty(rootPath)) {
+            return path;
+        }
+        else {
+            return path.subpath(1);
+        }
+    }
+
+    ElementRef getChildRef(Path path) {
+        BinderFactory binderFactory = factory.getBinderFactory();
+
+        ElementRef ref = this.ref;
+        for (Node node : child(path)) {
+            String name = node.getName();
+            Binder binder = binderFactory.getBinder(ref, true, false);
+            ref = binder.getChildRef(name);
+        }
+        return ref;
+    }
+
+    FormNode getChildNode(Path path) {
+        return node.getDefinedChild(child(path));
+    }
+
     // -- Form
 
     @Override
     public T get() {
-        return rootValue;
-    }
-
-    ElementRef getRef() {
-        return rootRef;
-    }
-
-    FormNode getNode() {
-        return rootNode;
+        return value;
     }
 
     @Override
     public boolean hasErrors() {
-        return rootNode.isTreeError();
+        return node.isTreeError();
     }
 
     @Override
     public Map<String, List<String>> getInfos() {
-        return getInfos(null, rootNode);
+        return getInfos(getPath(), node);
     }
 
     @Override
     public Map<String, List<String>> getErrors() {
-        return getErrors(null, rootNode);
+        return getErrors(getPath(), node);
     }
 
-    Map<String, List<String>> getInfos(String param, FormNode node) {
+    static Map<String, List<String>> getInfos(String param, FormNode node) {
         Map<String, List<String>> infos = new HashMap<String, List<String>>();
         node.getTreeInfos(param, infos);
         return infos;
     }
 
-    Map<String, List<String>> getErrors(String param, FormNode node) {
+    static Map<String, List<String>> getErrors(String param, FormNode node) {
         Map<String, List<String>> errors = new HashMap<String, List<String>>();
         node.getTreeErrors(param, errors);
         return errors;
@@ -97,22 +134,22 @@ class Form<T> implements JForm<T> {
 
     @Override
     public Field getField() {
-        return rootField;
+        return field;
     }
 
     @Override
     public Messages getMessages() {
-        return rootField;
+        return field;
     }
 
     @Override
     public void info(String msg) {
-        rootNode.info(msg);
+        node.info(msg);
     }
 
     @Override
     public void error(String msg) {
-        rootNode.error(msg);
+        node.error(msg);
     }
 
 }

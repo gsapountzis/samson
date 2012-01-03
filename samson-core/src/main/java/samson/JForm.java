@@ -33,7 +33,7 @@ import samson.metadata.Element;
  * &#064;Path(&quot;{id}&quot;)
  * public void post(@PathParam(&quot;id&quot;) Long id) {
  *
- *     JForm&lt;User&gt; userForm = jForm.bind(User.class).form(&quot;user&quot;);
+ *     JForm&lt;User&gt; userForm = jForm.form(&quot;user&quot;).bind(User.class);
  * }
  * </pre>
  *

@@ -46,7 +46,7 @@ public class FormParamInjectableProvider implements InjectableProvider<FormParam
         @Override
         public JForm<?> getValue(HttpContext context) {
             MultivaluedMap<String, String> params = getParameters(context, true);
-            return jForm.bind(element).params(element.name, params);
+            return jForm.params(element.name, params).bind(element);
         }
     }
 

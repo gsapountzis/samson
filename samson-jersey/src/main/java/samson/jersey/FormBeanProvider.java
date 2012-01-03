@@ -67,7 +67,7 @@ public class FormBeanProvider extends AbstractMessageReaderWriterProvider<JForm<
         }
         Form form = formProvider.readFrom(Form.class, Form.class, annotations, mediaType, httpHeaders, entityStream);
 
-        return jForm.bind(element).params(form);
+        return jForm.params(form).bind(element);
     }
 
     @Override

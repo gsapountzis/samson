@@ -217,7 +217,7 @@ public class FormNode implements BinderNode<FormNode> {
     }
 
     private String getChildParam(String parent, Node child) {
-        return (Utils.isNullOrEmpty(parent) ? "" : parent) + child;
+        return Utils.isNullOrEmpty(parent) ? ("" + child) : (parent + child);
     }
 
     public void getTreeInfos(String param, Map<String, List<String>> treeInfos) {

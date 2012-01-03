@@ -14,12 +14,12 @@ $(function() {
 		// Fill-in the name attribute of each item's input elements
 		$( "div.order-item-edit > .input" ).each( function() {
 			var $itemInput = $( this ),
-				itemName = "order.items[" + i + "]";
+				item = "items[" + i + "]";
 
 			$itemInput
-				.children( "#id" ).attr( "name", itemName + "." + "product.id" ).end()
-				.children( "#name" ).attr( "name", itemName + "." + "product.name" ).end()
-				.children( "#qty" ).attr( "name", itemName + "." + "qty" ).end();
+				.children( "#id" ).attr( "name", item + "." + "product.id" ).end()
+				.children( "#name" ).attr( "name", item + "." + "product.name" ).end()
+				.children( "#qty" ).attr( "name", item + "." + "qty" ).end();
 
 			i++;
 		});

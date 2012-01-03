@@ -47,7 +47,7 @@ public class TimeTest {
         form.add("user.email", "foo@bar.com");
         form.add("user.address.zipcode", "62400");
 
-        User user = jForm.bind(User.class).params("user", form).get();
+        User user = jForm.params("user", form).bind(User.class).get();
 
         assertEquals("foo@bar.com", user.getEmail());
         assertNotNull(user.getAddress());

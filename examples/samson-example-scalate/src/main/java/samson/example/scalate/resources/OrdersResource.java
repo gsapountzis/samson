@@ -66,7 +66,7 @@ public class OrdersResource {
 
     @Path("{id}")
     @POST
-    public Response update(@PathParam("id") Long id, @FormParam("order") JForm<Order> orderFormParam) {
+    public Response update(@PathParam("id") Long id, @FormParam("") JForm<Order> orderFormParam) {
 
         OrderForm orderForm = new OrderForm(orderFormParam).validate();
 

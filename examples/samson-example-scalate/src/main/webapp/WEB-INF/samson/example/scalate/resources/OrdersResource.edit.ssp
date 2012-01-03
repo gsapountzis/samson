@@ -24,7 +24,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="customer">Customer</label>
         <div class="input">
-          <select class="span4" id="customer" name="order.customer.id">
+          <select class="span4" id="customer" name="customer.id">
             <!-- option value="">-- Select customer --</option -->
             <% customerOptions.foreach(option => { %>
               <option value="<%= option.key %>" <%= if (option.key == field.getValue) "selected" %>><%= option.value %></option>
@@ -41,7 +41,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="code">Code</label>
         <div class="input">
-          <input class="span4" id="code" name="order.code" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="code" name="code" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -53,7 +53,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="orderDate">Order date</label>
         <div class="input">
-          <input class="span4" id="orderDate" name="order.orderDate" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="orderDate" name="orderDate" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -65,7 +65,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="shipDate">Ship date</label>
         <div class="input">
-          <input class="span4" id="shipDate" name="order.shipDate" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="shipDate" name="shipDate" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -77,7 +77,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="status">Status</label>
         <div class="input">
-          <input class="span4" id="status" name="order.status" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="status" name="status" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>

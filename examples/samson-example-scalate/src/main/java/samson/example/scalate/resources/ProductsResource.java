@@ -45,7 +45,7 @@ public class ProductsResource {
      * Create product, shows usage as a resource method parameter.
      */
     @POST
-    public Response save(@FormParam("product") JForm<Product> productForm) {
+    public Response save(@FormParam("") JForm<Product> productForm) {
 
         if (productForm.hasErrors()) {
             return Response.status(BAD_REQUEST).entity(views.create(productForm)).build();
@@ -87,7 +87,7 @@ public class ProductsResource {
     @POST
     public Response update(@PathParam("id") Long id) {
 
-        JForm<Product> productForm = jForm.bind(Product.class).form("product");
+        JForm<Product> productForm = jForm.form().bind(Product.class);
 
         if (productForm.hasErrors()) {
             return Response.status(BAD_REQUEST).entity(views.edit(id, productForm)).build();

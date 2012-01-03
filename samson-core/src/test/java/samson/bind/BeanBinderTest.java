@@ -68,7 +68,7 @@ public class BeanBinderTest {
         form.add("bean.a", "3");
         form.add("bean.nestedBean.b", "4");
 
-        Bean bean = jForm.bind(Bean.class).params("bean", form).get();
+        Bean bean = jForm.params("bean", form).bind(Bean.class).get();
 
         assertEquals(3, bean.getA());
         assertEquals(4, bean.getNestedBean().getB());
@@ -79,7 +79,7 @@ public class BeanBinderTest {
         Form form = new Form();
         form.add("bean.a", "1");
 
-        Bean bean = jForm.bind(Bean.class).params("bean", form).get();
+        Bean bean = jForm.params("bean", form).bind(Bean.class).get();
 
         assertEquals(1, bean.getA());
         assertNull(bean.getNestedBean());
@@ -98,7 +98,7 @@ public class BeanBinderTest {
         form.add("bean.beanTwo[a]", "3");
         form.add("bean.beanTwo[nestedBean].b", "4");
 
-        FormBean bean = jForm.bind(FormBean.class).params("bean", form).get();
+        FormBean bean = jForm.params("bean", form).bind(FormBean.class).get();
 
         assertEquals(1, bean.beanOne.getA());
         assertEquals(2, bean.beanOne.getNestedBean().getB());
@@ -127,7 +127,7 @@ public class BeanBinderTest {
         form.add("bean.a", "1");
         form.add("bean.recursiveBean.a", "2");
 
-        RecursiveBean bean = jForm.bind(RecursiveBean.class).params("bean", form).get();
+        RecursiveBean bean = jForm.params("bean", form).bind(RecursiveBean.class).get();
 
         assertEquals(1, bean.a);
         assertEquals(2, bean.recursiveBean.a);
@@ -140,7 +140,7 @@ public class BeanBinderTest {
         form.add("bean.left.b", "2");
         form.add("bean.left.right.a", "3");
 
-        RecursiveBeanRight bean = jForm.bind(RecursiveBeanRight.class).params("bean", form).get();
+        RecursiveBeanRight bean = jForm.params("bean", form).bind(RecursiveBeanRight.class).get();
 
         assertEquals(1, bean.a);
         assertEquals(2, bean.left.b);

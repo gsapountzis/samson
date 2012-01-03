@@ -2,6 +2,8 @@ package samson.form;
 
 import static samson.Configuration.DISABLE_VALIDATION;
 
+import java.lang.annotation.Annotation;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,22 +26,66 @@ import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
 
-class FormBuilder<T> implements JFormBuilder<T> {
+class FormBuilder implements JFormBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FormBuilder.class);
 
     private final FormFactory factory;
+    private final String path;
+    private final Map<String, List<String>> params;
 
-    private final Element element;
-    private final T initialValue;
+    private Element element;
 
-    FormBuilder(FormFactory factory, Element element, T instance) {
-        this.factory = factory;
-        this.element = element;
-        this.initialValue = instance;
+    FormBuilder(FormFactory factory, String path) {
+        this(factory, path, null);
     }
 
-    private ElementRef immutableRef(final T value) {
+    FormBuilder(FormFactory factory, String path, Map<String, List<String>> params) {
+        this.factory = factory;
+        this.path = path;
+        this.params = params;
+    }
+
+    // -- Element
+
+    private <T> Element element(Class<T> type) {
+        Annotation[] annotations = new Annotation[0];
+        return new Element(annotations, type, type, null);
+    }
+
+    @Override
+    public <T> JForm<T> wrap(Class<T> type) {
+        this.element = element(type);
+        return wrapForm(null);
+    }
+
+    @Override
+    public <T> JForm<T> wrap(Class<T> type, T instance) {
+        this.element = element(type);
+        return wrapForm(instance);
+    }
+
+    @Override
+    public <T> JForm<T> bind(Class<T> type) {
+        this.element = element(type);
+        return bindForm(null);
+    }
+
+    @Override
+    public <T> JForm<T> bind(Class<T> type, T instance) {
+        this.element = element(type);
+        return bindForm(instance);
+    }
+
+    @Override
+    public JForm<?> bind(Element element) {
+        this.element = element;
+        return bindForm(null);
+    }
+
+    // -- Instance
+
+    private <T> ElementRef immutableRef(final T value) {
         ElementAccessor accessor = new ElementAccessor() {
 
             @Override
@@ -55,75 +101,59 @@ class FormBuilder<T> implements JFormBuilder<T> {
         return new ElementRef(element, accessor);
     }
 
-    JForm<T> wrap() {
-        FormNode root = new FormNode(Node.createPrefix(null));
+    private <T> JForm<T> wrapForm(T initialValue) {
+        FormNode unnamed = new FormNode(Node.createPrefix(null));
 
-        return new Form<T>(factory, initialValue, immutableRef(initialValue), root);
+        try {
+            FormNode root = unnamed.getDefinedChild(Path.createPath(path));
+
+            return new Form<T>(factory, initialValue, immutableRef(initialValue), root);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Cannot parse root path " + path);
+        }
     }
 
-    @Override
-    public JForm<T> params(Map<String, List<String>> params) {
-        return params(null, params);
+    private <T> JForm<T> bindForm(T initialValue) {
+        FormNode unnamed = parse(params);
+
+        try {
+            FormNode root = unnamed.getDefinedChild(Path.createPath(path));
+
+            LOGGER.trace(printTree(root));
+
+            T value = bind(root, initialValue);
+            LOGGER.trace(printTree(root));
+
+            validate(root, value);
+            LOGGER.trace(printTree(root));
+
+            return new Form<T>(factory, value, immutableRef(value), root);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Cannot parse root path " + path);
+        }
     }
 
-    @Override
-    public JForm<T> params(String path, Map<String, List<String>> params) {
-        return bind(path, params);
-    }
-
-    @Override
-    public JForm<T> form() {
-        return form(null);
-    }
-
-    @Override
-    public JForm<T> form(String path) {
-        return bind(path, factory.getFormParams().get());
-    }
-
-    @Override
-    public JForm<T> query() {
-        return query(null);
-    }
-
-    @Override
-    public JForm<T> query(String path) {
-        return bind(path, factory.getQueryParams().get());
-    }
-
-    private JForm<T> bind(String path, Map<String, List<String>> params) {
-        FormNode root = parse(path, params);
-        LOGGER.trace(printTree(root));
-
-        final T value = bind(root);
-        LOGGER.trace(printTree(root));
-
-        validate(root, value);
-        LOGGER.trace(printTree(root));
-
-        return new Form<T>(factory, value, immutableRef(value), root);
-    }
-
-    private static FormNode parse(String rootPath, Map<String, List<String>> params) {
-
-        FormNode unnamedRoot = new FormNode(Node.createPrefix(null));
+    private static FormNode parse(Map<String, List<String>> params) {
+        FormNode unnamed = new FormNode(Node.createPrefix(null));
 
         for (Entry<String, List<String>> entry : params.entrySet()) {
             String param = entry.getKey();
             List<String> values = entry.getValue();
 
-            Path path = Path.createPath(param);
-            if (!path.isEmpty()) {
-                FormNode node = unnamedRoot.getDefinedChild(path);
+            try {
+                Path path = Path.createPath(param);
+                FormNode node = unnamed.getDefinedChild(path);
                 node.setStringValues(values);
+            } catch (ParseException e) {
+                LOGGER.warn("Cannot parse parameter name {}", param);
             }
         }
 
-        return unnamedRoot.getDefinedChild(Path.createPath(rootPath));
+        return unnamed;
     }
 
     @SuppressWarnings("unchecked")
-    private T bind(FormNode root) {
+    private <T> T bind(FormNode root, T initialValue) {
         BinderFactory binderFactory = factory.getBinderFactory();
 
         ElementAccessor accessor = new ElementAccessor() {
@@ -150,7 +180,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
         return (T) accessor.get();
     }
 
-    private void validate(FormNode root, T value) {
+    private <T> void validate(FormNode root, T value) {
         if (DISABLE_VALIDATION) {
             return;
         }
@@ -167,7 +197,7 @@ class FormBuilder<T> implements JFormBuilder<T> {
         validateType(validator, root, value);
     }
 
-    private void validateType(Validator validator, FormNode root, T value) {
+    private <T> void validateType(Validator validator, FormNode root, T value) {
         Set<ConstraintViolation<Object>> violations = ValidatorExt.validateType(validator, element, value);
 
         for (ConstraintViolation<Object> violation : violations) {
@@ -175,14 +205,19 @@ class FormBuilder<T> implements JFormBuilder<T> {
         }
 
         for (ConstraintViolation<Object> violation : violations) {
-            // parse and normalize the validation property path
             javax.validation.Path validationPath = violation.getPropertyPath();
             String param = validationPath.toString();
-            Path path = Path.createPath(param);
 
-            // annotate the form tree with violations
-            FormNode node = root.getDefinedChild(path);
-            node.addConstraintViolation(violation);
+            try {
+                // parse and normalize the validation property path
+                Path path = Path.createPath(param);
+
+                // annotate the form tree with violations
+                FormNode node = root.getDefinedChild(path);
+                node.addConstraintViolation(violation);
+            } catch (ParseException e) {
+                throw new IllegalStateException("Cannot parse validation path " + param);
+            }
         }
     }
 

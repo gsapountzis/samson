@@ -12,7 +12,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="code">Code</label>
         <div class="input">
-          <input class="span4" id="code" name="product.code" size="30" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="code" name="code" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -24,7 +24,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="name">Name</label>
         <div class="input">
-          <input class="span4" id="name" name="product.name" size="30" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="name" name="name" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -36,7 +36,7 @@
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="price">Price</label>
         <div class="input">
-          <input class="span4" id="price" name="product.price" size="30" type="text" value="<%= field.getValue %>" />
+          <input class="span4" id="price" name="price" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>

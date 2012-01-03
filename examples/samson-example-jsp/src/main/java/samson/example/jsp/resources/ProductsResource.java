@@ -37,7 +37,7 @@ public class ProductsResource {
     @Path("new")
     @GET
     public Response create() {
-        JForm<Product> productForm = jForm.wrap(Product.class);
+        JForm<Product> productForm = jForm.path("product").wrap(Product.class);
         return Response.ok(Views.create(productForm)).build();
     }
 
@@ -76,7 +76,7 @@ public class ProductsResource {
             return Response.status(NOT_FOUND).build();
         }
 
-        JForm<Product> productForm = jForm.wrap(Product.class, product);
+        JForm<Product> productForm = jForm.path("product").wrap(Product.class, product);
         return Response.ok(Views.edit(id, productForm)).build();
     }
 
@@ -87,7 +87,7 @@ public class ProductsResource {
     @POST
     public Response update(@PathParam("id") Long id) {
 
-        JForm<Product> productForm = jForm.bind(Product.class).form("product");
+        JForm<Product> productForm = jForm.form("product").bind(Product.class);
 
         if (productForm.hasErrors()) {
             return Response.status(BAD_REQUEST).entity(Views.edit(id, productForm)).build();

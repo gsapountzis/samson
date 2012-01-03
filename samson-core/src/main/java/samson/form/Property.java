@@ -1,19 +1,19 @@
 package samson.form;
 
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class Property {
+class Property {
 
     /**
      * A path to an object in an object graph.
      */
-    public static class Path implements Iterable<Node> {
+    static class Path implements Iterable<Node> {
 
         /** Immutable */
         private final List<Node> nodes;
@@ -26,8 +26,9 @@ public class Property {
          * Create a new root path.
          */
         public static Path createRoot(String name) {
-            Path path = new Path();
             Node node = Node.createPrefix(name);
+
+            Path path = new Path();
             path.nodes.add(node);
             return path;
         }
@@ -35,35 +36,30 @@ public class Property {
         /**
          * Create a new path from an EL property.
          */
-        public static Path createPath(String property) {
-            Path path = new Path();
+        public static Path createPath(String property) throws ParseException {
             List<Node> nodes = Parser.parse(property);
+
+            Path path = new Path();
             for (Node node : nodes) {
                 path.nodes.add(node);
             }
             return path;
         }
 
-        public Path head() {
+        public Path subpath(int index) {
             int size = nodes.size();
-            if (size == 0) {
-                throw new IllegalArgumentException();
+            if (index < 0) {
+                throw new IllegalArgumentException("Index out of bounds");
+            }
+            if (index > size) {
+                throw new IllegalArgumentException("Index out of bounds");
             }
 
             Path path = new Path();
-            for (int i = 0; i < (size - 1); i++) {
+            for (int i = index; i < size; i++) {
                 path.nodes.add(nodes.get(i));
             }
             return path;
-        }
-
-        public Node tail() {
-            int size = nodes.size();
-            if (size == 0) {
-                throw new IllegalArgumentException();
-            }
-
-            return nodes.get(size - 1);
         }
 
         public boolean isEmpty() {
@@ -125,7 +121,7 @@ public class Property {
      * The node keeps additional information about the parsing of the EL property,
      * for pretty printing but only the name is significant.
      */
-    public static class Node {
+    static class Node {
 
         /** The immutable name of this node: prefix (root node) / dot suffix / index suffix */
         private final String name;
@@ -149,24 +145,20 @@ public class Property {
             this.index = index;
         }
 
-        public static Node createPrefix(String name) {
+        static Node createPrefix(String name) {
             return new Node(name, name, true, false, false);
         }
 
-        public static Node createDotSuffix(String name, String match) {
+        static Node createDotSuffix(String name, String match) {
             return new Node(name, match, false, true, false);
         }
 
-        public static Node createIndexSuffix(String name, String match) {
+        static Node createIndexSuffix(String name, String match) {
             return new Node(name, match, false, false, true);
         }
 
         public String getName() {
             return name;
-        }
-
-        public String getMatch() {
-            return match;
         }
 
         @Override
@@ -218,15 +210,15 @@ public class Property {
         }
     }
 
-    public static final Parser Parser = new Parser();
+    private static final Parser Parser = new Parser();
 
-    public static class Parser {
+    private static class Parser {
 
         private static final Pattern PREFIX_PATTERN = Pattern.compile("[^\\.\\[]+");        // Identifier
         private static final Pattern DOT_PATTERN = Pattern.compile("\\.([^\\.\\[]+)");      // '.' Identifier
         private static final Pattern INDEX_PATTERN = Pattern.compile("\\[([^\\]]+)\\]");    // '[' Literal ']'
 
-        public Node getPrefix(String path) {
+        Node getPrefix(String path) throws ParseException {
 
             if (Utils.isNullOrEmpty(path)) {
                 return null;
@@ -237,11 +229,12 @@ public class Property {
                 String match = matcher.group();
                 return Node.createPrefix(match);
             }
-
-            return null;
+            else {
+                throw new ParseException("Cannot parse prefix", -1);
+            }
         }
 
-        public Node getNextSuffix(String suffix) {
+        Node getNextSuffix(String suffix) throws ParseException {
 
             if (Utils.isNullOrEmpty(suffix)) {
                 return null;
@@ -254,6 +247,9 @@ public class Property {
                     String name = matcher.group(1);
                     return Node.createDotSuffix(name, match);
                 }
+                else {
+                    throw new ParseException("Cannot parse suffix", -1);
+                }
             }
             else if (suffix.charAt(0) == '[') {
                 Matcher matcher = INDEX_PATTERN.matcher(suffix);
@@ -262,54 +258,27 @@ public class Property {
                     String name = matcher.group(1);
                     return Node.createIndexSuffix(name, match);
                 }
-            }
-
-            return null;
-        }
-
-        public List<Node> parse(String property) {
-            Node node = Parser.getPrefix(property);
-            if (node != null) {
-                return parsePrefix(property);
-            }
-            else {
-                node = Parser.getNextSuffix(property);
-                if (node != null) {
-                    // allow invalid expressions starting with [index]
-                    if (node.match.charAt(0) == '[') {
-                        return parseSuffix(property);
-                    }
+                else {
+                    throw new ParseException("Cannot parse suffix", -1);
                 }
             }
-            return Collections.emptyList();
+            else {
+                throw new ParseException("Cannot parse suffix", -1);
+            }
         }
 
-        public List<Node> parsePrefix(String property) {
+        List<Node> parse(String property) throws ParseException {
             List<Node> nodes = new ArrayList<Node>();
 
-            Node node = Parser.getPrefix(property);
-            String suffix;
+            Node node = getPrefix(property);
             if (node != null) {
                 nodes.add(node);
-                suffix = property.substring(node.match.length());
+                String suffix = property.substring(node.match.length());
 
-                while ((node = Parser.getNextSuffix(suffix)) != null) {
+                while ((node = getNextSuffix(suffix)) != null) {
                     nodes.add(node);
                     suffix = suffix.substring(node.match.length());
                 }
-            }
-
-            return nodes;
-        }
-
-        public List<Node> parseSuffix(String property) {
-            List<Node> nodes = new ArrayList<Node>();
-
-            Node node;
-            String suffix = property;
-            while ((node = Parser.getNextSuffix(suffix)) != null) {
-                nodes.add(node);
-                suffix = suffix.substring(node.match.length());
             }
 
             return nodes;

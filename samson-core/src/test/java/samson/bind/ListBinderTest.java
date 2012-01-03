@@ -42,7 +42,7 @@ public class ListBinderTest {
         form.add("bean.list[3]", "2");
         form.add("bean.list[0]", "3");
 
-        List<String> list = jForm.bind(ListFormBean.class).params("bean", form).get().list;
+        List<String> list = jForm.params("bean", form).bind(ListFormBean.class).get().list;
 
         assertEquals(Arrays.asList("3", null, "1", "2"), list);
     }
@@ -73,7 +73,7 @@ public class ListBinderTest {
         form.add("bean.list[4]",   "");
         form.add("bean.list[5].foo.bar", "");
 
-        List<ItemBean> list = jForm.bind(ListBeanFormBean.class).params("bean", form).get().list;
+        List<ItemBean> list = jForm.params("bean", form).bind(ListBeanFormBean.class).get().list;
 
         assertEquals(Arrays.asList(0, null, null, 2, null, 0), map(list));
     }
@@ -93,7 +93,7 @@ public class ListBinderTest {
         form.add("bean.bean.list[3]", "2");
         form.add("bean.bean.list[0]", "3");
 
-        List<Integer> list = jForm.bind(BeanListFormBean.class).params("bean", form).get().bean.list;
+        List<Integer> list = jForm.params("bean", form).bind(BeanListFormBean.class).get().bean.list;
 
         assertEquals(Arrays.asList(3, null, 1, 2), list);
     }
@@ -110,7 +110,7 @@ public class ListBinderTest {
         form.add("bean.list[3][0]", "3");
         form.add("bean.list[3][1]", "4");
 
-        List<List<Integer>> list = jForm.bind(ListListFormBean.class).params("bean", form).get().list;
+        List<List<Integer>> list = jForm.params("bean", form).bind(ListListFormBean.class).get().list;
 
         assertEquals(2, list.get(0).size());
         assertNull(list.get(1));
@@ -134,7 +134,7 @@ public class ListBinderTest {
         form.add("bean.list[3][0].a", "3");
         form.add("bean.list[3][1].a", "4");
 
-        List<List<ItemBean>> list = jForm.bind(ListListBeanFormBean.class).params("bean", form).get().list;
+        List<List<ItemBean>> list = jForm.params("bean", form).bind(ListListBeanFormBean.class).get().list;
 
         assertEquals(2, list.get(0).size());
         assertNull(list.get(1));
@@ -164,7 +164,7 @@ public class ListBinderTest {
         form.add("bean.set", "4");
         form.add("bean.set", "5");
 
-        Set<String> set = jForm.bind(SetFormBean.class).params("bean", form).get().set;
+        Set<String> set = jForm.params("bean", form).bind(SetFormBean.class).get().set;
 
         assertEquals(set(Arrays.asList("1", "2", "4", "5")), set);
     }
@@ -180,7 +180,7 @@ public class ListBinderTest {
         form.add("bean.set.a", "2");
         form.add("bean.set.a", "3");
 
-        Set<ItemBean> set = jForm.bind(SetBeanFormBean.class).params("bean", form).get().set;
+        Set<ItemBean> set = jForm.params("bean", form).bind(SetBeanFormBean.class).get().set;
 
         assertNull(set); // set cannot contain compound values
     }
@@ -213,7 +213,7 @@ public class ListBinderTest {
         form.add("bean.set", "2");
         form.add("bean.set", "1");
 
-        Set<StringItemBean> set = jForm.bind(SetStringBeanFormBean.class).params("bean", form).get().set;
+        Set<StringItemBean> set = jForm.params("bean", form).bind(SetStringBeanFormBean.class).get().set;
 
         assertEquals(set(Arrays.asList(1, 2, 3)), map(set));
     }

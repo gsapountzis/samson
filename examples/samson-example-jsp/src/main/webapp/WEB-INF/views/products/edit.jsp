@@ -34,32 +34,32 @@
       <form action="<c:url value="/products/${ id }" />" method="post">
         <fieldset>
 
-          <c:set var="field" value="${ sms:path(productForm, 'code').field }" />
+          <c:set var="field" value="${ sms:path(productForm, 'product.code').field }" />
 
           <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
             <label for="code">Code</label>
             <div class="input">
-              <input class="span4" id="code" name="product.code" size="30" type="text" value="${fn:escapeXml( field.value )}" />
+              <input class="span4" id="code" name="product.code" type="text" value="${fn:escapeXml( field.value )}" />
               <span class="help-inline"><c:out value="${ sms:messages(field) }" /></span>
             </div>
           </div>
 
-          <c:set var="field" value="${ sms:path(productForm, 'name').field }" />
+          <c:set var="field" value="${ sms:path(productForm, 'product.name').field }" />
 
           <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
             <label for="name">Name</label>
             <div class="input">
-              <input class="span4" id="name" name="product.name" size="30" type="text" value="${fn:escapeXml( field.value )}" />
+              <input class="span4" id="name" name="product.name" type="text" value="${fn:escapeXml( field.value )}" />
               <span class="help-inline"><c:out value="${ sms:messages(field) }" /></span>
             </div>
           </div>
 
-          <c:set var="field" value="${ sms:path(productForm, 'price').field }" />
+          <c:set var="field" value="${ sms:path(productForm, 'product.price').field }" />
 
           <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
             <label for="price">Price</label>
             <div class="input">
-              <input class="span4" id="price" name="product.price" size="30" type="text" value="${fn:escapeXml( field.value )}" />
+              <input class="span4" id="price" name="product.price" type="text" value="${fn:escapeXml( field.value )}" />
               <span class="help-inline"><c:out value="${ sms:messages(field) }" /></span>
             </div>
           </div>

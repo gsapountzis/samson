@@ -1,12 +1,10 @@
 package samson.form;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
 import samson.JForm;
-import samson.bind.Binder;
-import samson.bind.BinderFactory;
-import samson.form.Property.Node;
 import samson.form.Property.Path;
 import samson.metadata.ElementRef;
 
@@ -17,6 +15,7 @@ class PathForm implements JForm<Object> {
     private final Form<?> form;
     private final String param;
 
+    private final ElementRef ref;
     private final FormNode node;
     private final FormField field;
 
@@ -25,29 +24,14 @@ class PathForm implements JForm<Object> {
         this.form = form;
         this.param = param;
 
-        Path path = Path.createPath(param);
-        if (path.isEmpty()) {
-            throw new IllegalArgumentException();
+        try {
+            Path path = Path.createPath(param);
+            this.ref = form.getChildRef(path);
+            this.node = form.getChildNode(path);
+            this.field = new FormField(factory, ref, node);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Cannot parse path " + param);
         }
-
-        ElementRef rootRef = form.getRef();
-        FormNode rootNode = form.getNode();
-
-        ElementRef ref = getPathRef(rootRef, path);
-        this.node = rootNode.getDefinedChild(path);
-        this.field = new FormField(factory, ref, node);
-    }
-
-    private ElementRef getPathRef(ElementRef rootRef, Path path) {
-        BinderFactory binderFactory = factory.getBinderFactory();
-
-        ElementRef ref = rootRef;
-        for (Node node : path) {
-            String name = node.getName();
-            Binder binder = binderFactory.getBinder(ref, true, false);
-            ref = binder.getChildRef(name);
-        }
-        return ref;
     }
 
     // -- Path
@@ -59,7 +43,7 @@ class PathForm implements JForm<Object> {
 
     @Override
     public JForm<?> path(String path) {
-        return form.path(path);
+        return new PathForm(factory, form, path);
     }
 
     @Override
@@ -81,7 +65,7 @@ class PathForm implements JForm<Object> {
 
     @Override
     public Object get() {
-        return field.getObjectValue();
+        return ref.accessor.get();
     }
 
     @Override
@@ -91,12 +75,12 @@ class PathForm implements JForm<Object> {
 
     @Override
     public Map<String, List<String>> getInfos() {
-        return form.getInfos(param, node);
+        return Form.getInfos(param, node);
     }
 
     @Override
     public Map<String, List<String>> getErrors() {
-        return form.getErrors(param, node);
+        return Form.getErrors(param, node);
     }
 
     // -- Field
