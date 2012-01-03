@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Mock repository, should be synchronized and create deep copies ...
+ */
 public class Repository {
 
     private static final Repository INSTANCE = new Repository();

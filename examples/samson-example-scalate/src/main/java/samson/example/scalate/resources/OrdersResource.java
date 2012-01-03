@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -65,9 +66,9 @@ public class OrdersResource {
 
     @Path("{id}")
     @POST
-    public Response update(@PathParam("id") Long id) {
+    public Response update(@PathParam("id") Long id, @FormParam("order") JForm<Order> orderFormParam) {
 
-        OrderForm orderForm = new OrderForm(jForm.bind(Order.class).form("order")).validate();
+        OrderForm orderForm = new OrderForm(orderFormParam).validate();
 
         if (orderForm.hasErrors()) {
             return Response.status(BAD_REQUEST).entity(views.edit(id, orderForm)).build();
