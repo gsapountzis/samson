@@ -14,6 +14,9 @@ public class MethodParameter extends Element {
         this.parameterIndex = parameterIndex;
     }
 
+    /**
+     * Check if the method parameter is annotated with a specific annotation.
+     */
     public boolean hasAnnotation(Annotation annotation) {
         for (Annotation a : annotations) {
             if (a.equals(annotation)) {
