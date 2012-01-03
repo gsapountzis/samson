@@ -7,10 +7,11 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -18,6 +19,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import samson.JForm;
 import samson.JFormProvider;
@@ -31,6 +35,8 @@ import com.sun.jersey.api.view.Viewable;
 
 @Path("/orders")
 public class OrdersResource {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrdersResource.class);
 
     @Context
     private JFormProvider jForm;
@@ -66,9 +72,12 @@ public class OrdersResource {
 
     @Path("{id}")
     @POST
-    public Response update(@PathParam("id") Long id, @FormParam("") JForm<Order> orderFormParam) {
+    public Response update(@PathParam("id") Long id, JForm<Order> orderFormParam) {
 
         OrderForm orderForm = new OrderForm(orderFormParam).validate();
+
+        printErrors(orderForm.getErrors());
+        printErrors(orderForm.dot("items").getErrors());
 
         if (orderForm.hasErrors()) {
             return Response.status(BAD_REQUEST).entity(views.edit(id, orderForm)).build();
@@ -78,6 +87,16 @@ public class OrdersResource {
         Repository.get().updateOrder(id, order);
 
         return Response.seeOther(Paths.view(id)).build();
+    }
+
+    private static void printErrors(Map<String, List<String>> treeMessages) {
+        for (Entry<String, List<String>> entry : treeMessages.entrySet()) {
+            String param = entry.getKey();
+            List<String> messages = entry.getValue();
+            for (String message : messages) {
+                LOGGER.info(param + ": " + message);
+            }
+        }
     }
 
     // -- Option values (should be cached either at the resources or repository level)

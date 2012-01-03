@@ -6,7 +6,6 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import java.net.URI;
 import java.util.Collection;
 
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -45,7 +44,7 @@ public class ProductsResource {
      * Create product, shows usage as a resource method parameter.
      */
     @POST
-    public Response save(@FormParam("") JForm<Product> productForm) {
+    public Response save(JForm<Product> productForm) {
 
         if (productForm.hasErrors()) {
             return Response.status(BAD_REQUEST).entity(views.create(productForm)).build();

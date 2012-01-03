@@ -1,8 +1,8 @@
 package samson.form;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import samson.JForm;
 import samson.bind.Binder;
@@ -119,13 +119,13 @@ class Form<T> implements JForm<T> {
     }
 
     static Map<String, List<String>> getInfos(String param, FormNode node) {
-        Map<String, List<String>> infos = new HashMap<String, List<String>>();
+        Map<String, List<String>> infos = new TreeMap<String, List<String>>();
         node.getTreeInfos(param, infos);
         return infos;
     }
 
     static Map<String, List<String>> getErrors(String param, FormNode node) {
-        Map<String, List<String>> errors = new HashMap<String, List<String>>();
+        Map<String, List<String>> errors = new TreeMap<String, List<String>>();
         node.getTreeErrors(param, errors);
         return errors;
     }
