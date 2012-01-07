@@ -77,7 +77,6 @@ public class OrdersResource {
         OrderForm orderForm = new OrderForm(orderFormParam).validate();
 
         printErrors(orderForm.getErrors());
-        printErrors(orderForm.dot("items").getErrors());
 
         if (orderForm.hasErrors()) {
             return Response.status(BAD_REQUEST).entity(views.edit(id, orderForm)).build();
