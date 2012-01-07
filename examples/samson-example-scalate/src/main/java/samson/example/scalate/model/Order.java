@@ -10,12 +10,13 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-public class Order implements Identifiable<Long> {
+public class Order {
 
     public Long id;
 
     @NotNull
-    @ValidId
+    public Long customerId;
+
     public Customer customer;
 
     @NotEmpty
@@ -31,15 +32,5 @@ public class Order implements Identifiable<Long> {
     @Valid
     @Size(min = 1, message = "order must contain at least one item")
     public List<OrderItem> items = new ArrayList<OrderItem>();
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public boolean isIdValid() {
-        return (id != null) && (id > 0);
-    }
 
 }

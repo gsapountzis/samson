@@ -5,10 +5,9 @@ import javax.validation.constraints.NotNull;
 
 public class OrderItem {
 
-    public Order order;
-
     @NotNull
-    @ValidId(message = "must select a product")
+    public Long productId;
+
     public Product product;
 
     @NotNull

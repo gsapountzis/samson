@@ -40,20 +40,23 @@ public class OrderForm extends ForwardingForm<Order> {
         int i = 0;
         for (OrderItem item : order.items) {
 
-            Long id = (item != null && item.product != null) ? item.product.id : null;
-            if (id != null) {
-                if (map.containsKey(id)) {
+            Long productId = (item != null) ? item.productId : null;
+            if (productId != null) {
+                if (map.containsKey(productId)) {
                     containsDup = true;
-                    Integer first = map.get(id);
+                    Integer first = map.get(productId);
                     if (first != null) {
-                        map.put(id, null);
+                        map.put(productId, null);
                         itemsForm.index(first).dot("product").error("first item");
                     }
                     itemsForm.index(i).dot("product").error("duplicate item");
                 }
                 else {
-                    map.put(id, i);
+                    map.put(productId, i);
                 }
+            }
+            else {
+                itemsForm.index(i).dot("product").error("must select a product");
             }
 
             i += 1;

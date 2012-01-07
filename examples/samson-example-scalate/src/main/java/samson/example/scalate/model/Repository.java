@@ -61,7 +61,7 @@ public class Repository {
         createCustomer(customer);
 
         customer = new Customer();
-        customer.name = "Andrew";
+        customer.name = "Elena";
         createCustomer(customer);
 
         // -- Order
@@ -70,39 +70,41 @@ public class Repository {
         cal.set(2011, 8 - 1, 23);
 
         Order order = new Order();
-        order.customer = findCustomerByName("George");
+        customer = findCustomerByName("George");
+        order.customerId = customer.id;
         order.code = "001";
         order.orderDate = cal.getTime();
         order.status = OrderStatus.NEW;
 
         OrderItem item = new OrderItem();
-        item.order = order;
-        item.product = findProductByCode("0596529260");
+        product = findProductByCode("0596529260");
+        item.productId = product.id;
         item.qty = 10;
         order.items.add(item);
 
         item = new OrderItem();
-        item.order = order;
-        item.product = findProductByCode("0596158041");
+        product = findProductByCode("0596158041");
+        item.productId = product.id;
         item.qty = 2;
         order.items.add(item);
 
         item = new OrderItem();
-        item.order = order;
-        item.product = findProductByCode("0596801688");
+        product = findProductByCode("0596801688");
+        item.productId = product.id;
         item.qty = 15;
         order.items.add(item);
 
         createOrder(order);
 
         order = new Order();
-        order.customer = findCustomerByName("John");
+        customer = findCustomerByName("John");
+        order.customerId = customer.id;
         order.code = "002";
         order.status = OrderStatus.NEW;
 
         item = new OrderItem();
-        item.order = order;
-        item.product = findProductByCode("0596529260");
+        product = findProductByCode("0596529260");
+        item.productId = product.id;
         item.qty = 1;
         order.items.add(item);
 
@@ -169,7 +171,11 @@ public class Repository {
     // -- Order
 
     public Collection<Order> getOrders() {
-        return orders.values();
+        Collection<Order> orderSet = orders.values();
+        for (Order order : orderSet) {
+            fetchOrderCustomer(order);
+        }
+        return orderSet;
     }
 
     public Order findOrder(Long id) {
@@ -184,12 +190,12 @@ public class Repository {
     }
 
     private Order fetchOrderCustomer(Order order) {
-        order.customer = customers.get(order.customer.id);
+        order.customer = customers.get(order.customerId);
         return order;
     }
 
     private OrderItem fetchOrderItemProduct(OrderItem item) {
-        item.product = products.get(item.product.id);
+        item.product = products.get(item.productId);
         return item;
     }
 
@@ -207,17 +213,13 @@ public class Repository {
 
     private void saveOrder(Long id, Order order) {
         checkNotNull(order);
-        checkNotNull(order.customer);
-        checkNotNull(order.customer.id);
-        checkForeignKey(customers, order.customer.id);
+        checkNotNull(order.customerId);
+        checkForeignKey(customers, order.customerId);
 
         for (OrderItem item : order.items) {
             checkNotNull(item);
-            checkNotNull(item.product);
-            checkNotNull(item.product.id);
-            checkForeignKey(products, item.product.id);
-
-            item.order = order;
+            checkNotNull(item.productId);
+            checkForeignKey(products, item.productId);
         }
 
         orders.put(id, order);

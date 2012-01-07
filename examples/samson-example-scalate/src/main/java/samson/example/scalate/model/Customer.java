@@ -4,22 +4,12 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-public class Customer implements Identifiable<Long> {
+public class Customer {
 
     public Long id;
 
     @NotEmpty
     @Size(max = 80)
     public String name;
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public boolean isIdValid() {
-        return (id != null) && (id > 0);
-    }
 
 }

@@ -8,7 +8,7 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
-public class Product implements Identifiable<Long> {
+public class Product {
 
     public Long id;
 
@@ -21,15 +21,5 @@ public class Product implements Identifiable<Long> {
     @NotNull
     @DecimalMin("0.01")
     public BigDecimal price;
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public boolean isIdValid() {
-        return (id != null) && (id > 0);
-    }
 
 }

@@ -17,7 +17,7 @@ $(function() {
 				item = "items[" + i + "]";
 
 			$itemInput
-				.children( "#id" ).attr( "name", item + "." + "product.id" ).end()
+				.children( "#id" ).attr( "name", item + "." + "productId" ).end()
 				.children( "#name" ).attr( "name", item + "." + "product.name" ).end()
 				.children( "#qty" ).attr( "name", item + "." + "qty" ).end();
 
