@@ -191,13 +191,12 @@ public class FormBuilder implements JFormBuilder {
 
         Validator validator = validatorFactory.getValidator();
 
-        // https://hibernate.onjira.com/browse/HV-549
+        Set<ConstraintViolation<Object>> violations = ValidatorExt.validateType(validator, element, value);
 
-        validateType(validator, root, value);
+        addConstraintViolations(root, violations);
     }
 
-    private <T> void validateType(Validator validator, FormNode root, T value) {
-        Set<ConstraintViolation<Object>> violations = ValidatorExt.validateType(validator, element, value);
+    private static void addConstraintViolations(FormNode root, Set<ConstraintViolation<Object>> violations) {
 
         for (ConstraintViolation<Object> violation : violations) {
             LOGGER.debug("{}: {}", violation.getPropertyPath(), violation.getMessage());

@@ -93,14 +93,14 @@ class MetadataCache {
         }
     }
 
-    private final ConcurrentMap<Method, Boolean> resultCache = new ConcurrentHashMap<Method, Boolean>();
+    private final ConcurrentMap<Method, Boolean> isUniqueParametersCache = new ConcurrentHashMap<Method, Boolean>();
 
     private boolean isUniqueParameters(MethodMetadata metadata) {
         Method method = metadata.getMethod();
-        Boolean memo = resultCache.get(method);
+        Boolean memo = isUniqueParametersCache.get(method);
         if (memo == null) {
             Boolean result = computeUniqueParameters(metadata);
-            memo = resultCache.putIfAbsent(method, result);
+            memo = isUniqueParametersCache.putIfAbsent(method, result);
             if (memo == null) {
                 memo = result;
             }
@@ -127,7 +127,7 @@ class MetadataCache {
                 if (name != null) {
                     LOGGER.trace("{}: found parameter with name '{}'", method, name);
                     if (names.contains(name)) {
-                        LOGGER.error("{}: Duplicate parameter name '{}'", method, name);
+                        LOGGER.error("{}: duplicate parameter name '{}'", method, name);
                         return false;
                     }
                     else {
