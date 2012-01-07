@@ -17,6 +17,7 @@ import javax.ws.rs.ext.Providers;
 
 import samson.JForm;
 import samson.JFormProvider;
+import samson.form.FormBuilder;
 import samson.metadata.Element;
 
 import com.sun.jersey.api.container.ContainerException;
@@ -67,7 +68,8 @@ public class FormBeanProvider extends AbstractMessageReaderWriterProvider<JForm<
         }
         Form form = formProvider.readFrom(Form.class, Form.class, annotations, mediaType, httpHeaders, entityStream);
 
-        return jForm.params(form).bind(element);
+        FormBuilder builder = (FormBuilder) jForm.params(form);
+        return builder.bind(element);
     }
 
     @Override

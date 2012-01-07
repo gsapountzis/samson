@@ -16,7 +16,6 @@ import samson.JForm.Field;
 import samson.JForm.Messages;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterException;
-import samson.metadata.Element;
 import samson.metadata.ElementRef;
 import samson.metadata.TypeClassPair;
 
@@ -34,11 +33,6 @@ class FormField implements Field, Messages {
     }
 
     // -- Field
-
-    @Override
-    public Element getElement() {
-        return ref.element;
-    }
 
     @Override
     public Object getObjectValue() {

@@ -7,7 +7,6 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 
 import samson.convert.ConverterException;
-import samson.metadata.Element;
 
 /**
  * Facade over the binding and validation results that is compatible with the
@@ -119,8 +118,6 @@ public interface JForm<T> {
      * the case of a tree, the value corresponds to the <em>root</em> object.
      */
     public static interface Field {
-
-        Element getElement();
 
         Object getObjectValue();
 

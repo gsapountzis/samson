@@ -6,6 +6,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import samson.JForm;
 import samson.JFormProvider;
+import samson.form.FormBuilder;
 import samson.metadata.Element;
 
 import com.sun.jersey.api.core.HttpContext;
@@ -41,7 +42,8 @@ public class QueryParamInjectableProvider implements InjectableProvider<QueryPar
         @Override
         public JForm<?> getValue(HttpContext context) {
             MultivaluedMap<String, String> params = getParameters(context, true);
-            return jForm.params(element.name, params).bind(element);
+            FormBuilder builder = (FormBuilder) jForm.params(element.name, params);
+            return builder.bind(element);
         }
     }
 

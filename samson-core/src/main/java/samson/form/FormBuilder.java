@@ -26,7 +26,7 @@ import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
 
-class FormBuilder implements JFormBuilder {
+public class FormBuilder implements JFormBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FormBuilder.class);
 
@@ -77,7 +77,6 @@ class FormBuilder implements JFormBuilder {
         return bindForm(instance);
     }
 
-    @Override
     public JForm<?> bind(Element element) {
         this.element = element;
         return bindForm(null);
