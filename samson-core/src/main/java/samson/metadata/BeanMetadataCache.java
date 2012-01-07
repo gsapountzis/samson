@@ -9,8 +9,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import samson.jersey.core.reflection.AnnotatedMethod;
-import samson.jersey.core.reflection.MethodList;
 import samson.jersey.spi.inject.Errors;
 import samson.jersey.spi.inject.Errors.Closure;
 
@@ -52,11 +50,9 @@ public class BeanMetadataCache {
 
             findFields(clazz, properties);
 
-            final MethodList methodList = new MethodList(clazz);
+            findSetters(clazz, properties);
 
-            findSetters(methodList, properties);
-
-            findGetters(methodList, properties);
+            findGetters(clazz, properties);
 
             return new BeanMetadata(tcp, map(tcp, properties));
         }
@@ -119,15 +115,14 @@ public class BeanMetadataCache {
             }
         }
 
-        private static void findSetters(MethodList methodList, Map<String, Tuple> properties) {
-            for (AnnotatedMethod am : methodList.hasReturnType(void.class).hasNumParams(1)) {
-                Method m = am.getMethod();
-                String name = m.getName();
-
-                String property = null;
-                if (name.startsWith("set")) {
-                    property = getPropertyName(name, 3);
+        private static void findSetters(Class<?> c, Map<String, Tuple> properties) {
+            Method[] methods = c.getMethods();
+            for (Method m : methods) {
+                if (!isSetter(m)) {
+                    continue;
                 }
+
+                String property = getPropertyName(m.getName());
                 if (property != null) {
                     Tuple t = getTuple(properties, property);
                     t.setter = m;
@@ -135,19 +130,14 @@ public class BeanMetadataCache {
             }
         }
 
-        private static void findGetters(MethodList methodList, Map<String, Tuple> properties) {
-            for (AnnotatedMethod am : methodList.hasNumParams(0)) {
-                Method m = am.getMethod();
-                String name = m.getName();
-                Class<?> returnType = m.getReturnType();
+        private static void findGetters(Class<?> c, Map<String, Tuple> properties) {
+            Method[] methods = c.getMethods();
+            for (Method m : methods) {
+                if (!isGetter(m)) {
+                    continue;
+                }
 
-                String property = null;
-                if ((returnType != void.class) && name.startsWith("get")) {
-                    property = getPropertyName(name, 3);
-                }
-                else if ((returnType == boolean.class || returnType == Boolean.class) && name.startsWith("is")) {
-                    property = getPropertyName(name, 2);
-                }
+                String property = getPropertyName(m.getName());
                 if (property != null) {
                     Tuple t = getTuple(properties, property);
                     t.getter = m;
@@ -155,7 +145,61 @@ public class BeanMetadataCache {
             }
         }
 
-        private static String getPropertyName(String name, int prefix) {
+        private static boolean isSetter(Method m) {
+            Class<?> returnType = m.getReturnType();
+            Class<?>[] parameterTypes = m.getParameterTypes();
+            String name = m.getName();
+
+            if ((returnType == void.class) && (parameterTypes.length == 1)) {
+                if (name.startsWith("set")) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+
+        private static boolean isGetter(Method m) {
+            Class<?> returnType = m.getReturnType();
+            Class<?>[] parameterTypes = m.getParameterTypes();
+            String name = m.getName();
+
+            if ((returnType != void.class) && (parameterTypes.length == 0)) {
+                if (name.startsWith("get")) {
+                    return true;
+                }
+                else if ((returnType == boolean.class || returnType == Boolean.class) && name.startsWith("is")) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+
+        private static String getPropertyName(String name) {
+            int prefix;
+
+            if (name.startsWith("set")) {
+                prefix = 3;
+            }
+            else if (name.startsWith("get")) {
+                prefix = 3;
+            }
+            else if (name.startsWith("is")) {
+                prefix = 2;
+            }
+            else {
+                return null;
+            }
+
             if (name.length() < prefix + 1) {
                 return null;
             }
@@ -175,7 +219,7 @@ public class BeanMetadataCache {
                 }
                 else if (t.field != null) {
                     int modifiers = t.field.getModifiers();
-                    if (Modifier.isPublic(modifiers)) {
+                    if (Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers)) {
                         BeanProperty beanProperty = BeanProperty.fromPublicField(beanTcp, name, t.field);
                         beanProperties.put(name, beanProperty);
                     }

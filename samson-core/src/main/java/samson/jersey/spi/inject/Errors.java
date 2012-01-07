@@ -192,8 +192,7 @@ public final class Errors {
         try {
             return c.f();
         } catch (RuntimeException re) {
-            // If a runtime exception is caught then report errors and
-            // rethrow
+            // If a runtime exception is caught then report errors and rethrow
             caught = re;
         } finally {
             e.postProcess(caught == null);

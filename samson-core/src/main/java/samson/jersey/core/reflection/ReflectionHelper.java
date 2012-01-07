@@ -43,7 +43,6 @@ package samson.jersey.core.reflection;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -116,16 +115,6 @@ public class ReflectionHelper {
             return o.getClass();
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
-        }
-    }
-
-    private static final Class<?>[] NO_ARG = new Class<?>[0];
-
-    public static Constructor<?> getNoargConstructor(Class<?> c) {
-        try {
-            return c.getConstructor(NO_ARG);
-        } catch (Exception e) {
-            return null;
         }
     }
 
@@ -307,50 +296,14 @@ public class ReflectionHelper {
         return new ClassTypePair(c, t);
     }
 
-    /**
-     * Find a method on a class given an existing method.
-     * <p>
-     * If there exists a public method on the class that has the same name
-     * and parameters as the existing method then that public method is
-     * returned.
-     * <p>
-     * Otherwise, if there exists a public method on the class that has
-     * the same name and the same number of parameters as the existing method,
-     * and each generic parameter type, in order, of the public method is equal
-     * to the generic parameter type, in the same order, of the existing method
-     * or is an instance of {@link TypeVariable} then that public method is
-     * returned.
-     *
-     * @param c the class to search for a public method
-     * @param m the method to find
-     * @return the found public method.
-     */
-    public static Method findMethodOnClass(Class<?> c, Method m) {
-        try {
-            return c.getMethod(m.getName(), m.getParameterTypes());
-        } catch (NoSuchMethodException ex) {
-            for (Method _m : c.getMethods()) {
-                if (_m.getName().equals(m.getName()) &&
-                        _m.getParameterTypes().length == m.getParameterTypes().length) {
-                    if (compareParameterTypes(m.getGenericParameterTypes(),
-                            _m.getGenericParameterTypes())) {
-                        return _m;
-                    }
-                }
-            }
-        }
-        return null;
-    }
+    private static final Class<?>[] NO_ARG = new Class<?>[0];
 
-    private static boolean compareParameterTypes(Type[] ts, Type[] _ts) {
-        for (int i = 0; i < ts.length; i++) {
-            if (!ts[i].equals(_ts[i])) {
-                if (!(_ts[i] instanceof TypeVariable)) {
-                    return false;
-                }
-            }
+    public static Constructor<?> getNoargConstructor(Class<?> c) {
+        try {
+            return c.getConstructor(NO_ARG);
+        } catch (Exception e) {
+            return null;
         }
-        return true;
     }
 
 }

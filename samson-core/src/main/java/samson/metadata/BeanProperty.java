@@ -1,7 +1,6 @@
 package samson.metadata;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,9 +32,9 @@ public abstract class BeanProperty extends Element {
                 field.getType(),
                 field.getGenericType());
 
-        final int modifiers = tcp.c.getModifiers();
-        if (!Modifier.isPublic(modifiers)) {
-            throw new IllegalArgumentException("Non-public field");
+        final int modifiers = field.getModifiers();
+        if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers)) {
+            throw new IllegalArgumentException("Non-public or static field " + field);
         }
 
         Element element = new Element(annotations, tcp, null);
@@ -44,14 +43,9 @@ public abstract class BeanProperty extends Element {
 
     public static BeanProperty fromProperty(TypeClassPair beanTcp, String propertyName, Method getter, Method setter, Field field) {
 
-        Annotation[] argAnnotations = setter.getParameterAnnotations()[0];
-
-        List<Annotation> list = asList(argAnnotations);
-        if (getter != null) {
-            mergeAnnotations(list, getter);
-        }
+        List<Annotation> list = asList(getter.getAnnotations());
         if (field != null) {
-            mergeAnnotations(list, field);
+            mergeAnnotations(list, field.getAnnotations());
         }
 
         Annotation[] annotations = list.toArray(new Annotation[0]);
@@ -164,8 +158,8 @@ public abstract class BeanProperty extends Element {
         return tcp;
     }
 
-    private static void mergeAnnotations(List<Annotation> list, AccessibleObject ao) {
-        for (Annotation a : ao.getAnnotations()) {
+    private static void mergeAnnotations(List<Annotation> list, Annotation[] annotations) {
+        for (Annotation a : annotations) {
             if (!isAnnotationPresent(list, a))
                 list.add(a);
         }
