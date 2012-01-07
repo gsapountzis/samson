@@ -18,7 +18,7 @@
     </modules>
 
     <properties>
-        <jetty-version>7.5.4.v20111024</jetty-version>
+        <jetty-version>7.6.0.RC2</jetty-version>
         <tomcat-version>6.0.29</tomcat-version>
         <tomcat-plugin-version>1.1</tomcat-plugin-version>
     </properties>
