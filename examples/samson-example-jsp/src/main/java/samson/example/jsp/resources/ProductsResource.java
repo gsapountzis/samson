@@ -25,8 +25,7 @@ import samson.JForm;
 import samson.JFormProvider;
 import samson.example.jsp.model.Product;
 import samson.example.jsp.model.Repository;
-
-import com.sun.jersey.api.view.Viewable;
+import samson.example.jsp.views.Views;
 
 @Path("/products")
 public class ProductsResource {
@@ -39,14 +38,14 @@ public class ProductsResource {
     @GET
     public Response list() {
         Collection<Product> products = Repository.get().getProducts();
-        return Response.ok(Views.list(products)).build();
+        return Response.ok(Views.Products.list(products)).build();
     }
 
     @Path("new")
     @GET
     public Response create() {
         JForm<Product> productForm = jForm.path("product").wrap(Product.class);
-        return Response.ok(Views.create(productForm)).build();
+        return Response.ok(Views.Products.create(productForm)).build();
     }
 
     /**
@@ -58,7 +57,7 @@ public class ProductsResource {
         printErrors(productForm.getErrors());
 
         if (productForm.hasErrors()) {
-            return Response.status(BAD_REQUEST).entity(Views.create(productForm)).build();
+            return Response.status(BAD_REQUEST).entity(Views.Products.create(productForm)).build();
         }
 
         Product product = productForm.get();
@@ -75,7 +74,7 @@ public class ProductsResource {
             return Response.status(NOT_FOUND).build();
         }
 
-        return Response.ok(Views.view(id, product)).build();
+        return Response.ok(Views.Products.view(id, product)).build();
     }
 
     @Path("{id}/edit")
@@ -87,7 +86,7 @@ public class ProductsResource {
         }
 
         JForm<Product> productForm = jForm.path("product").wrap(Product.class, product);
-        return Response.ok(Views.edit(id, productForm)).build();
+        return Response.ok(Views.Products.edit(id, productForm)).build();
     }
 
     /**
@@ -102,7 +101,7 @@ public class ProductsResource {
         printErrors(productForm.getErrors());
 
         if (productForm.hasErrors()) {
-            return Response.status(BAD_REQUEST).entity(Views.edit(id, productForm)).build();
+            return Response.status(BAD_REQUEST).entity(Views.Products.edit(id, productForm)).build();
         }
 
         Product product = productForm.get();
@@ -121,7 +120,7 @@ public class ProductsResource {
         }
     }
 
-    // -- Boilerplate
+    // -- Reverse routing
 
     public static class Paths  {
 
@@ -133,61 +132,6 @@ public class ProductsResource {
             return UriBuilder.fromResource(ProductsResource.class).path(ProductsResource.class, "view").build(id);
         }
 
-    }
-
-    public static class Views {
-
-        public static Viewable list(Collection<Product> products) {
-            Model model = new Model(products, null, null, null);
-            return new Viewable("/WEB-INF/views/products/list", model);
-        }
-
-        public static Viewable create(JForm<Product> productForm) {
-            Model model = new Model(null, productForm, null, null);
-            return new Viewable("/WEB-INF/views/products/create", model);
-        }
-
-        public static Viewable view(Long id, Product product) {
-            Model model = new Model(null, null, id, product);
-            return new Viewable("/WEB-INF/views/products/view", model);
-        }
-
-        public static Viewable edit(Long id, JForm<Product> productForm) {
-            Model model = new Model(null, productForm, id, null);
-            return new Viewable("/WEB-INF/views/products/edit", model);
-        }
-
-    }
-
-    /** Tuple */
-    public static class Model {
-        public final Collection<Product> products;
-        public final JForm<Product> productForm;
-        public final Long id;
-        public final Product product;
-
-        Model(Collection<Product> products, JForm<Product> productForm, Long id, Product product) {
-            this.products = products;
-            this.productForm = productForm;
-            this.id = id;
-            this.product = product;
-        }
-
-        public Collection<Product> getProducts() {
-            return products;
-        }
-
-        public JForm<Product> getProductForm() {
-            return productForm;
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public Product getProduct() {
-            return product;
-        }
     }
 
 }
