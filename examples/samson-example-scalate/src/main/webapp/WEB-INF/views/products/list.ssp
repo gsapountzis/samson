@@ -1,5 +1,7 @@
-<%@ val it: ProductsResource %>
-<% val products = it.model.products %>
+<% import samson.example.scalate.views.Views.Products.Model %>
+
+<%@ val it: Model %>
+<% val products = it.products %>
 
 <table>
   <thead>

@@ -30,8 +30,7 @@ import samson.example.scalate.model.Order;
 import samson.example.scalate.model.OrderForm;
 import samson.example.scalate.model.Product;
 import samson.example.scalate.model.Repository;
-
-import com.sun.jersey.api.view.Viewable;
+import samson.example.scalate.views.Views;
 
 @Path("/orders")
 public class OrdersResource {
@@ -44,7 +43,7 @@ public class OrdersResource {
     @GET
     public Response list() {
         Collection<Order> orders = Repository.get().getOrders();
-        return Response.ok(views.list(orders)).build();
+        return Response.ok(Views.Orders.list(orders)).build();
     }
 
     @Path("{id}")
@@ -55,7 +54,7 @@ public class OrdersResource {
             return Response.status(NOT_FOUND).build();
         }
 
-        return Response.ok(views.view(id, order)).build();
+        return Response.ok(Views.Orders.view(id, order)).build();
     }
 
     @Path("{id}/edit")
@@ -67,7 +66,7 @@ public class OrdersResource {
         }
 
         JForm<Order> orderForm = jForm.wrap(Order.class, order);
-        return Response.ok(views.edit(id, orderForm)).build();
+        return Response.ok(Views.Orders.edit(this, id, orderForm)).build();
     }
 
     @Path("{id}")
@@ -79,7 +78,7 @@ public class OrdersResource {
         printErrors(orderForm.getErrors());
 
         if (orderForm.hasErrors()) {
-            return Response.status(BAD_REQUEST).entity(views.edit(id, orderForm)).build();
+            return Response.status(BAD_REQUEST).entity(Views.Orders.edit(this, id, orderForm)).build();
         }
 
         Order order = orderForm.get();
@@ -130,7 +129,7 @@ public class OrdersResource {
         return options;
     }
 
-    // -- Boilerplate
+    // -- Reverse routing
 
     public static class Paths  {
 
@@ -143,49 +142,5 @@ public class OrdersResource {
         }
 
     }
-
-    public static class Views {
-
-        private final OrdersResource resource;
-
-        public Views(OrdersResource resource) {
-            this.resource = resource;
-        }
-
-        public Viewable list(Collection<Order> orders) {
-            resource.model = new Model(orders, null, null, null);
-            return new Viewable("list", resource);
-        }
-
-        public Viewable view(Long id, Order order) {
-            resource.model = new Model(null, null, id, order);
-            return new Viewable("view", resource);
-        }
-
-        public Viewable edit(Long id, JForm<Order> orderForm) {
-            resource.model = new Model(null, orderForm, id, null);
-            return new Viewable("edit", resource);
-        }
-
-    }
-
-    /** Tuple */
-    public static class Model {
-        public final Collection<Order> orders;
-        public final JForm<Order> orderForm;
-        public final Long id;
-        public final Order order;
-
-        Model(Collection<Order> orders, JForm<Order> orderForm, Long id, Order order) {
-            this.orders = orders;
-            this.orderForm = orderForm;
-            this.id = id;
-            this.order = order;
-        }
-    }
-
-    private final Views views = new Views(this);
-
-    public Model model;
 
 }

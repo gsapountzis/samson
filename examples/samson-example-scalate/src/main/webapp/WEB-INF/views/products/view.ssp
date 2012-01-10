@@ -1,6 +1,8 @@
-<%@ val it: ProductsResource %>
-<% val id = it.model.id %>
-<% val product = it.model.product %>
+<% import samson.example.scalate.views.Views.Products.Model %>
+
+<%@ val it: Model %>
+<% val id = it.id %>
+<% val product = it.product %>
 
 <form>
   <fieldset>

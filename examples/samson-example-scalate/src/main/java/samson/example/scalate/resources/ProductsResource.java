@@ -18,8 +18,7 @@ import samson.JForm;
 import samson.JFormProvider;
 import samson.example.scalate.model.Product;
 import samson.example.scalate.model.Repository;
-
-import com.sun.jersey.api.view.Viewable;
+import samson.example.scalate.views.Views;
 
 @Path("/products")
 public class ProductsResource {
@@ -30,14 +29,14 @@ public class ProductsResource {
     @GET
     public Response list() {
         Collection<Product> products = Repository.get().getProducts();
-        return Response.ok(views.list(products)).build();
+        return Response.ok(Views.Products.list(products)).build();
     }
 
     @Path("new")
     @GET
     public Response create() {
         JForm<Product> productForm = jForm.wrap(Product.class);
-        return Response.ok(views.create(productForm)).build();
+        return Response.ok(Views.Products.create(productForm)).build();
     }
 
     /**
@@ -47,7 +46,7 @@ public class ProductsResource {
     public Response save(JForm<Product> productForm) {
 
         if (productForm.hasErrors()) {
-            return Response.status(BAD_REQUEST).entity(views.create(productForm)).build();
+            return Response.status(BAD_REQUEST).entity(Views.Products.create(productForm)).build();
         }
 
         Product product = productForm.get();
@@ -64,7 +63,7 @@ public class ProductsResource {
             return Response.status(NOT_FOUND).build();
         }
 
-        return Response.ok(views.view(id, product)).build();
+        return Response.ok(Views.Products.view(id, product)).build();
     }
 
     @Path("{id}/edit")
@@ -76,7 +75,7 @@ public class ProductsResource {
         }
 
         JForm<Product> productForm = jForm.wrap(Product.class, product);
-        return Response.ok(views.edit(id, productForm)).build();
+        return Response.ok(Views.Products.edit(id, productForm)).build();
     }
 
     /**
@@ -89,7 +88,7 @@ public class ProductsResource {
         JForm<Product> productForm = jForm.form().bind(Product.class);
 
         if (productForm.hasErrors()) {
-            return Response.status(BAD_REQUEST).entity(views.edit(id, productForm)).build();
+            return Response.status(BAD_REQUEST).entity(Views.Products.edit(id, productForm)).build();
         }
 
         Product product = productForm.get();
@@ -98,7 +97,7 @@ public class ProductsResource {
         return Response.seeOther(Paths.view(id)).build();
     }
 
-    // -- Boilerplate
+    // -- Reverse routing
 
     public static class Paths  {
 
@@ -111,54 +110,5 @@ public class ProductsResource {
         }
 
     }
-
-    public static class Views {
-
-        private final ProductsResource resource;
-
-        public Views(ProductsResource resource) {
-            this.resource = resource;
-        }
-
-        public Viewable list(Collection<Product> products) {
-            resource.model = new Model(products, null, null, null);
-            return new Viewable("list", resource);
-        }
-
-        public Viewable create(JForm<Product> productForm) {
-            resource.model = new Model(null, productForm, null, null);
-            return new Viewable("create", resource);
-        }
-
-        public Viewable view(Long id, Product product) {
-            resource.model = new Model(null, null, id, product);
-            return new Viewable("view", resource);
-        }
-
-        public Viewable edit(Long id, JForm<Product> productForm) {
-            resource.model = new Model(null, productForm, id, null);
-            return new Viewable("edit", resource);
-        }
-
-    }
-
-    /** Tuple */
-    public static class Model {
-        public final Collection<Product> products;
-        public final JForm<Product> productForm;
-        public final Long id;
-        public final Product product;
-
-        Model(Collection<Product> products, JForm<Product> productForm, Long id, Product product) {
-            this.products = products;
-            this.productForm = productForm;
-            this.id = id;
-            this.product = product;
-        }
-    }
-
-    private final Views views = new Views(this);
-
-    public Model model;
 
 }

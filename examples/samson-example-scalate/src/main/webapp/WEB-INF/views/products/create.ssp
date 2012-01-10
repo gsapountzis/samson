@@ -1,13 +1,13 @@
-<%@ val it: ProductsResource %>
-<% val id = it.model.id %>
-<% val productForm = it.model.productForm %>
-
+<% import samson.example.scalate.views.Views.Products.Model %>
 <% import samson.example.scalate.views.Functions._ %>
 
-<form action="${ uri("/products/" + id) }" method="post">
+<%@ val it: Model %>
+<% val productForm = it.productForm %>
+
+<form action="${ uri("/products") }" method="post">
   <fieldset>
 
-    <% using(productForm.path("code").getField) { field => %>
+    <% block(productForm.path("code").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="code">Code</label>
@@ -19,7 +19,7 @@
 
     <% } %>
 
-    <% using(productForm.path("name").getField) { field => %>
+    <% block(productForm.path("name").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="name">Name</label>
@@ -31,7 +31,7 @@
 
     <% } %>
 
-    <% using(productForm.path("price").getField) { field => %>
+    <% block(productForm.path("price").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="price">Price</label>
@@ -46,7 +46,7 @@
   </fieldset>
 
   <div class="actions">
-    <input type="submit" class="btn primary" value="Update">&nbsp;
-    <a href="${ uri("/products/" + id) }" class="btn">Cancel</a>
+    <input type="submit" class="btn primary" value="Create">&nbsp;
+    <a href="${ uri("/products") }" class="btn">Cancel</a>
   </div>
 </form>

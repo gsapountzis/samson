@@ -6,13 +6,13 @@ import scala.collection.JavaConverters._
 
 object Functions {
 
-  def using[A](a: A)(body: A => Unit) = body(a)
+  def block[A](a: A)(body: A => Unit) = body(a)
 
-  def using2[A, B](a: A, b: B)(body: (A, B) => Unit) = body(a, b)
+  def block2[A, B](a: A, b: B)(body: (A, B) => Unit) = body(a, b)
 
-  def using3[A, B, C](a: A, b: B, c: C)(body: (A, B, C) => Unit) = body(a, b, c)
+  def block3[A, B, C](a: A, b: B, c: C)(body: (A, B, C) => Unit) = body(a, b, c)
 
-  def using4[A, B, C, D](a: A, b: B, c: C, d: D)(body: (A, B, C, D) => Unit) = body(a, b, c, d)
+  def block4[A, B, C, D](a: A, b: B, c: C, d: D)(body: (A, B, C, D) => Unit) = body(a, b, c, d)
 
   def isNullOrEmpty(s: String) = (s == null || s.isEmpty)
 

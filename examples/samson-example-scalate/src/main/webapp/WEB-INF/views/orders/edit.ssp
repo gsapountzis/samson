@@ -1,11 +1,12 @@
-<%@ val it: OrdersResource %>
-<% val id = it.model.id %>
-<% val orderForm = it.model.orderForm %>
-<% val order = orderForm.get %>
-<% val customerOptions = it.getCustomerOptions %>
-<% val productOptions = it.getProductOptions %>
-
+<% import samson.example.scalate.views.Views.Orders.Model %>
 <% import samson.example.scalate.views.Functions._ %>
+
+<%@ val it: Model %>
+<% val id = it.id %>
+<% val orderForm = it.orderForm %>
+<% val order = orderForm.get %>
+<% val customerOptions = it.resource.getCustomerOptions %>
+<% val productOptions = it.resource.getProductOptions %>
 
 <% attributes("stylesheets") = capture { %>
 <link rel="stylesheet" type="text/css" href="${ uri("/resources/css/smoothness/jquery-ui-1.8.16.custom.css") }" />
@@ -19,7 +20,7 @@
 <form id="orderForm" action="${ uri("/orders/" + id) }" method="post">
   <fieldset>
 
-    <% using(orderForm.path("customerId").getField) { field => %>
+    <% block(orderForm.path("customerId").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="customer">Customer</label>
@@ -36,7 +37,7 @@
 
     <% } %>
 
-    <% using(orderForm.path("code").getField) { field => %>
+    <% block(orderForm.path("code").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="code">Code</label>
@@ -48,7 +49,7 @@
 
     <% } %>
 
-    <% using(orderForm.path("orderDate").getField) { field => %>
+    <% block(orderForm.path("orderDate").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="orderDate">Order date</label>
@@ -60,7 +61,7 @@
 
     <% } %>
 
-    <% using(orderForm.path("shipDate").getField) { field => %>
+    <% block(orderForm.path("shipDate").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="shipDate">Ship date</label>
@@ -72,7 +73,7 @@
 
     <% } %>
 
-    <% using(orderForm.path("status").getField) { field => %>
+    <% block(orderForm.path("status").getField) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="status">Status</label>
@@ -85,7 +86,7 @@
     <% } %>
 
 
-    <% using2(orderForm.path("items"), order.items) { (itemsForm, items) => %>
+    <% block2(orderForm.path("items"), order.items) { (itemsForm, items) => %>
 
       <% val itemsField = itemsForm.getField %>
 
