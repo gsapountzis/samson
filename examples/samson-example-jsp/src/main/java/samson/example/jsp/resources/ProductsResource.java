@@ -32,12 +32,17 @@ public class ProductsResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductsResource.class);
 
-    @Context
-    private JFormProvider jForm;
+    private final JFormProvider jForm;
+    private final Repository repository;
+
+    public ProductsResource(@Context JFormProvider jForm) {
+        this.jForm = jForm;
+        this.repository = Repository.get();
+    }
 
     @GET
     public Response list() {
-        Collection<Product> products = Repository.get().getProducts();
+        Collection<Product> products = repository.getProducts();
         return Response.ok(Views.Products.list(products)).build();
     }
 
@@ -61,7 +66,7 @@ public class ProductsResource {
         }
 
         Product product = productForm.get();
-        Long id = Repository.get().createProduct(product);
+        Long id = repository.createProduct(product);
 
         return Response.seeOther(Paths.view(id)).build();
     }
@@ -69,7 +74,7 @@ public class ProductsResource {
     @Path("{id}")
     @GET
     public Response view(@PathParam("id") Long id) {
-        Product product = Repository.get().findProduct(id);
+        Product product = repository.findProduct(id);
         if (product == null) {
             return Response.status(NOT_FOUND).build();
         }
@@ -80,7 +85,7 @@ public class ProductsResource {
     @Path("{id}/edit")
     @GET
     public Response edit(@PathParam("id") Long id) {
-        Product product = Repository.get().findProduct(id);
+        Product product = repository.findProduct(id);
         if (product == null) {
             return Response.status(NOT_FOUND).build();
         }
@@ -105,7 +110,7 @@ public class ProductsResource {
         }
 
         Product product = productForm.get();
-        Repository.get().updateProduct(id, product);
+        repository.updateProduct(id, product);
 
         return Response.seeOther(Paths.view(id)).build();
     }

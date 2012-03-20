@@ -37,19 +37,24 @@ public class OrdersResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrdersResource.class);
 
-    @Context
-    private JFormProvider jForm;
+    private final JFormProvider jForm;
+    private final Repository repository;
+
+    public OrdersResource(@Context JFormProvider jForm) {
+        this.jForm = jForm;
+        this.repository = Repository.get();
+    }
 
     @GET
     public Response list() {
-        Collection<Order> orders = Repository.get().getOrders();
+        Collection<Order> orders = repository.getOrders();
         return Response.ok(Views.Orders.list(orders)).build();
     }
 
     @Path("{id}")
     @GET
     public Response view(@PathParam("id") Long id) {
-        Order order = Repository.get().findOrder(id);
+        Order order = repository.findOrder(id);
         if (order == null) {
             return Response.status(NOT_FOUND).build();
         }
@@ -60,7 +65,7 @@ public class OrdersResource {
     @Path("{id}/edit")
     @GET
     public Response edit(@PathParam("id") Long id) {
-        Order order = Repository.get().findOrder(id);
+        Order order = repository.findOrder(id);
         if (order == null) {
             return Response.status(NOT_FOUND).build();
         }
@@ -82,7 +87,7 @@ public class OrdersResource {
         }
 
         Order order = orderForm.get();
-        Repository.get().updateOrder(id, order);
+        repository.updateOrder(id, order);
 
         return Response.seeOther(Paths.view(id)).build();
     }
@@ -101,7 +106,7 @@ public class OrdersResource {
 
     public Map<String, String> getCustomerOptions() {
         final Map<String, String> unsorted = new HashMap<String, String>();
-        for (Customer c : Repository.get().getCustomers()) {
+        for (Customer c : repository.getCustomers()) {
             unsorted.put(Long.toString(c.id), c.name);
         }
 
@@ -110,7 +115,7 @@ public class OrdersResource {
 
     public Map<String, String> getProductOptions() {
         final Map<String, String> unsorted = new HashMap<String, String>();
-        for (Product p : Repository.get().getProducts()) {
+        for (Product p : repository.getProducts()) {
             unsorted.put(Long.toString(p.id), p.name);
         }
 
