@@ -1,6 +1,6 @@
-<% import samson.example.scalate.views.Views.Products.Model %>
+<% import samson.example.scalate.views.Views.Products.ListModel %>
 
-<%@ val it: Model %>
+<%@ val it: ListModel %>
 <% val products = it.products %>
 
 <table>

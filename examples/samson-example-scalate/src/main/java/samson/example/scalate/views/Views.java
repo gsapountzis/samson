@@ -13,82 +13,120 @@ public class Views {
 
     public static class Products {
 
+        /** Tuple */
+        public static class ListModel {
+            public final Collection<Product> products;
+
+            ListModel(Collection<Product> products) {
+                this.products = products;
+            }
+        }
+
+        public static class CreateModel {
+            public final JForm<Product> productForm;
+
+            CreateModel(JForm<Product> productForm) {
+                this.productForm = productForm;
+            }
+        }
+
+        public static class ViewModel {
+            public final Long id;
+            public final Product product;
+
+            ViewModel(Long id, Product product) {
+                this.id = id;
+                this.product = product;
+            }
+        }
+
+        public static class EditModel {
+            public final Long id;
+            public final JForm<Product> productForm;
+
+            EditModel(Long id, JForm<Product> productForm) {
+                this.id = id;
+                this.productForm = productForm;
+            }
+        }
+
+        /** Static factory method */
         public static Viewable list(Collection<Product> products) {
-            Model model = new Model(null, null, null, products);
-            return new Viewable("/WEB-INF/views/products/list", model);
+            return new Viewable("/WEB-INF/views/products/list", new ListModel(products));
         }
 
         public static Viewable create(JForm<Product> productForm) {
-            Model model = new Model(null, null, productForm, null);
-            return new Viewable("/WEB-INF/views/products/create", model);
+            return new Viewable("/WEB-INF/views/products/create", new CreateModel(productForm));
         }
 
         public static Viewable view(Long id, Product product) {
-            Model model = new Model(id, product, null, null);
-            return new Viewable("/WEB-INF/views/products/view", model);
+            return new Viewable("/WEB-INF/views/products/view", new ViewModel(id, product));
         }
 
         public static Viewable edit(Long id, JForm<Product> productForm) {
-            Model model = new Model(id, null, productForm, null);
-            return new Viewable("/WEB-INF/views/products/edit", model);
-        }
-
-        /** Tuple */
-        public static class Model {
-            public final Long id;
-            public final Product product;
-            public final JForm<Product> productForm;
-            public final Collection<Product> products;
-
-            Model(Long id, Product product, JForm<Product> productForm, Collection<Product> products) {
-                this.id = id;
-                this.product = product;
-                this.productForm = productForm;
-                this.products = products;
-            }
-
+            return new Viewable("/WEB-INF/views/products/edit", new EditModel(id, productForm));
         }
 
     }
 
     public static class Orders {
 
+        /** Tuple */
+        public static class ListModel {
+            public final Collection<Order> orders;
+
+            ListModel(Collection<Order> orders) {
+                this.orders = orders;
+            }
+        }
+
+        public static class CreateModel {
+            public final OrdersResource resource;
+            public final JForm<Order> orderForm;
+
+            CreateModel(OrdersResource resource, JForm<Order> orderForm) {
+                this.resource = resource;
+                this.orderForm = orderForm;
+            }
+        }
+
+        public static class ViewModel {
+            public final Long id;
+            public final Order order;
+
+            ViewModel(Long id, Order order) {
+                this.id = id;
+                this.order = order;
+            }
+        }
+
+        public static class EditModel {
+            public final OrdersResource resource;
+            public final Long id;
+            public final JForm<Order> orderForm;
+
+            EditModel(OrdersResource resource, Long id, JForm<Order> orderForm) {
+                this.resource = resource;
+                this.id = id;
+                this.orderForm = orderForm;
+            }
+        }
+
+        /** Static factory method */
         public static Viewable list(Collection<Order> orders) {
-            Model model = new Model(null, null, null, null, orders);
-            return new Viewable("/WEB-INF/views/orders/list", model);
+            return new Viewable("/WEB-INF/views/orders/list", new ListModel(orders));
         }
 
         public static Viewable create(OrdersResource resource, JForm<Order> orderForm) {
-            Model model = new Model(resource, null, null, orderForm, null);
-            return new Viewable("/WEB-INF/views/orders/create", model);
+            return new Viewable("/WEB-INF/views/orders/create", new CreateModel(resource, orderForm));
         }
 
         public static Viewable view(Long id, Order order) {
-            Model model = new Model(null, id, order, null, null);
-            return new Viewable("/WEB-INF/views/orders/view", model);
+            return new Viewable("/WEB-INF/views/orders/view", new ViewModel(id, order));
         }
 
         public static Viewable edit(OrdersResource resource, Long id, JForm<Order> orderForm) {
-            Model model = new Model(resource, id, null, orderForm, null);
-            return new Viewable("/WEB-INF/views/orders/edit", model);
-        }
-
-        /** Tuple */
-        public static class Model {
-            public final OrdersResource resource;
-            public final Long id;
-            public final Order order;
-            public final JForm<Order> orderForm;
-            public final Collection<Order> orders;
-
-            Model(OrdersResource resource, Long id, Order order, JForm<Order> orderForm, Collection<Order> orders) {
-                this.resource = resource;
-                this.id = id;
-                this.order = order;
-                this.orderForm = orderForm;
-                this.orders = orders;
-            }
-
+            return new Viewable("/WEB-INF/views/orders/edit", new EditModel(resource, id, orderForm));
         }
 
     }

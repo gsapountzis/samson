@@ -1,7 +1,7 @@
-<% import samson.example.scalate.views.Views.Products.Model %>
+<% import samson.example.scalate.views.Views.Products.CreateModel %>
 <% import samson.example.scalate.views.Functions._ %>
 
-<%@ val it: Model %>
+<%@ val it: CreateModel %>
 <% val productForm = it.productForm %>
 
 <form action="${ uri("/products") }" method="post">

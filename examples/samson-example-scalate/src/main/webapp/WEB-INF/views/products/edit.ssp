@@ -1,7 +1,7 @@
-<% import samson.example.scalate.views.Views.Products.Model %>
+<% import samson.example.scalate.views.Views.Products.EditModel %>
 <% import samson.example.scalate.views.Functions._ %>
 
-<%@ val it: Model %>
+<%@ val it: EditModel %>
 <% val id = it.id %>
 <% val productForm = it.productForm %>
 

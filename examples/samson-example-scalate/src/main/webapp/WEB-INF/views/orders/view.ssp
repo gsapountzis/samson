@@ -1,6 +1,6 @@
-<% import samson.example.scalate.views.Views.Orders.Model %>
+<% import samson.example.scalate.views.Views.Orders.ViewModel %>
 
-<%@ val it: Model %>
+<%@ val it: ViewModel %>
 <% val id = it.id %>
 <% val order = it.order %>
 
