@@ -3,8 +3,6 @@ package samson.metadata;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import samson.jersey.core.reflection.ReflectionHelper;
-
 public class ListItem extends Element {
 
     private ListItem(Annotation[] annotations, TypeClassPair tcp) {

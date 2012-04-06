@@ -9,8 +9,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import samson.jersey.core.reflection.ReflectionHelper;
-
 public abstract class BeanProperty extends Element {
 
     public final TypeClassPair beanTcp;

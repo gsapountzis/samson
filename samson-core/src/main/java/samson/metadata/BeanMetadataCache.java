@@ -9,8 +9,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import samson.jersey.spi.inject.Errors;
-import samson.jersey.spi.inject.Errors.Closure;
+import samson.metadata.Errors.Closure;
 
 public class BeanMetadataCache {
 

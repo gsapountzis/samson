@@ -38,7 +38,7 @@
  * holder.
  */
 
-package samson.jersey.core.reflection;
+package samson.metadata;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -48,8 +48,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.Map;
-
-import samson.metadata.TypeClassPair;
 
 public class ReflectionHelper {
 

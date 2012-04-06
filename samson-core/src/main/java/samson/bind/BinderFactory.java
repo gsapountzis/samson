@@ -14,11 +14,11 @@ import samson.convert.Converter;
 import samson.convert.ConverterException;
 import samson.convert.ConverterProvider;
 import samson.convert.MultivaluedConverter;
-import samson.jersey.core.reflection.ReflectionHelper;
 import samson.metadata.BeanMetadata;
 import samson.metadata.BeanMetadataCache;
 import samson.metadata.Element;
 import samson.metadata.ElementRef;
+import samson.metadata.ReflectionHelper;
 import samson.metadata.TypeClassPair;
 
 public class BinderFactory {

@@ -3,8 +3,6 @@ package samson.metadata;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 
-import samson.jersey.core.reflection.ReflectionHelper;
-
 public class MapEntry extends Element {
 
     public final TypeClassPair keyTcp;
