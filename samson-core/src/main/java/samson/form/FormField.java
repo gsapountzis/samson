@@ -18,6 +18,7 @@ import samson.bind.BinderFactory;
 import samson.convert.ConverterException;
 import samson.metadata.ElementRef;
 import samson.metadata.TypeClassPair;
+import samson.utils.Utils;
 
 class FormField implements Field, Messages {
 

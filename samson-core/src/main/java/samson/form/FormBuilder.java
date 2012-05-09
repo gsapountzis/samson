@@ -20,11 +20,11 @@ import samson.JForm;
 import samson.JFormBuilder;
 import samson.bind.Binder;
 import samson.bind.BinderFactory;
-import samson.form.Property.Node;
-import samson.form.Property.Path;
 import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
+import samson.parse.Property.Node;
+import samson.parse.Property.Path;
 
 public class FormBuilder implements JFormBuilder {
 

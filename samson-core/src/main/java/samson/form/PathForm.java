@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import samson.JForm;
-import samson.form.Property.Path;
 import samson.metadata.ElementRef;
+import samson.parse.Property.Path;
 
 class PathForm implements JForm<Object> {
 

@@ -1,4 +1,4 @@
-package samson.form;
+package samson.parse;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import samson.utils.Utils;
 
-class Property {
+public class Property {
 
     /**
      * A path to an object in an object graph.
      */
-    static class Path implements Iterable<Node> {
+    public static class Path implements Iterable<Node> {
 
         /** Immutable */
         private final List<Node> nodes;
@@ -121,7 +122,7 @@ class Property {
      * The node keeps additional information about the parsing of the EL property,
      * for pretty printing but only the name is significant.
      */
-    static class Node {
+    public static class Node {
 
         /** The immutable name of this node: prefix (root node) / dot suffix / index suffix */
         private final String name;
@@ -145,7 +146,7 @@ class Property {
             this.index = index;
         }
 
-        static Node createPrefix(String name) {
+        public static Node createPrefix(String name) {
             return new Node(name, name, true, false, false);
         }
 

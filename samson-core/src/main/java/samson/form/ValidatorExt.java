@@ -17,6 +17,7 @@ import samson.metadata.BeanProperty;
 import samson.metadata.Element;
 import samson.metadata.MethodParameter;
 import samson.metadata.TypeClassPair;
+import samson.utils.Utils;
 
 /**
  * Validator extension methods.

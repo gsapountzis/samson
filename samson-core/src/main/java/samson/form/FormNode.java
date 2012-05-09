@@ -15,8 +15,9 @@ import javax.validation.ConstraintViolation;
 import samson.bind.Binder;
 import samson.bind.BinderNode;
 import samson.convert.ConverterException;
-import samson.form.Property.Node;
-import samson.form.Property.Path;
+import samson.parse.Property.Node;
+import samson.parse.Property.Path;
+import samson.utils.Utils;
 
 public class FormNode implements BinderNode<FormNode> {
     private Binder binder = Binder.NULL_BINDER;

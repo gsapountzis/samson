@@ -88,7 +88,7 @@
                         <configuration>
                             <instructions>
                                 <!-- Bundle version must match jersey version -->
-                                <Bundle-Version>${jersey-version}</Bundle-Version>
+                                <Bundle-Version>${jersey.version}</Bundle-Version>
                                 <!-- Bundle name must start with "com.sun.jersey" -->
                                 <Bundle-SymbolicName>com.sun.jersey.contribs.samson</Bundle-SymbolicName>
                                 <Export-Package>samson.*;version=${project.version}</Export-Package>

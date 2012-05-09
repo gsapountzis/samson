@@ -1,11 +1,11 @@
-package samson.form;
+package samson.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
-class Utils {
+public class Utils {
 
     private Utils() { }
 

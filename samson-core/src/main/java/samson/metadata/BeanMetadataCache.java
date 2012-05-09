@@ -9,8 +9,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import samson.metadata.Errors.Closure;
-
 public class BeanMetadataCache {
 
     private final ConcurrentMap<Class<?>, BeanMetadata> cache = new ConcurrentHashMap<Class<?>, BeanMetadata>();
@@ -23,7 +21,7 @@ public class BeanMetadataCache {
 
         BeanMetadata bean = cache.get(clazz);
         if (bean == null) {
-            final BeanMetadata newBean = Errors.processWithErrors(new Closure<BeanMetadata>() {
+            final BeanMetadata newBean = Errors.processWithErrors(new Errors.Closure<BeanMetadata>() {
                 @Override
                 public BeanMetadata f() {
                     return BeanIntrospector.createBeanMetadata(tcp);

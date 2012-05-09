@@ -18,9 +18,9 @@
         <scalate.workdir>${basedir}/target/_scalate</scalate.workdir>
         <scalate.package.resources>samson.example.scalate.resources</scalate.package.resources>
 
-        <scala-version>2.9.1</scala-version>
-        <scala-plugin-version>2.15.2</scala-plugin-version>
-        <scalate-version>1.5.3</scalate-version>
+        <scala.version>2.9.1</scala.version>
+        <scala-plugin.version>2.15.2</scala-plugin.version>
+        <scalate.version>1.5.3</scalate.version>
     </properties>
 
     <dependencies>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>org.fusesource.scalate</groupId>
             <artifactId>scalate-core</artifactId>
-            <version>${scalate-version}</version>
+            <version>${scalate.version}</version>
         </dependency>
 
         <!-- JAX-RS -->
@@ -93,7 +93,7 @@
             <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
-                <version>${scala-plugin-version}</version>
+                <version>${scala-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -110,7 +110,7 @@
                         <scalaJar>
                             <groupId>org.scala-lang</groupId>
                             <artifactId>scala-compiler</artifactId>
-                            <version>${scala-version}</version>
+                            <version>${scala.version}</version>
                         </scalaJar>
                     </scalaJars>
                     -->
@@ -121,7 +121,7 @@
                         <arg>-unchecked</arg>
                         <arg>-deprecation</arg>
                     </args>
-                    <scalaVersion>${scala-version}</scalaVersion>
+                    <scalaVersion>${scala.version}</scalaVersion>
                 </configuration>
             </plugin>
 
@@ -217,7 +217,7 @@
                     <plugin>
                         <groupId>org.fusesource.scalate</groupId>
                         <artifactId>maven-scalate-plugin</artifactId>
-                        <version>${scalate-version}</version>
+                        <version>${scalate.version}</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -235,13 +235,13 @@
                 <dependency>
                     <groupId>org.scala-lang</groupId>
                     <artifactId>scala-compiler</artifactId>
-                    <version>${scala-version}</version>
+                    <version>${scala.version}</version>
                     <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.scala-lang</groupId>
                     <artifactId>scala-library</artifactId>
-                    <version>${scala-version}</version>
+                    <version>${scala.version}</version>
                     <scope>provided</scope>
                 </dependency>
             </dependencies>

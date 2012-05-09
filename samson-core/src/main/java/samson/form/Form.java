@@ -7,9 +7,10 @@ import java.util.TreeMap;
 import samson.JForm;
 import samson.bind.Binder;
 import samson.bind.BinderFactory;
-import samson.form.Property.Node;
-import samson.form.Property.Path;
 import samson.metadata.ElementRef;
+import samson.parse.Property.Node;
+import samson.parse.Property.Path;
+import samson.utils.Utils;
 
 class Form<T> implements JForm<T> {
 
