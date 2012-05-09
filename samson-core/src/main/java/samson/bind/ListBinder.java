@@ -1,7 +1,5 @@
 package samson.bind;
 
-import static samson.Configuration.MAX_LIST_SIZE;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +13,15 @@ import samson.metadata.ListItem;
 import samson.metadata.TypeClassPair;
 
 class ListBinder extends Binder {
+
+    /**
+     * Maximum list size
+     * <p>
+     * This is to prevent DoS attacks. For example the attacker could just set
+     * the list index to (2<sup>32</sup> - 1) and cause the allocation of more
+     * than 4GB of memory.
+     */
+    private static final int MAX_LIST_SIZE = 256;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ListBinder.class);
 

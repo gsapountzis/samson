@@ -1,7 +1,5 @@
 package samson.form;
 
-import static samson.Configuration.CONVERSION_ERROR_MESSAGE_TEMPLATE;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -20,6 +18,9 @@ import samson.parse.Property.Path;
 import samson.utils.Utils;
 
 public class FormNode implements BinderNode<FormNode> {
+
+    private static final String CONVERSION_ERROR_MESSAGE_TEMPLATE = "invalid value '%s'";
+
     private Binder binder = Binder.NULL_BINDER;
 
     private final Node node;

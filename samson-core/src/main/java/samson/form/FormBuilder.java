@@ -1,7 +1,5 @@
 package samson.form;
 
-import static samson.Configuration.DISABLE_VALIDATION;
-
 import java.lang.annotation.Annotation;
 import java.text.ParseException;
 import java.util.List;
@@ -27,6 +25,8 @@ import samson.parse.Property.Node;
 import samson.parse.Property.Path;
 
 public class FormBuilder implements JFormBuilder {
+
+    private static final boolean DISABLE_BEAN_VALIDATION = false;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FormBuilder.class);
 
@@ -180,7 +180,7 @@ public class FormBuilder implements JFormBuilder {
     }
 
     private <T> void validate(FormNode root, T value) {
-        if (DISABLE_VALIDATION) {
+        if (DISABLE_BEAN_VALIDATION) {
             return;
         }
 
