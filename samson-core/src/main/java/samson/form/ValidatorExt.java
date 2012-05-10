@@ -22,7 +22,7 @@ import samson.utils.Utils;
 /**
  * Validator extension methods.
  */
-public class ValidatorExt {
+class ValidatorExt {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidatorExt.class);
 

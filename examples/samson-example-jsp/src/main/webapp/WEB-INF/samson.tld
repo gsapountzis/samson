@@ -12,17 +12,13 @@
   <function>
     <name>path</name>
     <function-class>samson.example.jsp.views.Functions</function-class>
-    <function-signature>samson.JForm path(samson.JForm, java.lang.String)</function-signature>
+    <function-signature>samson.form.FormNode path(samson.form.SamsonForm, java.lang.String)</function-signature>
   </function>
 
-  <!--
-    The actual method signature is String messages(samson.JForm.Field).
-    However, using a nested type throws exception.
-  -->
   <function>
     <name>messages</name>
     <function-class>samson.example.jsp.views.Functions</function-class>
-    <function-signature>java.lang.String errors(java.lang.Object)</function-signature>
+    <function-signature>java.lang.String errors(samson.form.FormNode)</function-signature>
   </function>
 
 </taglib>

@@ -4,9 +4,9 @@
 <%@ val it: EditModel %>
 <% val id = it.id %>
 <% val orderForm = it.orderForm %>
-<% val order = orderForm.get %>
-<% val customerOptions = it.resource.getCustomerOptions %>
-<% val productOptions = it.resource.getProductOptions %>
+<% val order = orderForm.get() %>
+<% val customerOptions = it.resource.getCustomerOptions() %>
+<% val productOptions = it.resource.getProductOptions() %>
 
 <% attributes("stylesheets") = capture { %>
 <link rel="stylesheet" type="text/css" href="${ uri("/resources/css/smoothness/jquery-ui-1.8.16.custom.css") }" />
@@ -20,7 +20,7 @@
 <form id="orderForm" action="${ uri("/orders/" + id) }" method="post">
   <fieldset>
 
-    <% block(orderForm.path("customerId").getField) { field => %>
+    <% block(orderForm.node().path("customerId")) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="customer">Customer</label>
@@ -37,7 +37,7 @@
 
     <% } %>
 
-    <% block(orderForm.path("code").getField) { field => %>
+    <% block(orderForm.node().path("code")) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="code">Code</label>
@@ -49,7 +49,7 @@
 
     <% } %>
 
-    <% block(orderForm.path("orderDate").getField) { field => %>
+    <% block(orderForm.node().path("orderDate")) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="orderDate">Order date</label>
@@ -61,7 +61,7 @@
 
     <% } %>
 
-    <% block(orderForm.path("shipDate").getField) { field => %>
+    <% block(orderForm.node().path("shipDate")) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="shipDate">Ship date</label>
@@ -73,7 +73,7 @@
 
     <% } %>
 
-    <% block(orderForm.path("status").getField) { field => %>
+    <% block(orderForm.node().path("status")) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="status">Status</label>
@@ -86,15 +86,13 @@
     <% } %>
 
 
-    <% block2(orderForm.path("items"), order.items) { (itemsForm, items) => %>
-
-      <% val itemsField = itemsForm.getField %>
+    <% block2(orderForm.node().path("items"), order.items) { (itemsNode, items) => %>
 
       <!-- errors for all items -->
-      <div class="order-items-error clearfix <%= if (itemsField.isError) "error" %>">
+      <div class="order-items-error clearfix <%= if (itemsNode.isError) "error" %>">
         <label>&nbsp;</label>
         <div class="input">
-          <span class="help-inline"><%= messages(itemsField) %></span>
+          <span class="help-inline"><%= messages(itemsNode) %></span>
         </div>
       </div>
 
@@ -103,26 +101,26 @@
       <% var i = 0; items.foreach(item => { %>
 
         <%
-          val itemForm = itemsForm.index(i)
-          val productField = itemForm.dot("product").getField
-          val qtyField = itemForm.dot("qty").getField
+          val itemNode = itemsNode.path(i)
+          val productNode = itemNode.path("product")
+          val qtyNode = itemNode.path("qty")
         %>
 
         <!--  edit item, "name" attr is filled at submission time  -->
-        <div class="order-item-edit clearfix <%= if (multiError(productField, qtyField)) "error" %>">
+        <div class="order-item-edit clearfix <%= if (multiError(productNode, qtyNode)) "error" %>">
           <label>&nbsp;</label>
           <div class="input">
             <input id="id" type="hidden" value="<%= item.productId %>" />
             <input id="name" type="hidden" value="<%= item.product.name %>" />
 
             <input class="span4" readonly="readonly" value="<%= item.product.name %>" /> &nbsp;&times;&nbsp;
-            <input id="qty" class="span1" type="text" value="<%= qtyField.getValue %>" />
+            <input id="qty" class="span1" type="text" value="<%= qtyNode.getValue %>" />
 
             <button id="del" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only">
               <span class="ui-button-icon-primary ui-icon ui-icon-minusthick"></span>
               <span class="ui-button-text">&nbsp;</span>
             </button>
-            <span class="help-inline"><%= multiMessages(productField, qtyField) %></span>
+            <span class="help-inline"><%= multiMessages(productNode, qtyNode) %></span>
           </div>
         </div>
 

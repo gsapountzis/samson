@@ -7,9 +7,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.ws.rs.GET;
@@ -20,27 +18,22 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import samson.JForm;
-import samson.JFormProvider;
 import samson.example.scalate.model.Customer;
 import samson.example.scalate.model.Order;
 import samson.example.scalate.model.OrderForm;
 import samson.example.scalate.model.Product;
 import samson.example.scalate.model.Repository;
 import samson.example.scalate.views.Views;
+import samson.form.FormProvider;
+import samson.form.SamsonForm;
 
 @Path("/orders")
 public class OrdersResource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OrdersResource.class);
-
-    private final JFormProvider jForm;
+    private final FormProvider jForm;
     private final Repository repository;
 
-    public OrdersResource(@Context JFormProvider jForm) {
+    public OrdersResource(@Context FormProvider jForm) {
         this.jForm = jForm;
         this.repository = Repository.get();
     }
@@ -70,17 +63,15 @@ public class OrdersResource {
             return Response.status(NOT_FOUND).build();
         }
 
-        JForm<Order> orderForm = jForm.wrap(Order.class, order);
+        SamsonForm<Order> orderForm = jForm.wrap(Order.class, order);
         return Response.ok(Views.Orders.edit(this, id, orderForm)).build();
     }
 
     @Path("{id}")
     @POST
-    public Response update(@PathParam("id") Long id, JForm<Order> orderFormParam) {
+    public Response update(@PathParam("id") Long id, OrderForm orderForm) {
 
-        OrderForm orderForm = new OrderForm(orderFormParam).validate();
-
-        printErrors(orderForm.getErrors());
+        orderForm.validate();
 
         if (orderForm.hasErrors()) {
             return Response.status(BAD_REQUEST).entity(Views.Orders.edit(this, id, orderForm)).build();
@@ -90,16 +81,6 @@ public class OrdersResource {
         repository.updateOrder(id, order);
 
         return Response.seeOther(Paths.view(id)).build();
-    }
-
-    private static void printErrors(Map<String, List<String>> treeMessages) {
-        for (Entry<String, List<String>> entry : treeMessages.entrySet()) {
-            String param = entry.getKey();
-            List<String> messages = entry.getValue();
-            for (String message : messages) {
-                LOGGER.info(param + ": " + message);
-            }
-        }
     }
 
     // -- Option values (should be cached either at the resources or repository level)

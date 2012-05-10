@@ -4,14 +4,9 @@ import java.util.Collection;
 import java.util.List;
 
 import samson.convert.ConverterException;
+import samson.metadata.ElementRef;
 
 public interface BinderNode<T extends BinderNode<?>> {
-
-    // -- Binder
-
-    Binder getBinder();
-
-    void setBinder(Binder binder);
 
     // -- Node
 
@@ -25,7 +20,13 @@ public interface BinderNode<T extends BinderNode<?>> {
 
     Collection<T> getChildren();
 
-    // -- Leaf
+    // -- Reference
+
+    ElementRef getRef();
+
+    void setRef(ElementRef ref);
+
+    // -- Value
 
     List<String> getStringValues();
 

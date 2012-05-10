@@ -3,39 +3,32 @@ package samson.example.scalate.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import samson.JForm;
-import samson.form.ForwardingForm;
+import samson.form.FormNode;
+import samson.form.SamsonForm;
 
-public class OrderForm extends ForwardingForm<Order> {
+public class OrderForm extends SamsonForm<Order> {
 
-    private final JForm<Order> orderForm;
-    private final JForm<?> itemsForm;
-
-    public OrderForm(JForm<Order> orderForm) {
-        this.orderForm = orderForm;
-        this.itemsForm = orderForm.dot("items");
-    }
-
-    @Override
-    protected JForm<Order> delegate() {
-        return orderForm;
+    OrderForm(Order value, FormNode node) {
+        super(value, node);
     }
 
     /**
      * Validate form for duplicate items.
      * <p>
-     * Implemented as a subclass of <code>JForm&lt;Order&gt;</code> in order to
-     * demonstrate usage of the {@link JForm} interface. Alternatively, it could
+     * Implemented as a subclass of <code>SamsonForm&lt;Order&gt;</code> in order to
+     * demonstrate usage of the {@link SamsonForm} interface. Alternatively, it could
      * be implemented as a {@link javax.validation.Constraint}.
      */
     public OrderForm validate() {
-        Order order = orderForm.get();
+        Order order = super.get();
         if (order == null) {
             return this;
         }
 
+        FormNode itemsNode = super.node().path("items");
+
         Map<Long, Integer> map = new HashMap<Long, Integer>();
-        boolean containsDup = false;
+        boolean duplicate = false;
 
         int i = 0;
         for (OrderItem item : order.items) {
@@ -43,27 +36,27 @@ public class OrderForm extends ForwardingForm<Order> {
             Long productId = (item != null) ? item.productId : null;
             if (productId != null) {
                 if (map.containsKey(productId)) {
-                    containsDup = true;
+                    duplicate = true;
                     Integer first = map.get(productId);
                     if (first != null) {
                         map.put(productId, null);
-                        itemsForm.index(first).dot("product").error("first item");
+                        itemsNode.path(first).path("product").error("first item");
                     }
-                    itemsForm.index(i).dot("product").error("duplicate item");
+                    itemsNode.path(i).path("product").error("duplicate item");
                 }
                 else {
                     map.put(productId, i);
                 }
             }
             else {
-                itemsForm.index(i).dot("product").error("must select a product");
+                itemsNode.path(i).path("product").error("must select a product");
             }
 
             i += 1;
         }
 
-        if (containsDup) {
-            itemsForm.error("order contains duplicate items");
+        if (duplicate) {
+            itemsNode.error("order contains duplicate items");
         }
 
         return this;

@@ -7,7 +7,7 @@
 <form action="${ uri("/products") }" method="post">
   <fieldset>
 
-    <% block(productForm.path("code").getField) { field => %>
+    <% block(productForm.node().path("code")) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="code">Code</label>
@@ -19,7 +19,7 @@
 
     <% } %>
 
-    <% block(productForm.path("name").getField) { field => %>
+    <% block(productForm.node().path("name")) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="name">Name</label>
@@ -31,7 +31,7 @@
 
     <% } %>
 
-    <% block(productForm.path("price").getField) { field => %>
+    <% block(productForm.node().path("price")) { field => %>
 
       <div class="clearfix <%= if (field.isError) "error" %>">
         <label for="price">Price</label>

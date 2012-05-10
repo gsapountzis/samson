@@ -5,8 +5,7 @@ import java.lang.reflect.Type;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 
-import samson.JFormProvider;
-import samson.form.FormFactory;
+import samson.form.FormProvider;
 import samson.form.ParamsProvider;
 import samson.jersey.convert.JerseyConverterProvider;
 
@@ -21,7 +20,7 @@ import com.sun.jersey.spi.inject.InjectableProvider;
 import com.sun.jersey.spi.inject.ServerSide;
 
 @ConstrainedTo(ServerSide.class)
-public class JFormProviderInjectableProvider implements InjectableProvider<Context, Type> {
+public class FormProviderInjectableProvider implements InjectableProvider<Context, Type> {
 
     private final HttpContext context;
 
@@ -41,13 +40,13 @@ public class JFormProviderInjectableProvider implements InjectableProvider<Conte
         }
     };
 
-    private final FormFactory provider;
+    private final FormProvider provider;
     private final JerseyConverterProvider converterProvider;
 
-    public JFormProviderInjectableProvider(@Context HttpContext context) {
+    public FormProviderInjectableProvider(@Context HttpContext context) {
         this.context = context;
         this.converterProvider = new JerseyConverterProvider();
-        this.provider = new FormFactory(formParams, queryParams, converterProvider);
+        this.provider = new FormProvider(formParams, queryParams, converterProvider);
     }
 
     @Context
@@ -66,15 +65,15 @@ public class JFormProviderInjectableProvider implements InjectableProvider<Conte
     }
 
     @Override
-    public Injectable<JFormProvider> getInjectable(ComponentContext componentContext, Context annotation, Type type) {
-        if (JFormProvider.class != type) {
+    public Injectable<FormProvider> getInjectable(ComponentContext componentContext, Context annotation, Type type) {
+        if (FormProvider.class != type) {
             return null;
         }
 
-        return new Injectable<JFormProvider>() {
+        return new Injectable<FormProvider>() {
 
             @Override
-            public JFormProvider getValue() {
+            public FormProvider getValue() {
                 return provider;
             }
         };

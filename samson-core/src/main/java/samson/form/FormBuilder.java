@@ -14,8 +14,6 @@ import javax.validation.ValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import samson.JForm;
-import samson.JFormBuilder;
 import samson.bind.Binder;
 import samson.bind.BinderFactory;
 import samson.metadata.Element;
@@ -24,23 +22,23 @@ import samson.metadata.ElementRef;
 import samson.parse.Property.Node;
 import samson.parse.Property.Path;
 
-public class FormBuilder implements JFormBuilder {
+public class FormBuilder {
 
     private static final boolean DISABLE_BEAN_VALIDATION = false;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FormBuilder.class);
 
-    private final FormFactory factory;
+    private final FormProvider factory;
     private final String path;
     private final Map<String, List<String>> params;
 
     private Element element;
 
-    FormBuilder(FormFactory factory, String path) {
+    FormBuilder(FormProvider factory, String path) {
         this(factory, path, null);
     }
 
-    FormBuilder(FormFactory factory, String path, Map<String, List<String>> params) {
+    FormBuilder(FormProvider factory, String path, Map<String, List<String>> params) {
         this.factory = factory;
         this.path = path;
         this.params = params;
@@ -53,36 +51,42 @@ public class FormBuilder implements JFormBuilder {
         return new Element(annotations, type, type, null);
     }
 
-    @Override
-    public <T> JForm<T> wrap(Class<T> type) {
+    public <T> SamsonForm<T> wrap(Class<T> type) {
         this.element = element(type);
         return wrapForm(null);
     }
 
-    @Override
-    public <T> JForm<T> wrap(Class<T> type, T instance) {
+    public <T> SamsonForm<T> wrap(Class<T> type, T instance) {
         this.element = element(type);
         return wrapForm(instance);
     }
 
-    @Override
-    public <T> JForm<T> bind(Class<T> type) {
+    public <T> SamsonForm<T> bind(Class<T> type) {
         this.element = element(type);
         return bindForm(null);
     }
 
-    @Override
-    public <T> JForm<T> bind(Class<T> type, T instance) {
+    public <T> SamsonForm<T> bind(Class<T> type, T instance) {
         this.element = element(type);
         return bindForm(instance);
     }
 
-    public JForm<?> bind(Element element) {
+    public SamsonForm<?> bind(Element element) {
         this.element = element;
         return bindForm(null);
     }
 
     // -- Instance
+
+    private static FormNode getNode(FormNode root, String param, boolean setRef) throws ParseException {
+        Path path = Path.createPath(param);
+
+        FormNode child = root;
+        for (Node node : path) {
+            child = child.path(node.getName(), setRef);
+        }
+        return child;
+    }
 
     private <T> ElementRef immutableRef(final T value) {
         ElementAccessor accessor = new ElementAccessor() {
@@ -100,24 +104,23 @@ public class FormBuilder implements JFormBuilder {
         return new ElementRef(element, accessor);
     }
 
-    private <T> JForm<T> wrapForm(T initialValue) {
-        FormNode unnamed = new FormNode(Node.createPrefix(null));
+    private <T> SamsonForm<T> wrapForm(T initialValue) {
+        FormNode unnamed = new FormNode(factory, null);
 
         try {
-            FormNode root = unnamed.getDefinedChild(Path.createPath(path));
-
-            return new Form<T>(factory, initialValue, immutableRef(initialValue), root);
+            FormNode root = getNode(unnamed, path, false);
+            root.setRef(immutableRef(initialValue));
+            return new SamsonForm<T>(initialValue, root);
         } catch (ParseException e) {
             throw new IllegalArgumentException("Cannot parse root path " + path);
         }
     }
 
-    private <T> JForm<T> bindForm(T initialValue) {
+    private <T> SamsonForm<T> bindForm(T initialValue) {
         FormNode unnamed = parse(params);
 
         try {
-            FormNode root = unnamed.getDefinedChild(Path.createPath(path));
-
+            FormNode root = getNode(unnamed, path, false);
             LOGGER.trace(printTree(root));
 
             T value = bind(root, initialValue);
@@ -126,22 +129,22 @@ public class FormBuilder implements JFormBuilder {
             validate(root, value);
             LOGGER.trace(printTree(root));
 
-            return new Form<T>(factory, value, immutableRef(value), root);
+            root.setRef(immutableRef(value));
+            return new SamsonForm<T>(value, root);
         } catch (ParseException e) {
             throw new IllegalArgumentException("Cannot parse root path " + path);
         }
     }
 
-    private static FormNode parse(Map<String, List<String>> params) {
-        FormNode unnamed = new FormNode(Node.createPrefix(null));
+    private FormNode parse(Map<String, List<String>> params) {
+        FormNode unnamed = new FormNode(factory, null);
 
         for (Entry<String, List<String>> entry : params.entrySet()) {
             String param = entry.getKey();
             List<String> values = entry.getValue();
 
             try {
-                Path path = Path.createPath(param);
-                FormNode node = unnamed.getDefinedChild(path);
+                FormNode node = getNode(unnamed, param, false);
                 node.setStringValues(values);
             } catch (ParseException e) {
                 LOGGER.warn("Cannot parse parameter name {}", param);
@@ -168,13 +171,13 @@ public class FormBuilder implements JFormBuilder {
                 return value;
             }
         };
-        ElementRef ref = new ElementRef(element, accessor);
-
         accessor.set(initialValue);
+
+        ElementRef ref = new ElementRef(element, accessor);
+        root.setRef(ref);
 
         Binder binder = binderFactory.getBinder(ref, root.hasChildren());
         binder.read(root);
-        root.setBinder(binder);
 
         return (T) accessor.get();
     }
@@ -208,10 +211,8 @@ public class FormBuilder implements JFormBuilder {
 
             try {
                 // parse and normalize the validation property path
-                Path path = Path.createPath(param);
-
+                FormNode node = getNode(root, param, true);
                 // annotate the form tree with violations
-                FormNode node = root.getDefinedChild(path);
                 node.addConstraintViolation(violation);
             } catch (ParseException e) {
                 throw new IllegalStateException("Cannot parse validation path " + param);

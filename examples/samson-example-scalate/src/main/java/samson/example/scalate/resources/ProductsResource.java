@@ -14,19 +14,19 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
-import samson.JForm;
-import samson.JFormProvider;
 import samson.example.scalate.model.Product;
 import samson.example.scalate.model.Repository;
 import samson.example.scalate.views.Views;
+import samson.form.FormProvider;
+import samson.form.SamsonForm;
 
 @Path("/products")
 public class ProductsResource {
 
-    private final JFormProvider jForm;
+    private final FormProvider jForm;
     private final Repository repository;
 
-    public ProductsResource(@Context JFormProvider jForm) {
+    public ProductsResource(@Context FormProvider jForm) {
         this.jForm = jForm;
         this.repository = Repository.get();
     }
@@ -40,7 +40,7 @@ public class ProductsResource {
     @Path("new")
     @GET
     public Response create() {
-        JForm<Product> productForm = jForm.wrap(Product.class);
+        SamsonForm<Product> productForm = jForm.wrap(Product.class);
         return Response.ok(Views.Products.create(productForm)).build();
     }
 
@@ -48,7 +48,7 @@ public class ProductsResource {
      * Create product, shows usage as a resource method parameter.
      */
     @POST
-    public Response save(JForm<Product> productForm) {
+    public Response save(SamsonForm<Product> productForm) {
 
         if (productForm.hasErrors()) {
             return Response.status(BAD_REQUEST).entity(Views.Products.create(productForm)).build();
@@ -79,7 +79,7 @@ public class ProductsResource {
             return Response.status(NOT_FOUND).build();
         }
 
-        JForm<Product> productForm = jForm.wrap(Product.class, product);
+        SamsonForm<Product> productForm = jForm.wrap(Product.class, product);
         return Response.ok(Views.Products.edit(id, productForm)).build();
     }
 
@@ -90,7 +90,7 @@ public class ProductsResource {
     @POST
     public Response update(@PathParam("id") Long id) {
 
-        JForm<Product> productForm = jForm.form().bind(Product.class);
+        SamsonForm<Product> productForm = jForm.form().bind(Product.class);
 
         if (productForm.hasErrors()) {
             return Response.status(BAD_REQUEST).entity(Views.Products.edit(id, productForm)).build();

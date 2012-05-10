@@ -15,9 +15,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Providers;
 
-import samson.JForm;
-import samson.JFormProvider;
 import samson.form.FormBuilder;
+import samson.form.FormProvider;
+import samson.form.SamsonForm;
 import samson.metadata.Element;
 
 import com.sun.jersey.api.container.ContainerException;
@@ -31,24 +31,24 @@ import com.sun.jersey.spi.inject.ServerSide;
 @ConstrainedTo(ServerSide.class)
 @Produces("application/x-www-form-urlencoded")
 @Consumes("application/x-www-form-urlencoded")
-public class FormBeanProvider extends AbstractMessageReaderWriterProvider<JForm<?>> {
+public class FormBeanProvider extends AbstractMessageReaderWriterProvider<SamsonForm<?>> {
 
     private final Providers providers;
-    private final JFormProvider jForm;
+    private final FormProvider jForm;
 
-    public FormBeanProvider(@Context Providers providers, @Context JFormProvider jForm) {
+    public FormBeanProvider(@Context Providers providers, @Context FormProvider jForm) {
         this.providers = providers;
         this.jForm = jForm;
     }
 
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return (type == JForm.class);
+        return (type == SamsonForm.class);
     }
 
     @Override
-    public JForm<?> readFrom(
-            Class<JForm<?>> type,
+    public SamsonForm<?> readFrom(
+            Class<SamsonForm<?>> type,
             Type genericType,
             Annotation[] annotations,
             MediaType mediaType,
@@ -68,7 +68,7 @@ public class FormBeanProvider extends AbstractMessageReaderWriterProvider<JForm<
         }
         Form form = formProvider.readFrom(Form.class, Form.class, annotations, mediaType, httpHeaders, entityStream);
 
-        FormBuilder builder = (FormBuilder) jForm.params(form);
+        FormBuilder builder = jForm.params(form);
         return builder.bind(element);
     }
 
@@ -79,7 +79,7 @@ public class FormBeanProvider extends AbstractMessageReaderWriterProvider<JForm<
 
     @Override
     public void writeTo(
-            JForm<?> t,
+            SamsonForm<?> t,
             Class<?> type,
             Type genericType,
             Annotation[] annotations,

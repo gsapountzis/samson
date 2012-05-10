@@ -14,7 +14,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.junit.Test;
 
-import samson.JForm;
+import samson.form.SamsonForm;
 import samson.jersey.test.util.WebappTestUtils;
 
 import com.sun.jersey.api.client.WebResource;
@@ -37,7 +37,7 @@ public class MapTest {
 
         @Path("query")
         @GET
-        public String query(@QueryParam("map") JForm<Map<String, Integer>> mapForm) {
+        public String query(@QueryParam("map") SamsonForm<Map<String, Integer>> mapForm) {
             Map<String, Integer> map = mapForm.get();
             return string(map);
         }
@@ -46,7 +46,7 @@ public class MapTest {
 
         @Path("form")
         @POST
-        public String form(@FormParam("map") JForm<Map<String, Integer>> mapForm) {
+        public String form(@FormParam("map") SamsonForm<Map<String, Integer>> mapForm) {
             Map<String, Integer> map = mapForm.get();
             return string(map);
         }

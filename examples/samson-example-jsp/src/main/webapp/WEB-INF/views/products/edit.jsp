@@ -34,7 +34,7 @@
       <form action="<c:url value="/products/${ id }" />" method="post">
         <fieldset>
 
-          <c:set var="field" value="${ sms:path(productForm, 'product.code').field }" />
+          <c:set var="field" value="${ sms:path(productForm, 'code') }" />
 
           <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
             <label for="code">Code</label>
@@ -44,7 +44,7 @@
             </div>
           </div>
 
-          <c:set var="field" value="${ sms:path(productForm, 'product.name').field }" />
+          <c:set var="field" value="${ sms:path(productForm, 'name') }" />
 
           <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
             <label for="name">Name</label>
@@ -54,7 +54,7 @@
             </div>
           </div>
 
-          <c:set var="field" value="${ sms:path(productForm, 'product.price').field }" />
+          <c:set var="field" value="${ sms:path(productForm, 'price') }" />
 
           <div class="clearfix <c:if test="${ field.error }">error</c:if>" >
             <label for="price">Price</label>

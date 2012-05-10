@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import samson.JFormProvider;
+import samson.form.FormProvider;
 import samson.test.example.register.User;
 
 import com.sun.jersey.api.representation.Form;
@@ -19,13 +19,13 @@ public class TimeTest {
 
     private static long[] t = new long[8];
 
-    private static JFormProvider jForm;
+    private static FormProvider jForm;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         t[0] = System.currentTimeMillis();
 
-        jForm = UnitTestUtils.createJFormProvider();
+        jForm = UnitTestUtils.createFormProvider();
 
         t[1] = System.currentTimeMillis();
     }

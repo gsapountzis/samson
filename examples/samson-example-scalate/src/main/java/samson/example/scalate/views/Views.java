@@ -2,10 +2,10 @@ package samson.example.scalate.views;
 
 import java.util.Collection;
 
-import samson.JForm;
 import samson.example.scalate.model.Order;
 import samson.example.scalate.model.Product;
 import samson.example.scalate.resources.OrdersResource;
+import samson.form.SamsonForm;
 
 import com.sun.jersey.api.view.Viewable;
 
@@ -23,9 +23,9 @@ public class Views {
         }
 
         public static class CreateModel {
-            public final JForm<Product> productForm;
+            public final SamsonForm<Product> productForm;
 
-            CreateModel(JForm<Product> productForm) {
+            CreateModel(SamsonForm<Product> productForm) {
                 this.productForm = productForm;
             }
         }
@@ -42,9 +42,9 @@ public class Views {
 
         public static class EditModel {
             public final Long id;
-            public final JForm<Product> productForm;
+            public final SamsonForm<Product> productForm;
 
-            EditModel(Long id, JForm<Product> productForm) {
+            EditModel(Long id, SamsonForm<Product> productForm) {
                 this.id = id;
                 this.productForm = productForm;
             }
@@ -55,7 +55,7 @@ public class Views {
             return new Viewable("/WEB-INF/views/products/list", new ListModel(products));
         }
 
-        public static Viewable create(JForm<Product> productForm) {
+        public static Viewable create(SamsonForm<Product> productForm) {
             return new Viewable("/WEB-INF/views/products/create", new CreateModel(productForm));
         }
 
@@ -63,7 +63,7 @@ public class Views {
             return new Viewable("/WEB-INF/views/products/view", new ViewModel(id, product));
         }
 
-        public static Viewable edit(Long id, JForm<Product> productForm) {
+        public static Viewable edit(Long id, SamsonForm<Product> productForm) {
             return new Viewable("/WEB-INF/views/products/edit", new EditModel(id, productForm));
         }
 
@@ -82,9 +82,9 @@ public class Views {
 
         public static class CreateModel {
             public final OrdersResource resource;
-            public final JForm<Order> orderForm;
+            public final SamsonForm<Order> orderForm;
 
-            CreateModel(OrdersResource resource, JForm<Order> orderForm) {
+            CreateModel(OrdersResource resource, SamsonForm<Order> orderForm) {
                 this.resource = resource;
                 this.orderForm = orderForm;
             }
@@ -103,9 +103,9 @@ public class Views {
         public static class EditModel {
             public final OrdersResource resource;
             public final Long id;
-            public final JForm<Order> orderForm;
+            public final SamsonForm<Order> orderForm;
 
-            EditModel(OrdersResource resource, Long id, JForm<Order> orderForm) {
+            EditModel(OrdersResource resource, Long id, SamsonForm<Order> orderForm) {
                 this.resource = resource;
                 this.id = id;
                 this.orderForm = orderForm;
@@ -117,7 +117,7 @@ public class Views {
             return new Viewable("/WEB-INF/views/orders/list", new ListModel(orders));
         }
 
-        public static Viewable create(OrdersResource resource, JForm<Order> orderForm) {
+        public static Viewable create(OrdersResource resource, SamsonForm<Order> orderForm) {
             return new Viewable("/WEB-INF/views/orders/create", new CreateModel(resource, orderForm));
         }
 
@@ -125,7 +125,7 @@ public class Views {
             return new Viewable("/WEB-INF/views/orders/view", new ViewModel(id, order));
         }
 
-        public static Viewable edit(OrdersResource resource, Long id, JForm<Order> orderForm) {
+        public static Viewable edit(OrdersResource resource, Long id, SamsonForm<Order> orderForm) {
             return new Viewable("/WEB-INF/views/orders/edit", new EditModel(resource, id, orderForm));
         }
 

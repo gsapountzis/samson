@@ -15,7 +15,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.junit.Test;
 
-import samson.JForm;
+import samson.form.SamsonForm;
 import samson.jersey.test.util.WebappTestUtils;
 
 import com.sun.jersey.api.client.UniformInterfaceException;
@@ -38,7 +38,7 @@ public class PrimitiveTest {
 
         @Path("queryForm")
         @GET
-        public String queryForm(@QueryParam("param") @DefaultValue("-1") JForm<Integer> param) {
+        public String queryForm(@QueryParam("param") @DefaultValue("-1") SamsonForm<Integer> param) {
             Integer i = param.get();
             return "" + i;
         }
@@ -53,7 +53,7 @@ public class PrimitiveTest {
 
         @Path("formForm")
         @POST
-        public String formForm(@FormParam("param") @DefaultValue("-1") JForm<Integer> param) {
+        public String formForm(@FormParam("param") @DefaultValue("-1") SamsonForm<Integer> param) {
             Integer i = param.get();
             return "" + i;
         }

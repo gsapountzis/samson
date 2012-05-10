@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import samson.JForm;
+import samson.form.SamsonForm;
 import samson.jersey.test.example.register.User;
 
 import com.sun.jersey.api.client.WebResource;
@@ -57,14 +57,14 @@ public class WebappTimeTest {
         }
 
         @GET
-        public String get(@QueryParam("") JForm<User> userForm) {
+        public String get(@QueryParam("") SamsonForm<User> userForm) {
             User user = userForm.get();
             print(user);
             return "";
         }
 
         @POST
-        public String post(@FormParam("") JForm<User> userForm) {
+        public String post(@FormParam("") SamsonForm<User> userForm) {
             User user = userForm.get();
             print(user);
             return "";
@@ -72,7 +72,7 @@ public class WebappTimeTest {
 
         @Path("body")
         @POST
-        public String body(JForm<User> userForm) {
+        public String body(SamsonForm<User> userForm) {
             User user = userForm.get();
             print(user);
             return "";

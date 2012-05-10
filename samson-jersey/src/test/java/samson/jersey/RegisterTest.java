@@ -11,7 +11,7 @@ import javax.ws.rs.Path;
 
 import org.junit.Test;
 
-import samson.JForm;
+import samson.form.SamsonForm;
 import samson.jersey.test.example.register.User;
 import samson.jersey.test.util.WebappTestUtils;
 
@@ -46,7 +46,7 @@ public class RegisterTest {
 
         @Path("param")
         @POST
-        public String param(@FormParam("") JForm<User> userForm, @FormParam("accept") boolean accept) {
+        public String param(@FormParam("") SamsonForm<User> userForm, @FormParam("accept") boolean accept) {
             User user = userForm.get();
 
             return "{" + string(user) + ", " + accept + "}";
@@ -54,7 +54,7 @@ public class RegisterTest {
 
         @Path("bean")
         @POST
-        public String bean(@FormParam("user") JForm<User> userForm, @FormParam("accept") boolean accept) {
+        public String bean(@FormParam("user") SamsonForm<User> userForm, @FormParam("accept") boolean accept) {
             User user = userForm.get();
 
             return "{" + string(user) + ", " + accept + "}";
@@ -62,7 +62,7 @@ public class RegisterTest {
 
         @Path("body")
         @POST
-        public String body(JForm<RegisterForm> registerForm) {
+        public String body(SamsonForm<RegisterForm> registerForm) {
             RegisterForm register = registerForm.get();
 
             return "{" + string(register.user) + ", " + register.accept + "}";

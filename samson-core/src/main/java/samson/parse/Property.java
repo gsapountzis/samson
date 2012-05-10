@@ -146,7 +146,7 @@ public class Property {
             this.index = index;
         }
 
-        public static Node createPrefix(String name) {
+        static Node createPrefix(String name) {
             return new Node(name, name, true, false, false);
         }
 

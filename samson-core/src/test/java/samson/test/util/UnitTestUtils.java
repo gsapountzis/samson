@@ -5,8 +5,7 @@ import java.lang.reflect.Type;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import samson.JFormProvider;
-import samson.form.FormFactory;
+import samson.form.FormProvider;
 import samson.jersey.convert.JerseyConverterProvider;
 
 import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParameterExtractorFactory;
@@ -53,7 +52,7 @@ public class UnitTestUtils {
 
     }
 
-    public static JFormProvider createJFormProvider() {
+    public static FormProvider createFormProvider() {
         StringReaderWorkers srw = new TestStringReaderFactory();
         MultivaluedParameterExtractorProvider mpep = new MultivaluedParameterExtractorFactory(srw);
 
@@ -61,6 +60,6 @@ public class UnitTestUtils {
         converterProvider.setStringReaderProvider(srw);
         converterProvider.setExtractorProvider(mpep);
 
-        return new FormFactory(null, null, converterProvider);
+        return new FormProvider(null, null, converterProvider);
     }
 }

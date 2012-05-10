@@ -14,7 +14,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.junit.Test;
 
-import samson.JForm;
+import samson.form.SamsonForm;
 import samson.jersey.test.util.WebappTestUtils;
 
 import com.sun.jersey.api.client.WebResource;
@@ -30,7 +30,7 @@ public class ListTest {
 
         @Path("query")
         @GET
-        public String query(@QueryParam("list") JForm<List<Integer>> listForm) {
+        public String query(@QueryParam("list") SamsonForm<List<Integer>> listForm) {
             List<Integer> list = listForm.get();
             return list.toString();
         }
@@ -39,7 +39,7 @@ public class ListTest {
 
         @Path("form")
         @POST
-        public String form(@FormParam("list") JForm<List<Integer>> listForm) {
+        public String form(@FormParam("list") SamsonForm<List<Integer>> listForm) {
             List<Integer> list = listForm.get();
             return list.toString();
         }

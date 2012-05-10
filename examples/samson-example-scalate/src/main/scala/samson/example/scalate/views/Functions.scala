@@ -1,6 +1,6 @@
 package samson.example.scalate.views
 
-import samson.JForm.Field
+import samson.form.FormNode;
 
 import scala.collection.JavaConverters._
 
@@ -16,30 +16,26 @@ object Functions {
 
   def isNullOrEmpty(s: String) = (s == null || s.isEmpty)
 
-  def infos(field: Field) = {
-    val messages = field.getMessages()
-
-    val conversionInfo = List(messages.getConversionInfo);
-    val validationInfos = messages.getValidationInfos.asScala.toList;
-    val infos = messages.getInfos.asScala.toList;
+  def infos(node: FormNode) = {
+    val conversionInfo = List(node.getConversionInfo);
+    val validationInfos = node.getValidationInfos.asScala.toList;
+    val infos = node.getInfos.asScala.toList;
 
     (conversionInfo ++ validationInfos ++ infos).filter(!isNullOrEmpty(_)).mkString(", ")
   }
 
-  def errors(field: Field) = {
-    val messages = field.getMessages()
-
-    val conversionError = Option(messages.getConversionError);
-    val validationErrors = messages.getValidationErrors.asScala.toList;
-    val errors = messages.getErrors.asScala.toList;
+  def errors(node: FormNode) = {
+    val conversionError = Option(node.getConversionError);
+    val validationErrors = node.getValidationErrors.asScala.toList;
+    val errors = node.getErrors.asScala.toList;
 
     conversionError.getOrElse((validationErrors ++ errors).filter(!isNullOrEmpty(_)).mkString(", "))
   }
 
-  def messages(field: Field) = errors(field);
+  def messages(node: FormNode) = errors(node);
 
-  def multiError(fields: Field*) = fields.map(_.isError).reduce(_ || _)
+  def multiError(nodes: FormNode*) = nodes.map(_.isError).reduce(_ || _)
 
-  def multiMessages(fields: Field*) = fields.map(messages(_)).filter(!isNullOrEmpty(_)).mkString(", ")
+  def multiMessages(nodes: FormNode*) = nodes.map(messages(_)).filter(!isNullOrEmpty(_)).mkString(", ")
 
 }

@@ -44,10 +44,10 @@ class ListBinder extends Binder {
         for (BinderNode<?> child : node.getChildren()) {
             String stringIndex = child.getName();
             ElementRef childRef = getChildRef(listItem, list, stringIndex);
+            child.setRef(childRef);
 
             Binder binder = factory.getBinder(childRef, child.hasChildren());
             binder.read(child);
-            child.setBinder(binder);
         }
     }
 

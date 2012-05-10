@@ -10,15 +10,12 @@ import javax.validation.ValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import samson.JForm;
-import samson.JFormBuilder;
-import samson.JFormProvider;
 import samson.bind.BinderFactory;
 import samson.convert.ConverterProvider;
 
-public class FormFactory implements JFormProvider {
+public class FormProvider {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FormFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FormProvider.class);
 
     private final ParamsProvider formParams;
     private final ParamsProvider queryParams;
@@ -26,7 +23,7 @@ public class FormFactory implements JFormProvider {
     private final BinderFactory binderFactory;
     private final ValidatorFactory validatorFactory;
 
-    public FormFactory(ParamsProvider formParams, ParamsProvider queryParams, ConverterProvider converterProvider) {
+    public FormProvider(ParamsProvider formParams, ParamsProvider queryParams, ConverterProvider converterProvider) {
         this.formParams = formParams;
         this.queryParams = queryParams;
 
@@ -56,13 +53,11 @@ public class FormFactory implements JFormProvider {
         return new FormBuilder(this, path);
     }
 
-    @Override
-    public JFormBuilder path() {
+    public FormBuilder path() {
         return builder(null);
     }
 
-    @Override
-    public JFormBuilder path(String path) {
+    public FormBuilder path(String path) {
         return builder(path);
     }
 
@@ -72,45 +67,37 @@ public class FormFactory implements JFormProvider {
         return new FormBuilder(this, path, params);
     }
 
-    @Override
-    public JFormBuilder params(Map<String, List<String>> params) {
+    public FormBuilder params(Map<String, List<String>> params) {
         return builder(null, params);
     }
 
-    @Override
-    public JFormBuilder params(String path, Map<String, List<String>> params) {
+    public FormBuilder params(String path, Map<String, List<String>> params) {
         return builder(path, params);
     }
 
-    @Override
-    public JFormBuilder form() {
+    public FormBuilder form() {
         return builder(null, formParams.get());
     }
 
-    @Override
-    public JFormBuilder form(String path) {
+    public FormBuilder form(String path) {
         return builder(path, formParams.get());
     }
 
-    @Override
-    public JFormBuilder query() {
+    public FormBuilder query() {
         return builder(null, queryParams.get());
     }
 
-    @Override
-    public JFormBuilder query(String path) {
+    public FormBuilder query(String path) {
         return builder(path, queryParams.get());
     }
 
     // -- Wrap
 
-    @Override
-    public <T> JForm<T> wrap(Class<T> type) {
+    public <T> SamsonForm<T> wrap(Class<T> type) {
         return builder(null).wrap(type);
     }
 
-    @Override
-    public <T> JForm<T> wrap(Class<T> type, T instance) {
+    public <T> SamsonForm<T> wrap(Class<T> type, T instance) {
         return builder(null).wrap(type, instance);
     }
 

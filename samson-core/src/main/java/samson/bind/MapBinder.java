@@ -37,10 +37,10 @@ class MapBinder extends Binder {
         for (BinderNode<?> child : node.getChildren()) {
             String stringKey = child.getName();
             ElementRef childRef = getChildRef(mapEntry, map, stringKey);
+            child.setRef(childRef);
 
             Binder binder = factory.getBinder(childRef, child.hasChildren());
             binder.read(child);
-            child.setBinder(binder);
         }
     }
 

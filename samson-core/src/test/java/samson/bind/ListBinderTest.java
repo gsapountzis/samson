@@ -13,18 +13,18 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import samson.JFormProvider;
+import samson.form.FormProvider;
 import samson.test.util.UnitTestUtils;
 
 import com.sun.jersey.api.representation.Form;
 
 public class ListBinderTest {
 
-    private static JFormProvider jForm;
+    private static FormProvider jForm;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        jForm = UnitTestUtils.createJFormProvider();
+        jForm = UnitTestUtils.createFormProvider();
     }
 
     @AfterClass

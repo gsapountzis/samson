@@ -5,9 +5,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
-import samson.JForm;
-import samson.JFormProvider;
 import samson.form.FormBuilder;
+import samson.form.FormProvider;
+import samson.form.SamsonForm;
 import samson.metadata.Element;
 
 import com.sun.jersey.api.core.HttpContext;
@@ -27,27 +27,27 @@ import com.sun.jersey.spi.inject.ServerSide;
 @ConstrainedTo(ServerSide.class)
 public class FormParamInjectableProvider implements InjectableProvider<FormParam, Parameter> {
 
-    private final JFormProvider jForm;
+    private final FormProvider jForm;
     private final MetadataCache cache;
 
-    public FormParamInjectableProvider(@Context JFormProvider jForm, @Context MetadataCache cache) {
+    public FormParamInjectableProvider(@Context FormProvider jForm, @Context MetadataCache cache) {
         this.jForm = jForm;
         this.cache = cache;
     }
 
-    static class FormParamInjectable extends AbstractHttpContextInjectable<JForm<?>> {
-        private final JFormProvider jForm;
+    static class FormParamInjectable extends AbstractHttpContextInjectable<SamsonForm<?>> {
+        private final FormProvider jForm;
         private final Element element;
 
-        FormParamInjectable(JFormProvider jForm, Element element) {
+        FormParamInjectable(FormProvider jForm, Element element) {
             this.jForm = jForm;
             this.element = element;
         }
 
         @Override
-        public JForm<?> getValue(HttpContext context) {
+        public SamsonForm<?> getValue(HttpContext context) {
             MultivaluedMap<String, String> params = getParameters(context, true);
-            FormBuilder builder = (FormBuilder) jForm.params(element.name, params);
+            FormBuilder builder = jForm.params(element.name, params);
             return builder.bind(element);
         }
     }
@@ -80,9 +80,9 @@ public class FormParamInjectableProvider implements InjectableProvider<FormParam
     }
 
     @Override
-    public Injectable<JForm<?>> getInjectable(ComponentContext componentContext, FormParam annotation, Parameter parameter) {
+    public Injectable<SamsonForm<?>> getInjectable(ComponentContext componentContext, FormParam annotation, Parameter parameter) {
         Class<?> clazz = parameter.getParameterClass();
-        if (clazz != JForm.class) {
+        if (clazz != SamsonForm.class) {
             return null;
         }
 

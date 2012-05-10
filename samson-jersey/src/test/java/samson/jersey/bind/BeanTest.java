@@ -13,7 +13,7 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.junit.Test;
 
-import samson.JForm;
+import samson.form.SamsonForm;
 import samson.jersey.test.util.WebappTestUtils;
 
 import com.sun.jersey.api.client.WebResource;
@@ -39,13 +39,13 @@ public class BeanTest {
 
         @Path("query")
         @GET
-        public String query(@QueryParam("") JForm<Bean> bean) {
+        public String query(@QueryParam("") SamsonForm<Bean> bean) {
             return string(bean.get());
         }
 
         @Path("queryBean")
         @GET
-        public String queryBean(@QueryParam("bean") JForm<Bean> bean) {
+        public String queryBean(@QueryParam("bean") SamsonForm<Bean> bean) {
             return string(bean.get());
         }
 
@@ -53,13 +53,13 @@ public class BeanTest {
 
         @Path("form")
         @POST
-        public String form(@FormParam("") JForm<Bean> bean) {
+        public String form(@FormParam("") SamsonForm<Bean> bean) {
             return string(bean.get());
         }
 
         @Path("formBean")
         @POST
-        public String formBean(@FormParam("bean") JForm<Bean> bean) {
+        public String formBean(@FormParam("bean") SamsonForm<Bean> bean) {
             return string(bean.get());
         }
 
@@ -67,7 +67,7 @@ public class BeanTest {
 
         @Path("body")
         @POST
-        public String body(JForm<Bean> bean) {
+        public String body(SamsonForm<Bean> bean) {
             return string(bean.get());
         }
 

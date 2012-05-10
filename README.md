@@ -13,7 +13,7 @@ Utility module for handling form submissions and query parameters in JAX-RS reso
 
 * integration with [bean validation](http://beanvalidation.org).
 
-* [facade](/gsapountzis/samson/blob/master/samson-core/src/main/java/samson/JForm.java)
+* [facade](/gsapountzis/samson/blob/master/samson-core/src/main/java/samson/form/SamsonForm.java)
   over the binding and validation results.
 
 ## Usage
