@@ -8,8 +8,8 @@ import samson.form.SamsonForm;
 
 public class OrderForm extends SamsonForm<Order> {
 
-    OrderForm(Order value, FormNode node) {
-        super(value, node);
+    public OrderForm(SamsonForm<Order> orderForm) {
+        super(orderForm.get(), orderForm.node());
     }
 
     /**

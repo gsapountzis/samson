@@ -69,9 +69,8 @@ public class OrdersResource {
 
     @Path("{id}")
     @POST
-    public Response update(@PathParam("id") Long id, OrderForm orderForm) {
-
-        orderForm.validate();
+    public Response update(@PathParam("id") Long id, SamsonForm<Order> orderFormParam) {
+        OrderForm orderForm = new OrderForm(orderFormParam).validate();
 
         if (orderForm.hasErrors()) {
             return Response.status(BAD_REQUEST).entity(Views.Orders.edit(this, id, orderForm)).build();
