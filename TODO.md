@@ -9,14 +9,16 @@ bypass samson-core and let converter "components" inject current locale.
 
 ## Resource bean/method validation
 
-This cannot be done within samson-core.
-It requires an interceptor / resource-method-dispatcher.
+This needs the validator to support extensions for custom wrapper types (e.g. Optional&lt;T&gt;, Form&lt;T&gt;).
+See [HV-565](https://hibernate.onjira.com/browse/HV-565)
 
-## multipart/form-data
+## Use jackson for binding
+
+Replace Binder with ObjectMapper and use FormNode extends JsonNode for the graph-of-nodes overlay.
 
 # MAYBE
 
-## Binder configuration
+## Binder configuration (moot if binding is replaced with jackson-databind)
 
 Provide some basic bean binder configuration:
 
