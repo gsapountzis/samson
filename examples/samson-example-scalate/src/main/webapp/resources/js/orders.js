@@ -1,48 +1,43 @@
-$(function() {
+jQuery(function( $ ) {
+
 	var dateOptions = {
-			dateFormat: "dd M yy",
-			showOn: "button",
-			buttonImageOnly: true
+			format: "dd M yy",
 		};
 
 	$( "#orderDate" ).datepicker( dateOptions );
 	$( "#shipDate" ).datepicker( dateOptions );
 
 	$( "#orderForm" ).submit( function() {
-		var i = 0;
 
 		// Fill-in the name attribute of each item's input elements
-		$( "div.order-item-edit > .input" ).each( function() {
-			var $itemInput = $( this ),
+		$( "div.order-item-edit > div.controls" ).each( function( i ) {
+			var $itemControls = $( this ),
 				item = "items[" + i + "]";
 
-			$itemInput
+			$itemControls
 				.children( "#id" ).attr( "name", item + "." + "productId" ).end()
 				.children( "#name" ).attr( "name", item + "." + "product.name" ).end()
 				.children( "#qty" ).attr( "name", item + "." + "qty" ).end();
-
-			i++;
 		});
 	});
 
-	$( "div.order-item-edit button#del" ).live( "click", function() {
+	$( document ).on( "click", "div.order-item-edit button#del", function() {
 		$( this ).closest( "div.order-item-edit" ).fadeOut( "fast", function() {
 			$( this ).remove();
 		});
 	});
 
 	$( "div.order-items-new button#add" ).click( function() {
-		var $item = $( this ),
-			$itemInput = $item.parent( ".input" ),
+		var $itemControls = $( this ).parent( ".controls" ),
 			$tmpl = $( "div.order-item-edit-tmpl" ).clone().removeClass( "order-item-edit-tmpl" ).addClass( "order-item-edit" ),
-			$tmplInput = $tmpl.children( ".input" );
+			$tmplControls = $tmpl.children( ".controls" );
 
-		var $product = $itemInput.find( "#product > option" ).filter( ":selected" ),
-			$qty = $itemInput.children( "#qty" );
+		var $product = $itemControls.find( "#product > option" ).filter( ":selected" ),
+			$qty = $itemControls.children( "#qty" );
 
 		// Don't do any conversion/validation here in order to demonstrate server-side features
 
-		$tmplInput
+		$tmplControls
 			.children( "#id" ).val( $product.val() ).end()
 			.children( "#name" ).val( $product.text() ).end()
 			.children( "#nameText" ).val( $product.text() ).end()

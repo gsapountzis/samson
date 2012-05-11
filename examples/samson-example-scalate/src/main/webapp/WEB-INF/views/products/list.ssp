@@ -3,7 +3,7 @@
 <%@ val it: ListModel %>
 <% val products = it.products %>
 
-<table>
+<table class="table">
   <thead>
     <tr>
       <th>Code</th>

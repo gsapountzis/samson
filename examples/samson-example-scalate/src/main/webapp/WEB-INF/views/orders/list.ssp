@@ -3,7 +3,7 @@
 <%@ val it: ListModel %>
 <% val orders = it.orders %>
 
-<table>
+<table class="table">
   <thead>
     <tr>
       <th>Code</th>
@@ -25,7 +25,3 @@
     <% }) %>
   </tbody>
 </table>
-
-<!-- div>
-  <a href="${ uri("/orders/new") }" class="btn">Create new</a>
-</div -->

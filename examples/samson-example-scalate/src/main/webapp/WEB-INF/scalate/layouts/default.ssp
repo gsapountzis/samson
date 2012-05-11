@@ -12,14 +12,14 @@
     <link rel="stylesheet" type="text/css" href="${ uri("/resources/css/bootstrap.css") }" />
     <link rel="stylesheet" type="text/css" href="${ uri("/resources/css/main.css") }" />
     ${ unescape(stylesheets) }
-    <script type="text/javascript" src="${ uri("/resources/js/jquery-1.6.2.js") }"></script>
+    <script type="text/javascript" src="${ uri("/resources/js/jquery-1.7.2.js") }"></script>
     ${ unescape(javascripts) }
   </head>
 
   <body>
 
-    <div class="topbar">
-      <div class="fill">
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
         <div class="container">
           <a class="brand" href="${ uri("/") }">Samson Scalate</a>
           <ul class="nav">

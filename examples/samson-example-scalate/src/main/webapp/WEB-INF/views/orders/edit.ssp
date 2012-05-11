@@ -3,29 +3,29 @@
 
 <%@ val it: EditModel %>
 <% val id = it.id %>
-<% val orderForm = it.orderForm %>
-<% val order = orderForm.get() %>
+<% val order = it.orderForm.get() %>
+<% val orderNode = it.orderForm.node() %>
 <% val customerOptions = it.resource.getCustomerOptions() %>
 <% val productOptions = it.resource.getProductOptions() %>
 
 <% attributes("stylesheets") = capture { %>
-<link rel="stylesheet" type="text/css" href="${ uri("/resources/css/smoothness/jquery-ui-1.8.16.custom.css") }" />
+<link rel="stylesheet" type="text/css" href="${ uri("/resources/css/datepicker.css") }" />
 <% } %>
 
 <% attributes("javascripts") = capture { %>
-<script type="text/javascript" src="${ uri("/resources/js/jquery-ui-1.8.16.custom.js") }"></script>
+<script type="text/javascript" src="${ uri("/resources/js/bootstrap-datepicker.js") }"></script>
 <script type="text/javascript" src="${ uri("/resources/js/orders.js") }"></script>
 <% } %>
 
-<form id="orderForm" action="${ uri("/orders/" + id) }" method="post">
+<form class="well form-horizontal" id="orderForm" action="${ uri("/orders/" + id) }" method="post">
   <fieldset>
 
-    <% block(orderForm.node().path("customerId")) { field => %>
+    <% block(orderNode.path("customerId")) { field => %>
 
-      <div class="clearfix <%= if (field.isError) "error" %>">
-        <label for="customer">Customer</label>
-        <div class="input">
-          <select class="span4" id="customer" name="customerId">
+      <div class="control-group <%= if (field.isError) "error" %>">
+        <label class="control-label" for="customer">Customer</label>
+        <div class="controls">
+          <select id="customer" name="customerId">
             <!-- option value="">-- Select customer --</option -->
             <% customerOptions.foreach(option => { %>
               <option value="<%= option.key %>" <%= if (option.key == field.getValue) "selected" %>><%= option.value %></option>
@@ -37,48 +37,48 @@
 
     <% } %>
 
-    <% block(orderForm.node().path("code")) { field => %>
+    <% block(orderNode.path("code")) { field => %>
 
-      <div class="clearfix <%= if (field.isError) "error" %>">
-        <label for="code">Code</label>
-        <div class="input">
-          <input class="span4" id="code" name="code" type="text" value="<%= field.getValue %>" />
+      <div class="control-group <%= if (field.isError) "error" %>">
+        <label class="control-label" for="code">Code</label>
+        <div class="controls">
+          <input id="code" name="code" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
 
     <% } %>
 
-    <% block(orderForm.node().path("orderDate")) { field => %>
+    <% block(orderNode.path("orderDate")) { field => %>
 
-      <div class="clearfix <%= if (field.isError) "error" %>">
-        <label for="orderDate">Order date</label>
-        <div class="input">
-          <input class="span4" id="orderDate" name="orderDate" type="text" value="<%= field.getValue %>" />
+      <div class="control-group <%= if (field.isError) "error" %>">
+        <label class="control-label" for="orderDate">Order date</label>
+        <div class="controls">
+          <input id="orderDate" name="orderDate" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
 
     <% } %>
 
-    <% block(orderForm.node().path("shipDate")) { field => %>
+    <% block(orderNode.path("shipDate")) { field => %>
 
-      <div class="clearfix <%= if (field.isError) "error" %>">
-        <label for="shipDate">Ship date</label>
-        <div class="input">
-          <input class="span4" id="shipDate" name="shipDate" type="text" value="<%= field.getValue %>" />
+      <div class="control-group <%= if (field.isError) "error" %>">
+        <label class="control-label" for="shipDate">Ship date</label>
+        <div class="controls">
+          <input id="shipDate" name="shipDate" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
 
     <% } %>
 
-    <% block(orderForm.node().path("status")) { field => %>
+    <% block(orderNode.path("status")) { field => %>
 
-      <div class="clearfix <%= if (field.isError) "error" %>">
-        <label for="status">Status</label>
-        <div class="input">
-          <input class="span4" id="status" name="status" type="text" value="<%= field.getValue %>" />
+      <div class="control-group <%= if (field.isError) "error" %>">
+        <label class="control-label" for="status">Status</label>
+        <div class="controls">
+          <input id="status" name="status" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -86,19 +86,18 @@
     <% } %>
 
 
-    <% block2(orderForm.node().path("items"), order.items) { (itemsNode, items) => %>
+    <% block2(orderNode.path("items"), order.items) { (itemsNode, items) => %>
 
       <!-- errors for all items -->
-      <div class="order-items-error clearfix <%= if (itemsNode.isError) "error" %>">
-        <label>&nbsp;</label>
-        <div class="input">
+      <div class="control-group <%= if (itemsNode.isError) "error" %>">
+        <div class="controls">
           <span class="help-inline"><%= messages(itemsNode) %></span>
         </div>
       </div>
 
       <div class="order-items">
 
-      <% var i = 0; items.foreach(item => { %>
+      <% items.zipWithIndex.foreach({ case(item, i) => { %>
 
         <%
           val itemNode = itemsNode.path(i)
@@ -107,61 +106,55 @@
         %>
 
         <!--  edit item, "name" attr is filled at submission time  -->
-        <div class="order-item-edit clearfix <%= if (multiError(productNode, qtyNode)) "error" %>">
-          <label>&nbsp;</label>
-          <div class="input">
+        <div class="order-item-edit control-group <%= if (multiError(productNode, qtyNode)) "error" %>">
+          <div class="controls">
             <input id="id" type="hidden" value="<%= item.productId %>" />
             <input id="name" type="hidden" value="<%= item.product.name %>" />
 
-            <input class="span4" readonly="readonly" value="<%= item.product.name %>" /> &nbsp;&times;&nbsp;
+            <input readonly="readonly" value="<%= item.product.name %>" /> <span>&nbsp;&times;&nbsp;</span>
             <input id="qty" class="span1" type="text" value="<%= qtyNode.getValue %>" />
 
-            <button id="del" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only">
-              <span class="ui-button-icon-primary ui-icon ui-icon-minusthick"></span>
-              <span class="ui-button-text">&nbsp;</span>
+            <button id="del" type="button" class="btn btn-small">
+              <i class="icon-minus"></i>
             </button>
             <span class="help-inline"><%= multiMessages(productNode, qtyNode) %></span>
           </div>
         </div>
 
-      <% i += 1; }) %>
+      <% }}) %>
 
       </div>
 
       <!--  tmpl for new item, "value" attr is filled at addition time -->
       <div style="display:none">
-        <div class="order-item-edit-tmpl clearfix">
-          <label>&nbsp;</label>
-          <div class="input">
+        <div class="order-item-edit-tmpl control-group">
+          <div class="controls">
             <input id="id" type="hidden" />
             <input id="name" type="hidden" />
 
-            <input id="nameText" class="span4" readonly="readonly" /> &nbsp;&times;&nbsp;
+            <input id="nameText" readonly="readonly" /> <span>&nbsp;&times;&nbsp;</span>
             <input id="qty" class="span1" type="text" />
 
-            <button id="del" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only">
-              <span class="ui-button-icon-primary ui-icon ui-icon-minusthick"></span>
-              <span class="ui-button-text">&nbsp;</span>
+            <button id="del" type="button" class="btn btn-small">
+              <i class="icon-minus"></i>
             </button>
           </div>
         </div>
       </div>
 
       <!--  add new item, no "name" attr, not submitted with the form -->
-      <div class="order-items-new clearfix">
-        <label>&nbsp;</label>
-        <div class="input">
-          <select class="span4" id="product">
+      <div class="order-items-new control-group">
+        <div class="controls">
+          <select id="product">
             <option value="">-- Select product --</option>
-            <% productOptions.foreach(option => { %>
-              <option value="<%= option.key %>"><%= option.value %></option>
-            <% }) %>
-          </select> &nbsp;&times;&nbsp;
+              <% productOptions.foreach(option => { %>
+                <option value="<%= option.key %>"><%= option.value %></option>
+              <% }) %>
+          </select> <span>&nbsp;&times;&nbsp;</span>
           <input id="qty" class="span1" type="text" value="1" />
 
-          <button id="add" type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only">
-            <span class="ui-button-icon-primary ui-icon ui-icon-plusthick"></span>
-            <span class="ui-button-text">&nbsp;</span>
+          <button id="add" type="button" class="btn btn-small">
+            <i class="icon-plus"></i>
           </button>
         </div>
       </div>
@@ -170,8 +163,8 @@
 
   </fieldset>
 
-  <div class="actions">
-    <input type="submit" class="btn primary" value="Update">&nbsp;
+  <div class="form-actions">
+    <input type="submit" class="btn btn-primary" value="Update">&nbsp;
     <a href="${ uri("/orders/" + id) }" class="btn">Cancel</a>
   </div>
 </form>

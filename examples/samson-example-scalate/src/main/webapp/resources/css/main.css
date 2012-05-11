@@ -1,36 +1,9 @@
+
 body {
-  padding-top: 60px;
+	padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+	padding-bottom: 40px;
 }
 
-.uneditable-input.span1 {
-  display: inline-block;
-  width: 30px;
-}
-.uneditable-input.span2 {
-  display: inline-block;
-  width: 90px;
-}
-.uneditable-input.span3 {
-  display: inline-block;
-  width: 150px;
-}
-.uneditable-input.span4 {
-  display: inline-block;
-  width: 210px;
-}
-.uneditable-input.span5 {
-  display: inline-block;
-  width: 270px;
-}
-.uneditable-input.span6 {
-  display: inline-block;
-  width: 330px;
-}
-
-.order-item-edit .ui-button {
-  font-size: 0.8em;
-}
-
-.order-items-new .ui-button {
-  font-size: 0.8em;
+.uneditable-input {
+	overflow: visible;
 }

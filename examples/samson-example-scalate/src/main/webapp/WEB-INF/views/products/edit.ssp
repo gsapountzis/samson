@@ -5,15 +5,15 @@
 <% val id = it.id %>
 <% val productForm = it.productForm %>
 
-<form action="${ uri("/products/" + id) }" method="post">
+<form class="well form-horizontal" action="${ uri("/products/" + id) }" method="post">
   <fieldset>
 
     <% block(productForm.node().path("code")) { field => %>
 
-      <div class="clearfix <%= if (field.isError) "error" %>">
-        <label for="code">Code</label>
-        <div class="input">
-          <input class="span4" id="code" name="code" type="text" value="<%= field.getValue %>" />
+      <div class="control-group <%= if (field.isError) "error" %>">
+        <label class="control-label" for="code">Code</label>
+        <div class="controls">
+          <input id="code" name="code" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -22,10 +22,10 @@
 
     <% block(productForm.node().path("name")) { field => %>
 
-      <div class="clearfix <%= if (field.isError) "error" %>">
-        <label for="name">Name</label>
-        <div class="input">
-          <input class="span4" id="name" name="name" type="text" value="<%= field.getValue %>" />
+      <div class="control-group <%= if (field.isError) "error" %>">
+        <label class="control-label" for="name">Name</label>
+        <div class="controls">
+          <input id="name" name="name" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -34,10 +34,10 @@
 
     <% block(productForm.node().path("price")) { field => %>
 
-      <div class="clearfix <%= if (field.isError) "error" %>">
-        <label for="price">Price</label>
-        <div class="input">
-          <input class="span4" id="price" name="price" type="text" value="<%= field.getValue %>" />
+      <div class="control-group <%= if (field.isError) "error" %>">
+        <label class="control-label" for="price">Price</label>
+        <div class="controls">
+          <input id="price" name="price" type="text" value="<%= field.getValue %>" />
           <span class="help-inline"><%= messages(field) %></span>
         </div>
       </div>
@@ -46,8 +46,8 @@
 
   </fieldset>
 
-  <div class="actions">
-    <input type="submit" class="btn primary" value="Update">&nbsp;
+  <div class="form-actions">
+    <input type="submit" class="btn btn-primary" value="Update">&nbsp;
     <a href="${ uri("/products/" + id) }" class="btn">Cancel</a>
   </div>
 </form>
