@@ -14,13 +14,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/bootstrap.css" />" />
     <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/main.css" />" />
-    <script type="text/javascript" src="<c:url value="/resources/js/jquery-1.6.2.js" />"></script>
+    <script type="text/javascript" src="<c:url value="/resources/js/jquery-1.7.2.js" />"></script>
   </head>
 
   <body>
 
-    <div class="topbar">
-      <div class="fill">
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
         <div class="container">
           <a class="brand" href="<c:url value="/" />">Samson JSP</a>
         </div>
@@ -29,7 +29,7 @@
 
     <div class="container">
 
-      <table>
+      <table class="table">
         <thead>
           <tr>
             <th>Code</th>
