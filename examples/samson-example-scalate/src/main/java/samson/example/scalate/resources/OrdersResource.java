@@ -64,7 +64,12 @@ public class OrdersResource {
         }
 
         SamsonForm<Order> orderForm = jForm.wrap(Order.class, order);
-        return Response.ok(Views.Orders.edit(this, id, orderForm)).build();
+        Map<String, String> customerOptions = getCustomerOptions();
+        Map<String, String> productOptions = getProductOptions();
+
+        return Response.ok(
+                Views.Orders.edit(id, orderForm, customerOptions, productOptions)
+        ).build();
     }
 
     @Path("{id}")
@@ -73,7 +78,12 @@ public class OrdersResource {
         OrderForm orderForm = new OrderForm(orderFormParam).validate();
 
         if (orderForm.hasErrors()) {
-            return Response.status(BAD_REQUEST).entity(Views.Orders.edit(this, id, orderForm)).build();
+            Map<String, String> customerOptions = getCustomerOptions();
+            Map<String, String> productOptions = getProductOptions();
+
+            return Response.status(BAD_REQUEST).entity(
+                    Views.Orders.edit(id, orderForm, customerOptions, productOptions)
+            ).build();
         }
 
         Order order = orderForm.get();
@@ -84,7 +94,7 @@ public class OrdersResource {
 
     // -- Option values (should be cached either at the resources or repository level)
 
-    public Map<String, String> getCustomerOptions() {
+    private Map<String, String> getCustomerOptions() {
         final Map<String, String> unsorted = new HashMap<String, String>();
         for (Customer c : repository.getCustomers()) {
             unsorted.put(Long.toString(c.id), c.name);
@@ -93,7 +103,7 @@ public class OrdersResource {
         return sortByValue(unsorted);
     }
 
-    public Map<String, String> getProductOptions() {
+    private Map<String, String> getProductOptions() {
         final Map<String, String> unsorted = new HashMap<String, String>();
         for (Product p : repository.getProducts()) {
             unsorted.put(Long.toString(p.id), p.name);

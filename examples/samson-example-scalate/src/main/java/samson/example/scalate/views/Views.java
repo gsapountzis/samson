@@ -1,10 +1,10 @@
 package samson.example.scalate.views;
 
 import java.util.Collection;
+import java.util.Map;
 
 import samson.example.scalate.model.Order;
 import samson.example.scalate.model.Product;
-import samson.example.scalate.resources.OrdersResource;
 import samson.form.SamsonForm;
 
 import com.sun.jersey.api.view.Viewable;
@@ -81,12 +81,17 @@ public class Views {
         }
 
         public static class CreateModel {
-            public final OrdersResource resource;
             public final SamsonForm<Order> orderForm;
+            public final Map<String, String> customerOptions;
+            public final Map<String, String> productOptions;
 
-            CreateModel(OrdersResource resource, SamsonForm<Order> orderForm) {
-                this.resource = resource;
+            CreateModel(SamsonForm<Order> orderForm,
+                    Map<String, String> customerOptions,
+                    Map<String, String> productOptions)
+            {
                 this.orderForm = orderForm;
+                this.customerOptions = customerOptions;
+                this.productOptions = productOptions;
             }
         }
 
@@ -101,14 +106,19 @@ public class Views {
         }
 
         public static class EditModel {
-            public final OrdersResource resource;
             public final Long id;
             public final SamsonForm<Order> orderForm;
+            public final Map<String, String> customerOptions;
+            public final Map<String, String> productOptions;
 
-            EditModel(OrdersResource resource, Long id, SamsonForm<Order> orderForm) {
-                this.resource = resource;
+            EditModel(Long id, SamsonForm<Order> orderForm,
+                    Map<String, String> customerOptions,
+                    Map<String, String> productOptions)
+            {
                 this.id = id;
                 this.orderForm = orderForm;
+                this.customerOptions = customerOptions;
+                this.productOptions = productOptions;
             }
         }
 
@@ -117,16 +127,22 @@ public class Views {
             return new Viewable("/WEB-INF/views/orders/list", new ListModel(orders));
         }
 
-        public static Viewable create(OrdersResource resource, SamsonForm<Order> orderForm) {
-            return new Viewable("/WEB-INF/views/orders/create", new CreateModel(resource, orderForm));
+        public static Viewable create(SamsonForm<Order> orderForm,
+                Map<String, String> customerOptions,
+                Map<String, String> productOptions)
+        {
+            return new Viewable("/WEB-INF/views/orders/create", new CreateModel(orderForm, customerOptions, productOptions));
         }
 
         public static Viewable view(Long id, Order order) {
             return new Viewable("/WEB-INF/views/orders/view", new ViewModel(id, order));
         }
 
-        public static Viewable edit(OrdersResource resource, Long id, SamsonForm<Order> orderForm) {
-            return new Viewable("/WEB-INF/views/orders/edit", new EditModel(resource, id, orderForm));
+        public static Viewable edit(Long id, SamsonForm<Order> orderForm,
+                Map<String, String> customerOptions,
+                Map<String, String> productOptions)
+        {
+            return new Viewable("/WEB-INF/views/orders/edit", new EditModel(id, orderForm, customerOptions, productOptions));
         }
 
     }

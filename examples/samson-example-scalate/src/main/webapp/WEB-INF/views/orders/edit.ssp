@@ -5,8 +5,8 @@
 <% val id = it.id %>
 <% val order = it.orderForm.get() %>
 <% val orderNode = it.orderForm.node() %>
-<% val customerOptions = it.resource.getCustomerOptions() %>
-<% val productOptions = it.resource.getProductOptions() %>
+<% val customerOptions = it.customerOptions %>
+<% val productOptions = it.productOptions %>
 
 <% attributes("stylesheets") = capture { %>
 <link rel="stylesheet" type="text/css" href="${ uri("/resources/css/datepicker.css") }" />
