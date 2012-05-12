@@ -26,8 +26,6 @@ Install the module and add the following dependency to your pom.xml:
 		<version>${samson.version}</version>
 	</dependency>
 
-The module has been tested on Jersey 1.10.
-
 ## Example
 
 There are some simple examples [here](/gsapountzis/samson/tree/master/examples/).
