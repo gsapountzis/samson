@@ -1,7 +1,7 @@
 jQuery(function( $ ) {
 
 	var dateOptions = {
-			format: "dd M yy",
+			format: "dd M yyyy",
 		};
 
 	$( "#orderDate" ).datepicker( dateOptions );
