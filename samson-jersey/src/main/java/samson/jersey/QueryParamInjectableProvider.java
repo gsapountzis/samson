@@ -42,7 +42,7 @@ public class QueryParamInjectableProvider implements InjectableProvider<QueryPar
         @Override
         public SamsonForm<?> getValue(HttpContext context) {
             MultivaluedMap<String, String> params = getParameters(context, true);
-            FormBuilder builder = jForm.params(element.name, params);
+            FormBuilder builder = jForm.params(element.jaxrs.name, params);
             return builder.bind(element);
         }
     }

@@ -141,8 +141,8 @@ public class BinderFactory {
                 element.tcp.t,
                 element.tcp.c,
                 element.annotations,
-                element.encoded,
-                element.defaultValue);
+                element.jaxrs.encoded,
+                element.jaxrs.defaultValue);
 
         if (extractor != null) {
             try {

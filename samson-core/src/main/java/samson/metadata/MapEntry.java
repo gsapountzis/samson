@@ -5,11 +5,14 @@ import java.util.Map;
 
 public class MapEntry extends Element {
 
+    public final String key;
+
     public final TypeClassPair keyTcp;
 
-    private MapEntry(Annotation[] annotations, TypeClassPair tcp, TypeClassPair keyTcp) {
-        super(annotations, tcp, null);
+    private MapEntry(Annotation[] annotations, TypeClassPair tcp, TypeClassPair keyTcp, String key) {
+        super(annotations, tcp);
         this.keyTcp = keyTcp;
+        this.key = key;
     }
 
     public static MapEntry fromMap(Element map) {
@@ -21,11 +24,11 @@ public class MapEntry extends Element {
             throw new IllegalArgumentException("Parameterized type without type arguement");
         }
 
-        return new MapEntry(annotations, valTcp, keyTcp);
+        return new MapEntry(annotations, valTcp, keyTcp, null);
     }
 
-    public Element createElement(String key) {
-        return new Element(annotations, tcp, key);
+    public static MapEntry fromEntry(MapEntry entry, String key) {
+        return new MapEntry(entry.annotations, entry.tcp, entry.keyTcp, key);
     }
 
     public static ElementAccessor createAccessor(final Map<?, ?> map, final Object key) {

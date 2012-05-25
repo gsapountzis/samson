@@ -19,6 +19,7 @@ import samson.bind.BinderFactory;
 import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
+import samson.metadata.TypeClassPair;
 import samson.parse.Property.Node;
 import samson.parse.Property.Path;
 
@@ -48,7 +49,8 @@ public class FormBuilder {
 
     private <T> Element element(Class<T> type) {
         Annotation[] annotations = new Annotation[0];
-        return new Element(annotations, type, type, null);
+        TypeClassPair tcp = new TypeClassPair(type, type);
+        return new Element(annotations, tcp);
     }
 
     public <T> SamsonForm<T> wrap(Class<T> type) {

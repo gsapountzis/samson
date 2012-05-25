@@ -7,11 +7,13 @@ public class MethodParameter extends Element {
 
     public final Method method;
     public final int parameterIndex;
+    public final String parameterName;
 
-    public MethodParameter(Element element, Method method, int parameterIndex) {
-        super(element.annotations, element.tcp, element.name, element.encoded, element.defaultValue);
+    public MethodParameter(Annotation[] annotations, TypeClassPair tcp, Method method, int parameterIndex, String parameterName) {
+        super(annotations, tcp);
         this.method = method;
         this.parameterIndex = parameterIndex;
+        this.parameterName = parameterName;
     }
 
     /**

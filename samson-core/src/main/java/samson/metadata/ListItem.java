@@ -5,8 +5,11 @@ import java.util.List;
 
 public class ListItem extends Element {
 
-    private ListItem(Annotation[] annotations, TypeClassPair tcp) {
-        super(annotations, tcp, null);
+    public final int index;
+
+    private ListItem(Annotation[] annotations, TypeClassPair tcp, int index) {
+        super(annotations, tcp);
+        this.index = index;
     }
 
     public static ListItem fromList(Element list) {
@@ -17,11 +20,11 @@ public class ListItem extends Element {
             throw new IllegalArgumentException("Parameterized type without type arguement");
         }
 
-        return new ListItem(annotations, tcp);
+        return new ListItem(annotations, tcp, -1);
     }
 
-    public Element createElement(String index) {
-        return new Element(annotations, tcp, index);
+    public static ListItem fromItem(ListItem item, int index) {
+        return new ListItem(item.annotations, item.tcp, index);
     }
 
     public static ElementAccessor createAccessor(final List<?> list, final int index) {

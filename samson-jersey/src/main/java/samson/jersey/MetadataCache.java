@@ -21,11 +21,11 @@ import samson.metadata.Element;
 import samson.metadata.MethodMetadata;
 import samson.metadata.MethodMetadataCache;
 import samson.metadata.MethodParameter;
+import samson.metadata.TypeClassPair;
 
 import com.sun.jersey.api.container.ContainerException;
 import com.sun.jersey.api.model.Parameter;
 import com.sun.jersey.core.reflection.ReflectionHelper;
-import com.sun.jersey.core.reflection.ReflectionHelper.TypeClassPair;
 
 class MetadataCache {
 
@@ -38,21 +38,23 @@ class MetadataCache {
     }
 
     Element getArgumentElement(AccessibleObject ao, Parameter parameter) {
+        Annotation[] annotations = parameter.getAnnotations();
+        Annotation annotation = parameter.getAnnotation();
+
         Type type = parameter.getParameterType();
 
-        TypeClassPair tcp = ReflectionHelper.getTypeArgumentAndClass(type);
+        ReflectionHelper.TypeClassPair tcp = ReflectionHelper.getTypeArgumentAndClass(type);
         if (tcp == null) {
             throw new ContainerException("Parameterized type without type arguement");
         }
+        TypeClassPair samsonTcp = new TypeClassPair(tcp.t, tcp.c);
 
-        Element element = new Element(
-                parameter.getAnnotations(),
-                tcp.t, tcp.c,
+        Element.JaxrsAnnotations jaxrsAnnotations = new Element.JaxrsAnnotations(
                 parameter.getSourceName(),
                 parameter.isEncoded(),
                 parameter.getDefaultValue());
 
-        Annotation annotation = parameter.getAnnotation();
+        Element element = new Element(annotations, samsonTcp, jaxrsAnnotations);
 
         if (ao instanceof Constructor) {
             // constructor injection
@@ -76,7 +78,8 @@ class MetadataCache {
 
                 MethodParameter methodParameter = metadata.findParameter(annotation);
                 if (methodParameter != null) {
-                    return new MethodParameter(element, method, methodParameter.parameterIndex);
+                    // new instance with jaxrs annotations set
+                    return element;
                 }
                 else {
                     // setter injection

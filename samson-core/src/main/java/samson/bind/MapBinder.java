@@ -56,7 +56,7 @@ class MapBinder extends Binder {
     private ElementRef getChildRef(MapEntry mapEntry, Map<?,?> map, String stringKey) {
         Object key = getKey(mapEntry.keyTcp, stringKey);
         if (key != null) {
-            Element valueElement = mapEntry.createElement(stringKey);
+            Element valueElement = MapEntry.fromEntry(mapEntry, stringKey);
             ElementAccessor valueAccessor = MapEntry.createAccessor(map, key);
             return new ElementRef(valueElement, valueAccessor);
         }

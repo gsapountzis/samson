@@ -47,7 +47,7 @@ public class FormParamInjectableProvider implements InjectableProvider<FormParam
         @Override
         public SamsonForm<?> getValue(HttpContext context) {
             MultivaluedMap<String, String> params = getParameters(context, true);
-            FormBuilder builder = jForm.params(element.name, params);
+            FormBuilder builder = jForm.params(element.jaxrs.name, params);
             return builder.bind(element);
         }
     }

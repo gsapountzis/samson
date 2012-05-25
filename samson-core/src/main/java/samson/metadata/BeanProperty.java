@@ -14,8 +14,8 @@ public abstract class BeanProperty extends Element {
     public final TypeClassPair beanTcp;
     public final String propertyName;
 
-    private BeanProperty(Element element, TypeClassPair beanTcp, String propertyName) {
-        super(element.annotations, element.tcp, propertyName);
+    private BeanProperty(Annotation[] annotations, TypeClassPair tcp, TypeClassPair beanTcp, String propertyName) {
+        super(annotations, tcp);
         this.beanTcp = beanTcp;
         this.propertyName = propertyName;
     }
@@ -35,8 +35,7 @@ public abstract class BeanProperty extends Element {
             throw new IllegalArgumentException("Non-public or static field " + field);
         }
 
-        Element element = new Element(annotations, tcp, null);
-        return new FieldBeanProperty(element, beanTcp, propertyName, field);
+        return new FieldBeanProperty(annotations, tcp, beanTcp, propertyName, field);
     }
 
     public static BeanProperty fromProperty(TypeClassPair beanTcp, String propertyName, Method getter, Method setter, Field field) {
@@ -54,8 +53,7 @@ public abstract class BeanProperty extends Element {
                 setter.getParameterTypes()[0],
                 setter.getGenericParameterTypes()[0]);
 
-        Element element = new Element(annotations, tcp, null);
-        return new MethodBeanProperty(element, beanTcp, propertyName, getter, setter);
+        return new MethodBeanProperty(annotations, tcp, beanTcp, propertyName, getter, setter);
     }
 
     public ElementAccessor createAccessor(final Object bean) {
@@ -87,8 +85,8 @@ public abstract class BeanProperty extends Element {
 
         private final Field field;
 
-        FieldBeanProperty(Element element, TypeClassPair beanTcp, String propertyName, Field field) {
-            super(element, beanTcp, propertyName);
+        FieldBeanProperty(Annotation[] annotations, TypeClassPair tcp, TypeClassPair beanTcp, String propertyName, Field field) {
+            super(annotations, tcp, beanTcp, propertyName);
             this.field = field;
         }
 
@@ -116,8 +114,8 @@ public abstract class BeanProperty extends Element {
         private final Method getter;
         private final Method setter;
 
-        MethodBeanProperty(Element element, TypeClassPair beanTcp, String propertyName, Method getter, Method setter) {
-            super(element, beanTcp, propertyName);
+        MethodBeanProperty(Annotation[] annotations, TypeClassPair tcp, TypeClassPair beanTcp, String propertyName, Method getter, Method setter) {
+            super(annotations, tcp, beanTcp, propertyName);
             this.getter = getter;
             this.setter = setter;
         }

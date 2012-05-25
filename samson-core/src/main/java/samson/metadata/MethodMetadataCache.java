@@ -37,8 +37,8 @@ public class MethodMetadataCache {
 
             int length = types.length;
             for (int i = 0; i < length; i++) {
-                Element element = new Element(annotations[i], genericTypes[i], types[i], null);
-                MethodParameter parameter = new MethodParameter(element, method, i);
+                TypeClassPair tcp = new TypeClassPair(genericTypes[i], types[i]);
+                MethodParameter parameter = new MethodParameter(annotations[i], tcp, method, i, null);
                 parameters.add(parameter);
             }
 

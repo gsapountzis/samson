@@ -19,12 +19,12 @@ import samson.form.FormBuilder;
 import samson.form.FormProvider;
 import samson.form.SamsonForm;
 import samson.metadata.Element;
+import samson.metadata.TypeClassPair;
 
 import com.sun.jersey.api.container.ContainerException;
 import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.core.provider.AbstractMessageReaderWriterProvider;
 import com.sun.jersey.core.reflection.ReflectionHelper;
-import com.sun.jersey.core.reflection.ReflectionHelper.TypeClassPair;
 import com.sun.jersey.spi.inject.ConstrainedTo;
 import com.sun.jersey.spi.inject.ServerSide;
 
@@ -56,11 +56,12 @@ public class FormBeanProvider extends AbstractMessageReaderWriterProvider<Samson
             InputStream entityStream)
                     throws IOException, WebApplicationException {
 
-        TypeClassPair tcp = ReflectionHelper.getTypeArgumentAndClass(genericType);
+        ReflectionHelper.TypeClassPair tcp = ReflectionHelper.getTypeArgumentAndClass(genericType);
         if (tcp == null) {
             throw new ContainerException("Parameterized type without type arguement");
         }
-        Element element = new Element(annotations, tcp.t, tcp.c, null);
+        TypeClassPair samsonTcp = new TypeClassPair(tcp.t, tcp.c);
+        Element element = new Element(annotations, samsonTcp);
 
         MessageBodyReader<Form> formProvider = providers.getMessageBodyReader(Form.class, Form.class, annotations, mediaType);
         if (formProvider == null) {

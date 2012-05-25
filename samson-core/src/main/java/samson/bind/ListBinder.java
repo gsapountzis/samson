@@ -63,7 +63,7 @@ class ListBinder extends Binder {
     private ElementRef getChildRef(ListItem listItem, List<?> list, String stringIndex) {
         int index = getIndex(stringIndex);
         if (index >= 0 && index < MAX_LIST_SIZE) {
-            Element itemElement = listItem.createElement(stringIndex);
+            Element itemElement = ListItem.fromItem(listItem, index);
             ElementAccessor itemAccessor = ListItem.createAccessor(list, index);
             return new ElementRef(itemElement, itemAccessor);
         }
