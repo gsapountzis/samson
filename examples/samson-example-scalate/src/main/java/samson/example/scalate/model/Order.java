@@ -29,8 +29,8 @@ public class Order {
     public OrderStatus status;
 
     @NotNull
-    @Valid
     @Size(min = 1, message = "order must contain at least one item")
+    @Valid
     public List<OrderItem> items = new ArrayList<OrderItem>();
 
 }

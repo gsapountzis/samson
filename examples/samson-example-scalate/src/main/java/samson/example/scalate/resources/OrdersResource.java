@@ -67,9 +67,7 @@ public class OrdersResource {
         Map<String, String> customerOptions = getCustomerOptions();
         Map<String, String> productOptions = getProductOptions();
 
-        return Response
-                .ok(Views.Orders.edit(id, orderForm, customerOptions, productOptions))
-                .build();
+        return Response.ok(Views.Orders.edit(id, orderForm, customerOptions, productOptions)).build();
     }
 
     @Path("{id}")
@@ -81,10 +79,7 @@ public class OrdersResource {
             Map<String, String> customerOptions = getCustomerOptions();
             Map<String, String> productOptions = getProductOptions();
 
-            return Response
-                    .status(BAD_REQUEST)
-                    .entity(Views.Orders.edit(id, orderForm, customerOptions, productOptions))
-                    .build();
+            return Response.status(BAD_REQUEST).entity(Views.Orders.edit(id, orderForm, customerOptions, productOptions)).build();
         }
 
         Order order = orderForm.get();
