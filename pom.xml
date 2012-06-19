@@ -13,6 +13,7 @@
         <module>samson-core</module>
         <module>samson-jersey-convert</module>
         <module>samson-jersey</module>
+        <module>samson-jersey-test</module>
         <module>examples</module>
     </modules>
 
