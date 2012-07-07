@@ -57,11 +57,11 @@ public class BeanMetadataCache {
         private static void checkClass(Class<?> clazz) {
             final int modifiers = clazz.getModifiers();
 
+            /*
             if (!Modifier.isPublic(modifiers)) {
                 Errors.nonPublicClass(clazz);
             }
 
-            /*
             if (Modifier.isAbstract(modifiers)) {
                 if (Modifier.isInterface(modifiers)) {
                     Errors.interfaceClass(clazz);

@@ -78,56 +78,84 @@ public class BinderFactory {
     private BinderType getBinderType(TypeClassPair tcp, boolean composite) {
         final Class<?> clazz = tcp.c;
 
-        BinderType type = BinderType.NULL;
         if (composite) {
-            if (List.class.isAssignableFrom(clazz)) {
-                type = BinderType.LIST;
-            }
-            else if (Map.class.isAssignableFrom(clazz)) {
-                type = BinderType.MAP;
-            }
-            else {
-                type = BinderType.BEAN;
-            }
+            return getCompositeBinderType(clazz);
         }
         else {
-            type = BinderType.STRING;
+            boolean isConvertibleFromString = converterProvider.isConvertible(tcp.t, tcp.c);
+            if (isConvertibleFromString) {
+                return BinderType.STRING;
+            }
+            else {
+                LOGGER.warn("{} is not convertible from string values, assuming composite type (bean/list/map)", clazz);
+                return getCompositeBinderType(clazz);
+            }
         }
+    }
 
-        return type;
+    private BinderType getCompositeBinderType(Class<?> clazz) {
+
+        if (List.class.isAssignableFrom(clazz)) {
+            return BinderType.LIST;
+        }
+        else if (Map.class.isAssignableFrom(clazz)) {
+            return BinderType.MAP;
+        }
+        else {
+            return BinderType.BEAN;
+        }
     }
 
     private BinderType validateBinderType(BinderType type, TypeClassPair tcp, Object instance, boolean composite) {
         final Class<?> clazz = tcp.c;
 
-        if (composite) {
-            if (type == BinderType.BEAN) {
-                final int modifiers = clazz.getModifiers();
-                if (Modifier.isAbstract(modifiers)) {
-                    if (instance == null) {
-                        LOGGER.warn("{} cannot be instantiated", clazz);
-                        type = BinderType.NULL;
-                    }
-                }
-                else {
-                    // we require no-arg constructor for non-abstract beans
-                    Constructor<?> constructor = ReflectionHelper.getNoargConstructor(clazz);
-                    if (constructor == null) {
-                        LOGGER.warn("{} does not have a no-arg constructor", clazz);
-                        type = BinderType.NULL;
-                    }
+        if (type == BinderType.BEAN) {
+            final int modifiers = clazz.getModifiers();
+
+            if (!Modifier.isPublic(modifiers)) {
+                if (instance == null) {
+                    LOGGER.warn("{} is not a public class and cannot be instantiated", clazz);
+                    type = BinderType.NULL;
                 }
             }
-        }
-        else {
-            boolean isStringType = converterProvider.isConvertible(tcp.t, tcp.c);
-            if (!isStringType) {
-                LOGGER.warn("{} cannot be converted", clazz);
-                type = BinderType.NULL;
+
+            if (Modifier.isAbstract(modifiers)) {
+                if (instance == null) {
+                    LOGGER.warn("{} is an abstract class or interface and cannot be instantiated", clazz);
+                    type = BinderType.NULL;
+                }
+            }
+
+            if (Modifier.isPublic(modifiers) && !Modifier.isAbstract(modifiers)) {
+                // we require no-arg constructor for non-abstract beans
+                Constructor<?> constructor = ReflectionHelper.getNoargConstructor(clazz);
+                if (constructor == null) {
+                    LOGGER.warn("{} does not have a no-arg constructor and cannot be instantiated", clazz);
+                    type = BinderType.NULL;
+                }
             }
         }
 
         return type;
+    }
+
+    public static Object createInstanceIfComposite(Binder binder) {
+        BinderType type = binder.type;
+        ElementRef ref = binder.ref;
+        TypeClassPair tcp = ref.element.tcp;
+
+        if (type == BinderType.LIST) {
+            return ListBinder.createInstance(tcp);
+        }
+        else if (type == BinderType.MAP) {
+            return MapBinder.createInstance(tcp);
+        }
+        else if (type == BinderType.BEAN) {
+            return BeanBinder.createInstance(tcp);
+        }
+        else {
+            return null;
+        }
     }
 
     public ConversionResult fromStringList(Element element, List<String> values) {

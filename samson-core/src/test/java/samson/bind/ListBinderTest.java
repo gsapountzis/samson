@@ -75,7 +75,7 @@ public class ListBinderTest {
 
         List<ItemBean> list = jForm.params("bean", form).bind(ListBeanFormBean.class).get().list;
 
-        assertEquals(Arrays.asList(0, null, null, 2, null, 0), map(list));
+        assertEquals(Arrays.asList(0, null, null, 2, 0, 0), map(list));
     }
 
     public static class BeanListBean {

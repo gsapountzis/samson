@@ -237,8 +237,6 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("list/string").build();
         s = r.uri(u).get(String.class);
-
-        // this is empty because it delegates to Jersey
         assertEquals(LIST_EMPTY, s);
 
         // empty
@@ -287,8 +285,6 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("list/int").build();
         s = r.uri(u).get(String.class);
-
-        // this is empty because it delegates to Jersey
         assertEquals(LIST_EMPTY, s);
 
         // empty
@@ -409,9 +405,7 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("map/string").build();
         s = r.uri(u).get(String.class);
-
-        // this should be empty
-        assertEquals(MAP_NULL, s);
+        assertEquals(MAP_EMPTY, s);
 
         // empty
         w = WebappTestUtils.createWepapp(MapResource.class);
@@ -419,9 +413,7 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("map/string").queryParam("param", "").build();
         s = r.uri(u).get(String.class);
-
-        // this should be empty
-        assertEquals(MAP_NULL, s);
+        assertEquals(MAP_EMPTY, s);
 
         // empty[zero]
         w = WebappTestUtils.createWepapp(MapResource.class);
@@ -453,9 +445,7 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("map/int").build();
         s = r.uri(u).get(String.class);
-
-        // this should be empty
-        assertEquals(MAP_NULL, s);
+        assertEquals(MAP_EMPTY, s);
 
         // empty
         w = WebappTestUtils.createWepapp(MapResource.class);
@@ -463,9 +453,7 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("map/int").queryParam("param", "").build();
         s = r.uri(u).get(String.class);
-
-        // this should be empty
-        assertEquals(MAP_NULL, s);
+        assertEquals(MAP_EMPTY, s);
 
         // empty[zero]
         w = WebappTestUtils.createWepapp(MapResource.class);
@@ -548,9 +536,7 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("bean/string").build();
         s = r.uri(u).get(String.class);
-
-        // this should be non-null
-        assertEquals(BEAN_NULL, s);
+        assertEquals(STRING_NULL, s);
 
         // empty bean
         w = WebappTestUtils.createWepapp(BeanResource.class);
@@ -558,9 +544,7 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("bean/string").queryParam("param", "").build();
         s = r.uri(u).get(String.class);
-
-        // this should be non-null
-        assertEquals(BEAN_NULL, s);
+        assertEquals(STRING_NULL, s);
 
         // empty bean property
         w = WebappTestUtils.createWepapp(BeanResource.class);
@@ -584,9 +568,7 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("bean/int").build();
         s = r.uri(u).get(String.class);
-
-        // this should be non-null
-        assertEquals(BEAN_NULL, s);
+        assertEquals(INT_NULL, s);
 
         // empty bean
         w = WebappTestUtils.createWepapp(BeanResource.class);
@@ -594,9 +576,7 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("bean/int").queryParam("param", "").build();
         s = r.uri(u).get(String.class);
-
-        // this should be non-null
-        assertEquals(BEAN_NULL, s);
+        assertEquals(INT_NULL, s);
 
         // empty bean property
         w = WebappTestUtils.createWepapp(BeanResource.class);

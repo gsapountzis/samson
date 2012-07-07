@@ -181,7 +181,12 @@ public class FormBuilder {
         Binder binder = binderFactory.getBinder(ref, root.hasChildren());
         binder.read(root);
 
-        return (T) accessor.get();
+        Object value = accessor.get();
+        if (value == null) {
+            value = BinderFactory.createInstanceIfComposite(binder);
+            accessor.set(value);
+        }
+        return (T) value;
     }
 
     private <T> void validate(FormNode root, T value) {
