@@ -237,6 +237,8 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("list/string").build();
         s = r.uri(u).get(String.class);
+
+        // this is empty because it delegates to Jersey
         assertEquals(LIST_EMPTY, s);
 
         // empty
@@ -285,6 +287,8 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("list/int").build();
         s = r.uri(u).get(String.class);
+
+        // this is empty because it delegates to Jersey
         assertEquals(LIST_EMPTY, s);
 
         // empty
@@ -405,6 +409,8 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("map/string").build();
         s = r.uri(u).get(String.class);
+
+        // this should be empty
         assertEquals(MAP_NULL, s);
 
         // empty
@@ -413,6 +419,8 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("map/string").queryParam("param", "").build();
         s = r.uri(u).get(String.class);
+
+        // this should be empty
         assertEquals(MAP_NULL, s);
 
         // empty[zero]
@@ -445,6 +453,8 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("map/int").build();
         s = r.uri(u).get(String.class);
+
+        // this should be empty
         assertEquals(MAP_NULL, s);
 
         // empty
@@ -453,6 +463,8 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("map/int").queryParam("param", "").build();
         s = r.uri(u).get(String.class);
+
+        // this should be empty
         assertEquals(MAP_NULL, s);
 
         // empty[zero]
@@ -536,6 +548,8 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("bean/string").build();
         s = r.uri(u).get(String.class);
+
+        // this should be non-null
         assertEquals(BEAN_NULL, s);
 
         // empty bean
@@ -544,6 +558,8 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("bean/string").queryParam("param", "").build();
         s = r.uri(u).get(String.class);
+
+        // this should be non-null
         assertEquals(BEAN_NULL, s);
 
         // empty bean property
@@ -568,6 +584,8 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("bean/int").build();
         s = r.uri(u).get(String.class);
+
+        // this should be non-null
         assertEquals(BEAN_NULL, s);
 
         // empty bean
@@ -576,6 +594,8 @@ public class NullSamsonTest {
 
         u = UriBuilder.fromPath("bean/int").queryParam("param", "").build();
         s = r.uri(u).get(String.class);
+
+        // this should be non-null
         assertEquals(BEAN_NULL, s);
 
         // empty bean property
