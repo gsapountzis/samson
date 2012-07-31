@@ -54,6 +54,8 @@ import java.util.logging.Logger;
 public final class Errors {
 
     public static class ErrorMessagesException extends RuntimeException {
+        private static final long serialVersionUID = -3758032640083053215L;
+
         public final List<ErrorMessage> messages;
 
         private ErrorMessagesException(List<ErrorMessage> messages) {

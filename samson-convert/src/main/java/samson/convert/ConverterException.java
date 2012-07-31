@@ -2,6 +2,8 @@ package samson.convert;
 
 public class ConverterException extends RuntimeException {
 
+    private static final long serialVersionUID = -8735909941488910999L;
+
     public ConverterException() {
         super();
     }
