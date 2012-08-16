@@ -21,10 +21,12 @@
       <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
       <param-value>/(resources)/.*</param-value>
     </init-param>
+    <!--
     <init-param>
       <param-name>com.sun.jersey.config.property.JSPTemplatesBasePath</param-name>
       <param-value>/WEB-INF/views</param-value>
     </init-param>
+    -->
     <!--
     <init-param>
       <param-name>com.sun.jersey.config.feature.ImplicitViewables</param-name>

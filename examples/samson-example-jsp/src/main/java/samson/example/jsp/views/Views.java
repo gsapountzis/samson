@@ -1,6 +1,7 @@
 package samson.example.jsp.views;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import samson.example.jsp.model.Order;
@@ -13,82 +14,35 @@ public class Views {
 
     public static class Products {
 
-        /** Tuple */
-        public static class ListModel {
-            public final Collection<Product> products;
-
-            ListModel(Collection<Product> products) {
-                this.products = products;
-            }
-
-            public Collection<Product> getProducts() {
-                return products;
-            }
-        }
-
-        public static class CreateModel {
-            public final SamsonForm<Product> productForm;
-
-            CreateModel(SamsonForm<Product> productForm) {
-                this.productForm = productForm;
-            }
-
-            public SamsonForm<Product> getProductForm() {
-                return productForm;
-            }
-        }
-
-        public static class ViewModel {
-            public final Long id;
-            public final Product product;
-
-            ViewModel(Long id, Product product) {
-                this.id = id;
-                this.product = product;
-            }
-
-            public Long getId() {
-                return id;
-            }
-
-            public Product getProduct() {
-                return product;
-            }
-        }
-
-        public static class EditModel {
-            public final Long id;
-            public final SamsonForm<Product> productForm;
-
-            EditModel(Long id, SamsonForm<Product> productForm) {
-                this.id = id;
-                this.productForm = productForm;
-            }
-
-            public Long getId() {
-                return id;
-            }
-
-            public SamsonForm<Product> getProductForm() {
-                return productForm;
-            }
-        }
-
         /** Static factory method */
         public static Viewable list(Collection<Product> products) {
-            return new Viewable("/products/list", new ListModel(products));
+            Map<String, Object> model = new HashMap<String, Object>();
+            model.put("products", products);
+            model.put("body", "/WEB-INF/views/products/list.jsp");
+            return new Viewable("/WEB-INF/layouts/default", model);
         }
 
         public static Viewable create(SamsonForm<Product> productForm) {
-            return new Viewable("/products/create", new CreateModel(productForm));
+            Map<String, Object> model = new HashMap<String, Object>();
+            model.put("productForm", productForm);
+            model.put("body", "/WEB-INF/views/products/create.jsp");
+            return new Viewable("/WEB-INF/layouts/default", model);
         }
 
         public static Viewable view(Long id, Product product) {
-            return new Viewable("/products/view", new ViewModel(id, product));
+            Map<String, Object> model = new HashMap<String, Object>();
+            model.put("id", id);
+            model.put("product", product);
+            model.put("body", "/WEB-INF/views/products/view.jsp");
+            return new Viewable("/WEB-INF/layouts/default", model);
         }
 
         public static Viewable edit(Long id, SamsonForm<Product> productForm) {
-            return new Viewable("/products/edit", new EditModel(id, productForm));
+            Map<String, Object> model = new HashMap<String, Object>();
+            model.put("id", id);
+            model.put("productForm", productForm);
+            model.put("body", "/WEB-INF/views/products/edit.jsp");
+            return new Viewable("/WEB-INF/layouts/default", model);
         }
 
     }
