@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -13,6 +15,8 @@ public class Order {
     public Long id;
 
     @NotNull
+    public Long customerId;
+
     public Customer customer;
 
     @NotEmpty
@@ -24,12 +28,19 @@ public class Order {
 
     public OrderStatus status;
 
+    @NotNull
+    @Size(min = 1, message = "order must contain at least one item")
+    @Valid
     public List<OrderItem> items = new ArrayList<OrderItem>();
 
     // -- Accessors
 
     public Long getId() {
         return id;
+    }
+
+    public Long getCustomerId() {
+        return customerId;
     }
 
     public Customer getCustomer() {
