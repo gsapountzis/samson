@@ -1,29 +1,11 @@
 package samson.example.jsp.views;
 
-import java.text.ParseException;
 import java.util.Iterator;
 import java.util.List;
 
 import samson.form.FormNode;
-import samson.form.SamsonForm;
-import samson.parse.Property.Node;
-import samson.parse.Property.Path;
 
 public class Functions {
-
-    public static FormNode path(SamsonForm<?> form, String param) {
-        try {
-            Path path = Path.createPath(param);
-
-            FormNode child = form.getNode();
-            for (Node node : path) {
-                child = child.path(node.getName());
-            }
-            return child;
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Cannot parse path " + param);
-        }
-    }
 
     public static String infos(FormNode node) {
         String conversionInfo = node.getConversionInfo();

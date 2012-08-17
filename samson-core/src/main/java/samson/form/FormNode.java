@@ -155,6 +155,14 @@ public class FormNode implements BinderNode<FormNode> {
         return path(name, true);
     }
 
+    public FormNode indexPath(int index) {
+        return path(index);
+    }
+
+    public FormNode propertyPath(String name) {
+        return path(name);
+    }
+
     FormNode path(String name, boolean setRef) {
         FormNode child = children.get(name);
         if (child == null) {

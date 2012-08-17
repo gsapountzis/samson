@@ -10,7 +10,7 @@
 <form class="well form-horizontal" action="<c:url value="/products/${ id }" />" method="post">
   <fieldset>
 
-    <c:set var="field" value="${ sms:path(productForm, 'code') }" />
+    <c:set var="field" value="${ productForm.node.propertyPath('code') }" />
 
     <div class="control-group <c:if test="${ field.error }">error</c:if>" >
       <label class="control-label" for="code">Code</label>
@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <c:set var="field" value="${ sms:path(productForm, 'name') }" />
+    <c:set var="field" value="${ productForm.node.propertyPath('name') }" />
 
     <div class="control-group <c:if test="${ field.error }">error</c:if>" >
       <label class="control-label" for="name">Name</label>
@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <c:set var="field" value="${ sms:path(productForm, 'price') }" />
+    <c:set var="field" value="${ productForm.node.propertyPath('price') }" />
 
     <div class="control-group <c:if test="${ field.error }">error</c:if>" >
       <label class="control-label" for="price">Price</label>
