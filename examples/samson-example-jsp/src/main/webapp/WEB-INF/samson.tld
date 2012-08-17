@@ -12,7 +12,19 @@
   <function>
     <name>messages</name>
     <function-class>samson.example.jsp.views.Functions</function-class>
-    <function-signature>java.lang.String errors(samson.form.FormNode)</function-signature>
+    <function-signature>java.lang.String messages(samson.form.FormNode)</function-signature>
+  </function>
+
+  <function>
+    <name>multiMessages2</name>
+    <function-class>samson.example.jsp.views.Functions</function-class>
+    <function-signature>java.lang.String multiMessages2(samson.form.FormNode, samson.form.FormNode)</function-signature>
+  </function>
+
+  <function>
+    <name>multiError2</name>
+    <function-class>samson.example.jsp.views.Functions</function-class>
+    <function-signature>boolean multiError2(samson.form.FormNode, samson.form.FormNode)</function-signature>
   </function>
 
 </taglib>

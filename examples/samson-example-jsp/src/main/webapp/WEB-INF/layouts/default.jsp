@@ -7,6 +7,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <c:set var="body" value="${ it.body }" />
+<c:set var="styles" value="${ it.styles }" />
+<c:set var="scripts" value="${ it.scripts }" />
 
 <html>
 <head>
@@ -14,6 +16,9 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/bootstrap.css" />" />
   <link rel="stylesheet" type="text/css" href="<c:url value="/resources/css/main.css" />" />
+  <c:if test="${ not empty styles }">
+    <jsp:include page="${ styles }" />
+  </c:if>
 </head>
 
 <body>
@@ -35,11 +40,12 @@
 </div>
 
 <div class="container">
-
   <jsp:include page="${ body }" />
-
 </div>
 
 <script type="text/javascript" src="<c:url value="/resources/js/jquery-1.7.2.js" />"></script>
+<c:if test="${ not empty scripts }">
+  <jsp:include page="${ scripts }" />
+</c:if>
 </body>
 </html>

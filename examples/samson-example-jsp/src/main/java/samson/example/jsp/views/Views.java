@@ -87,6 +87,8 @@ public class Views {
             model.put("customerOptions", customerOptions);
             model.put("productOptions", productOptions);
             model.put("body", "/WEB-INF/views/orders/edit.jsp");
+            model.put("styles", "/WEB-INF/views/orders/styles.jsp");
+            model.put("scripts", "/WEB-INF/views/orders/scripts.jsp");
             return new Viewable("/WEB-INF/layouts/default", model);
         }
 
