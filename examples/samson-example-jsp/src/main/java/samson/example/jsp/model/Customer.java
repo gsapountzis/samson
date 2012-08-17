@@ -12,4 +12,14 @@ public class Customer {
     @Size(max = 80)
     public String name;
 
+    // -- Accessors
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
 }

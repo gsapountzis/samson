@@ -14,4 +14,18 @@ public class OrderItem {
     @Min(1L)
     public Integer qty;
 
+    // -- Accessors
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public Integer getQty() {
+        return qty;
+    }
+
 }

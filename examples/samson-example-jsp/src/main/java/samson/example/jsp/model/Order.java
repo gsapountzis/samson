@@ -55,6 +55,10 @@ public class Order {
         return orderDate;
     }
 
+    public Date getShipDate() {
+        return shipDate;
+    }
+
     public OrderStatus getStatus() {
         return status;
     }
