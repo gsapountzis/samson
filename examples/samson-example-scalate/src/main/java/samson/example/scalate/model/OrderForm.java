@@ -9,7 +9,7 @@ import samson.form.SamsonForm;
 public class OrderForm extends SamsonForm<Order> {
 
     public OrderForm(SamsonForm<Order> orderForm) {
-        super(orderForm.get(), orderForm.node());
+        super(orderForm.getNode(), orderForm.get());
     }
 
     /**
@@ -25,7 +25,7 @@ public class OrderForm extends SamsonForm<Order> {
             return this;
         }
 
-        FormNode itemsNode = super.node().path("items");
+        FormNode itemsNode = super.getNode().path("items");
 
         Map<Long, Integer> map = new HashMap<Long, Integer>();
         boolean duplicate = false;

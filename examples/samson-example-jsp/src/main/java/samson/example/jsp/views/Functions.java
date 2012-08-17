@@ -15,7 +15,7 @@ public class Functions {
         try {
             Path path = Path.createPath(param);
 
-            FormNode child = form.node();
+            FormNode child = form.getNode();
             for (Node node : path) {
                 child = child.path(node.getName());
             }

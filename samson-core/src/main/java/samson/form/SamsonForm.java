@@ -38,26 +38,12 @@ package samson.form;
  */
 public class SamsonForm<T> {
 
-    private final T value;
     private final FormNode node;
+    private final T value;
 
-    public SamsonForm(T value, FormNode node) {
-        this.value = value;
+    public SamsonForm(FormNode node, T value) {
         this.node = node;
-    }
-
-    /**
-     * Get the underlying object in a type-safe way.
-     */
-    public T get() {
-        return value;
-    }
-
-    /**
-     * Get the node for the root object of the form.
-     */
-    public FormNode node() {
-        return node;
+        this.value = value;
     }
 
     /**
@@ -65,6 +51,27 @@ public class SamsonForm<T> {
      */
     public boolean hasErrors() {
         return node.isTreeError();
+    }
+
+    /**
+     * Get the node for the root object of the form.
+     */
+    public FormNode getNode() {
+        return node;
+    }
+
+    /**
+     * Get the underlying object in a type-safe way.
+     */
+    public T getValue() {
+        return value;
+    }
+
+    /**
+     * Convenience method for {@link #getValue()}.
+     */
+    public T get() {
+        return getValue();
     }
 
 }

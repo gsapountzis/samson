@@ -4,7 +4,7 @@
 <%@ val it: EditModel %>
 <% val id = it.id %>
 <% val order = it.orderForm.get() %>
-<% val orderNode = it.orderForm.node() %>
+<% val orderNode = it.orderForm.getNode() %>
 <% val customerOptions = it.customerOptions %>
 <% val productOptions = it.productOptions %>
 

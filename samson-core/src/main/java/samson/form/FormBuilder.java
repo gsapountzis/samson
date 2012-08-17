@@ -112,7 +112,7 @@ public class FormBuilder {
         try {
             FormNode root = getNode(unnamed, path, false);
             root.setRef(immutableRef(initialValue));
-            return new SamsonForm<T>(initialValue, root);
+            return new SamsonForm<T>(root, initialValue);
         } catch (ParseException e) {
             throw new IllegalArgumentException("Cannot parse root path " + path);
         }
@@ -132,7 +132,7 @@ public class FormBuilder {
             LOGGER.trace(printTree(root));
 
             root.setRef(immutableRef(value));
-            return new SamsonForm<T>(value, root);
+            return new SamsonForm<T>(root, value);
         } catch (ParseException e) {
             throw new IllegalArgumentException("Cannot parse root path " + path);
         }

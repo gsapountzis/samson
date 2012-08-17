@@ -8,7 +8,7 @@
 <form class="well form-horizontal" action="${ uri("/products/" + id) }" method="post">
   <fieldset>
 
-    <% block(productForm.node().path("code")) { field => %>
+    <% block(productForm.getNode().path("code")) { field => %>
 
       <div class="control-group <%= if (field.isError) "error" %>">
         <label class="control-label" for="code">Code</label>
@@ -20,7 +20,7 @@
 
     <% } %>
 
-    <% block(productForm.node().path("name")) { field => %>
+    <% block(productForm.getNode().path("name")) { field => %>
 
       <div class="control-group <%= if (field.isError) "error" %>">
         <label class="control-label" for="name">Name</label>
@@ -32,7 +32,7 @@
 
     <% } %>
 
-    <% block(productForm.node().path("price")) { field => %>
+    <% block(productForm.getNode().path("price")) { field => %>
 
       <div class="control-group <%= if (field.isError) "error" %>">
         <label class="control-label" for="price">Price</label>
