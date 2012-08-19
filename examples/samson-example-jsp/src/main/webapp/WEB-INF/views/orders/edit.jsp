@@ -87,14 +87,14 @@
         <c:set var="productNode" value="${ itemNode.propertyPath( 'product' ) }" />
         <c:set var="qtyNode" value="${ itemNode.propertyPath( 'qty' ) }" />
 
-        <!--  edit item, "name" attr is filled at submission time  -->
+        <!-- edit item, "name" attr is filled at submission time -->
         <div class="order-item-edit control-group <c:if test="${ sms:multiError2(productNode, qtyNode) }">error</c:if>" >
           <div class="controls">
-            <input id="id" type="hidden" value="${ item.productId }" />
-            <input id="name" type="hidden" value="${ item.product.name }" />
+            <input id="id" type="hidden" value="${fn:escapeXml( item.productId )}" />
+            <input id="name" type="hidden" value="${fn:escapeXml( item.product.name )}" />
 
-            <input readonly="readonly" value="${ item.product.name }" /> <span>&nbsp;&times;&nbsp;</span>
-            <input id="qty" class="span1" type="text" value="${ qtyNode.value }" />
+            <input readonly="readonly" value="${fn:escapeXml( item.product.name )}" /> <span>&nbsp;&times;&nbsp;</span>
+            <input id="qty" class="span1" type="text" value="${fn:escapeXml( qtyNode.value )}" />
 
             <button id="del" type="button" class="btn btn-small">
               <i class="icon-minus"></i>
@@ -107,7 +107,7 @@
 
     </div>
 
-    <!--  tmpl for new item, "value" attr is filled at addition time -->
+    <!-- tmpl for new item, "value" attr is filled at addition time -->
     <div style="display:none">
       <div class="order-item-edit-tmpl control-group">
         <div class="controls">
@@ -124,13 +124,13 @@
       </div>
     </div>
 
-    <!--  add new item, no "name" attr, not submitted with the form -->
+    <!-- add new item, no "name" attr, not submitted with the form -->
     <div class="order-items-new control-group">
       <div class="controls">
         <select id="product">
           <option value="">-- Select product --</option>
           <c:forEach var="option" items="${ productOptions }">
-              <option value="${fn:escapeXml( option.key )}"><c:out value="${ option.value }" /></option>
+            <option value="${fn:escapeXml( option.key )}"><c:out value="${ option.value }" /></option>
           </c:forEach>
         </select> <span>&nbsp;&times;&nbsp;</span>
         <input id="qty" class="span1" type="text" value="1" />
