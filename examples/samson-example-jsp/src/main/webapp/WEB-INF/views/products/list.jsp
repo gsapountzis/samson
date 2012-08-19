@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="samson" prefix="sms"%>
 
 <c:set var="products" value="${ it.products }" />
 
@@ -16,7 +17,7 @@
   <tbody>
     <c:forEach var="product" items="${ products }">
       <tr>
-        <td><a href="<c:url value="/products/${ product.id }" />"><c:out value="${ product.code }" /></a></td>
+        <td><a href="<c:url value="/products/${sms:urlEncode( product.id )}" />"><c:out value="${ product.code }" /></a></td>
         <td><c:out value="${ product.name }" /></td>
         <td><c:out value="${ product.price }" /></td>
       </tr>

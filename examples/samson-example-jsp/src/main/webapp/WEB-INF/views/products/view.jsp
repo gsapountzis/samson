@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="samson" prefix="sms"%>
 
 <c:set var="id" value="${ it.id }" />
 <c:set var="product" value="${ it.product }" />
@@ -33,7 +34,7 @@
   </fieldset>
 
   <div class="form-actions">
-    <a href="<c:url value="/products/${ id }/edit" />" class="btn btn-primary">Edit</a>&nbsp;
+    <a href="<c:url value="/products/${sms:urlEncode( id )}/edit" />" class="btn btn-primary">Edit</a>&nbsp;
     <a href="<c:url value="/products" />" class="btn">View list</a>
   </div>
 </form>

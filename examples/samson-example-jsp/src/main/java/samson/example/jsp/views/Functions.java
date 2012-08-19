@@ -1,5 +1,7 @@
 package samson.example.jsp.views;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -7,6 +9,10 @@ import java.util.List;
 import samson.form.FormNode;
 
 public class Functions {
+
+    public static String urlEncode(String value) throws UnsupportedEncodingException {
+        return URLEncoder.encode(value, "UTF-8");
+    }
 
     public static String messages(FormNode node) {
         return errors(node);

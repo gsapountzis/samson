@@ -10,6 +10,12 @@
   <uri>samson</uri>
 
   <function>
+    <name>urlEncode</name>
+    <function-class>samson.example.jsp.views.Functions</function-class>
+    <function-signature>java.lang.String urlEncode(java.lang.String)</function-signature>
+  </function>
+
+  <function>
     <name>messages</name>
     <function-class>samson.example.jsp.views.Functions</function-class>
     <function-signature>java.lang.String messages(samson.form.FormNode)</function-signature>

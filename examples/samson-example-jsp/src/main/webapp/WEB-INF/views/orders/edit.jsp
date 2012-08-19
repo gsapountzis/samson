@@ -9,7 +9,7 @@
 <c:set var="customerOptions" value="${ it.customerOptions }" />
 <c:set var="productOptions" value="${ it.productOptions }" />
 
-<form id="orderForm" class="well form-horizontal" action="<c:url value="/orders/${ id }" />" method="post">
+<form id="orderForm" class="well form-horizontal" action="<c:url value="/orders/${sms:urlEncode( id )}" />" method="post">
   <fieldset>
 
     <c:set var="field" value="${ orderForm.node.propertyPath('customerId') }" />
@@ -145,6 +145,6 @@
 
   <div class="form-actions">
     <input type="submit" class="btn btn-primary" value="Update">&nbsp;
-    <a href="<c:url value="/orders/${ id }" />" class="btn">Cancel</a>
+    <a href="<c:url value="/orders/${sms:urlEncode( id )}" />" class="btn">Cancel</a>
   </div>
 </form>
