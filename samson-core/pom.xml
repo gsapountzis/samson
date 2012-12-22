@@ -18,6 +18,10 @@
             <artifactId>samson-convert</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.github.gsapountzis.samson</groupId>
+            <artifactId>samson-bind</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
         </dependency>

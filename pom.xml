@@ -49,6 +49,11 @@
             </dependency>
             <dependency>
                 <groupId>com.github.gsapountzis.samson</groupId>
+                <artifactId>samson-bind</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.gsapountzis.samson</groupId>
                 <artifactId>samson-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
