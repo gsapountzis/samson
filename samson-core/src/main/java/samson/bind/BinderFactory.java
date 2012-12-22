@@ -38,7 +38,7 @@ public class BinderFactory {
     }
 
     public Converter<?> getConverter(TypeClassPair tcp, Annotation annotations[]) {
-        return converterProvider.get(tcp.t, tcp.c, annotations);
+        return converterProvider.get(tcp.c, tcp.t, annotations);
     }
 
     public Binder getBinder(ElementRef ref, boolean composite) {
@@ -82,7 +82,7 @@ public class BinderFactory {
             return getCompositeBinderType(clazz);
         }
         else {
-            boolean isConvertibleFromString = converterProvider.isConvertible(tcp.t, tcp.c);
+            boolean isConvertibleFromString = converterProvider.isConvertible(tcp.c, tcp.t);
             if (isConvertibleFromString) {
                 return BinderType.STRING;
             }
@@ -166,8 +166,8 @@ public class BinderFactory {
         }
 
         MultivaluedConverter<?> extractor = converterProvider.getMultivalued(
-                element.tcp.t,
                 element.tcp.c,
+                element.tcp.t,
                 element.annotations,
                 element.jaxrs.encoded,
                 element.jaxrs.defaultValue);
@@ -195,8 +195,8 @@ public class BinderFactory {
 
         @SuppressWarnings("unchecked")
         MultivaluedConverter<Object> extractor = (MultivaluedConverter<Object>) converterProvider.getMultivalued(
-                element.tcp.t,
                 element.tcp.c,
+                element.tcp.t,
                 element.annotations);
 
         if (extractor != null) {

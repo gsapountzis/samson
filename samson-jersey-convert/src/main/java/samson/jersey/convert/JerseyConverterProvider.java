@@ -52,7 +52,7 @@ public class JerseyConverterProvider implements ConverterProvider {
     // -- Conversion Predicate
 
     @Override
-    public boolean isConvertible(Type type, Class<?> rawType) {
+    public boolean isConvertible(Class<?> rawType, Type type) {
         return stringTypePredicate.isStringType(type, rawType);
     }
 
@@ -60,7 +60,7 @@ public class JerseyConverterProvider implements ConverterProvider {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> Converter<T> get(Type type, Class<T> rawType, Annotation annotations[]) {
+    public <T> Converter<T> get(Class<T> rawType, Type type, Annotation annotations[]) {
 
         if (rawType == String.class) {
             return (Converter<T>) new StringConverter();
@@ -83,12 +83,12 @@ public class JerseyConverterProvider implements ConverterProvider {
     // -- Multivalued Converter
 
     @Override
-    public <T> MultivaluedConverter<T> getMultivalued(Type type, Class<T> rawType, Annotation annotations[]) {
-        return getMultivalued(type, rawType, annotations, false, null);
+    public <T> MultivaluedConverter<T> getMultivalued(Class<T> rawType, Type type, Annotation annotations[]) {
+        return getMultivalued(rawType, type, annotations, false, null);
     }
 
     @Override
-    public <T> MultivaluedConverter<T> getMultivalued(Type type, Class<T> rawType, Annotation[] annotations, boolean encoded, String defaultValue) {
+    public <T> MultivaluedConverter<T> getMultivalued(Class<T> rawType, Type type, Annotation[] annotations, boolean encoded, String defaultValue) {
 
         Parameter parameter = new Parameter(
                 annotations, null,
@@ -112,14 +112,14 @@ public class JerseyConverterProvider implements ConverterProvider {
                 }
 
                 @SuppressWarnings("unchecked")
-                Converter<Object> converter = this.get(tcp.t, tcp.c, annotations);
+                Converter<Object> converter = this.get(tcp.c, tcp.t, annotations);
                 if (converter == null) {
                     return null;
                 }
                 return new CollectionMultivaluedConverter<T>(extractor, converter);
             }
             else {
-                Converter<T> converter = this.get(type, rawType, annotations);
+                Converter<T> converter = this.get(rawType, type, annotations);
                 if (converter == null) {
                     return null;
                 }

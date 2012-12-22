@@ -5,12 +5,12 @@ import java.lang.reflect.Type;
 
 public interface ConverterProvider {
 
-    boolean isConvertible(Type type, Class<?> rawType);
+    boolean isConvertible(Class<?> rawType, Type type);
 
-    <T> Converter<T> get(Type type, Class<T> rawType, Annotation annotations[]);
+    <T> Converter<T> get(Class<T> rawType, Type type, Annotation annotations[]);
 
-    <T> MultivaluedConverter<T> getMultivalued(Type type, Class<T> rawType, Annotation annotations[]);
+    <T> MultivaluedConverter<T> getMultivalued(Class<T> rawType, Type type, Annotation annotations[]);
 
-    <T> MultivaluedConverter<T> getMultivalued(Type type, Class<T> rawType, Annotation annotations[], boolean encoded, String defaultValue);
+    <T> MultivaluedConverter<T> getMultivalued(Class<T> rawType, Type type, Annotation annotations[], boolean encoded, String defaultValue);
 
 }
