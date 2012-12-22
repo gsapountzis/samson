@@ -10,6 +10,7 @@
 
     <modules>
         <module>samson-convert</module>
+        <module>samson-bind</module>
         <module>samson-core</module>
         <module>samson-jersey-convert</module>
         <module>samson-jersey</module>
