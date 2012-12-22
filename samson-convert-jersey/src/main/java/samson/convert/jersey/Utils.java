@@ -1,4 +1,4 @@
-package samson.jersey.convert;
+package samson.convert.jersey;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

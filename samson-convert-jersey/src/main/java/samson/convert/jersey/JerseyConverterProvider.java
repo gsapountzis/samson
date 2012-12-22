@@ -1,4 +1,4 @@
-package samson.jersey.convert;
+package samson.convert.jersey;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -10,12 +10,12 @@ import java.util.SortedSet;
 import samson.convert.Converter;
 import samson.convert.ConverterProvider;
 import samson.convert.MultivaluedConverter;
-import samson.jersey.convert.JerseyConverters.DateConverter;
-import samson.jersey.convert.JerseyConverters.JerseyConverter;
-import samson.jersey.convert.JerseyConverters.StringConverter;
-import samson.jersey.convert.JerseyMultivaluedConverters.CollectionMultivaluedConverter;
-import samson.jersey.convert.JerseyMultivaluedConverters.PrimitiveMultivaluedConverter;
-import samson.jersey.convert.JerseyMultivaluedConverters.SingularMultivaluedConverter;
+import samson.convert.jersey.JerseyConverters.DateConverter;
+import samson.convert.jersey.JerseyConverters.JerseyConverter;
+import samson.convert.jersey.JerseyConverters.StringConverter;
+import samson.convert.jersey.JerseyMultivaluedConverters.CollectionMultivaluedConverter;
+import samson.convert.jersey.JerseyMultivaluedConverters.PrimitiveMultivaluedConverter;
+import samson.convert.jersey.JerseyMultivaluedConverters.SingularMultivaluedConverter;
 
 import com.sun.jersey.api.model.Parameter;
 import com.sun.jersey.core.reflection.ReflectionHelper;

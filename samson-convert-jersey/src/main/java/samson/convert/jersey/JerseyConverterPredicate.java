@@ -1,4 +1,4 @@
-package samson.jersey.convert;
+package samson.convert.jersey;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;

@@ -5,8 +5,8 @@ import java.lang.reflect.Type;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import samson.convert.jersey.JerseyConverterProvider;
 import samson.form.FormProvider;
-import samson.jersey.convert.JerseyConverterProvider;
 
 import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParameterExtractorFactory;
 import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParameterExtractorProvider;

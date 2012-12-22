@@ -1,4 +1,4 @@
-package samson.jersey.convert;
+package samson.convert.jersey;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

@@ -5,9 +5,9 @@ import java.lang.reflect.Type;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 
+import samson.convert.jersey.JerseyConverterProvider;
 import samson.form.FormProvider;
 import samson.form.ParamsProvider;
-import samson.jersey.convert.JerseyConverterProvider;
 
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.core.spi.component.ComponentContext;

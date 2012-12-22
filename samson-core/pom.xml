@@ -42,7 +42,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.gsapountzis.samson</groupId>
-            <artifactId>samson-jersey-convert</artifactId>
+            <artifactId>samson-convert-jersey</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

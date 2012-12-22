@@ -10,9 +10,9 @@
 
     <modules>
         <module>samson-convert</module>
+        <module>samson-convert-jersey</module>
         <module>samson-bind</module>
         <module>samson-core</module>
-        <module>samson-jersey-convert</module>
         <module>samson-jersey</module>
         <module>samson-jersey-test</module>
         <module>examples</module>
@@ -49,6 +49,11 @@
             </dependency>
             <dependency>
                 <groupId>com.github.gsapountzis.samson</groupId>
+                <artifactId>samson-convert-jersey</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.gsapountzis.samson</groupId>
                 <artifactId>samson-bind</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -60,11 +65,6 @@
             <dependency>
                 <groupId>com.github.gsapountzis.samson</groupId>
                 <artifactId>samson-jersey</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.gsapountzis.samson</groupId>
-                <artifactId>samson-jersey-convert</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
