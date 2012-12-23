@@ -41,7 +41,6 @@
 package samson.metadata;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -51,7 +50,7 @@ import java.util.Map;
 
 public class ReflectionHelper {
 
-    // -- TypeClassPair
+    // -- Type Argument
 
     public static TypeClassPair getTypeArgumentAndClass(Type parameterizedType) throws IllegalArgumentException {
         return getTypeArgumentAndClass(parameterizedType, 0);
@@ -59,8 +58,9 @@ public class ReflectionHelper {
 
     public static TypeClassPair getTypeArgumentAndClass(Type parameterizedType, int index) throws IllegalArgumentException {
         final Type t = getTypeArgumentOfParameterizedType(parameterizedType, index);
-        if (t == null)
+        if (t == null) {
             return null;
+        }
 
         final Class<?> c = getClassOfType(t);
         if (c == null) {
@@ -71,52 +71,59 @@ public class ReflectionHelper {
     }
 
     private static Type getTypeArgumentOfParameterizedType(Type parameterizedType, int index) {
-        if (!(parameterizedType instanceof ParameterizedType)) return null;
+        if (parameterizedType instanceof ParameterizedType) {
+            ParameterizedType pType = (ParameterizedType) parameterizedType;
+            Type[] genericTypes = pType.getActualTypeArguments();
 
-        ParameterizedType type = (ParameterizedType)parameterizedType;
-        Type[] genericTypes = type.getActualTypeArguments();
-
-        if (genericTypes.length <= index)
-            return null;
-
-        return genericTypes[index];
-    }
-
-    private static Class<?> getClassOfType(Type type) {
-        if (type instanceof Class) {
-            return (Class<?>)type;
-        } else if (type instanceof GenericArrayType) {
-            GenericArrayType arrayType = (GenericArrayType)type;
-            Type t = arrayType.getGenericComponentType();
-            if (t instanceof Class) {
-                return getArrayClass((Class<?>)t);
+            if (index < genericTypes.length) {
+                return genericTypes[index];
             }
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType subType = (ParameterizedType)type;
-            Type t = subType.getRawType();
-            if (t instanceof Class) {
-                return (Class<?>)t;
+            else {
+                return null;
             }
         }
+        else {
+            return null;
+        }
+    }
+
+    // -- Class of Type
+
+    public static Class<?> getClassOfType(Type type) {
+
+        if (type instanceof Class) {
+            Class<?> clazz = (Class<?>) type;
+            return clazz;
+        }
+        else if (type instanceof GenericArrayType) {
+            GenericArrayType arrayType = (GenericArrayType) type;
+            Type componentType = arrayType.getGenericComponentType();
+            if (componentType instanceof Class) {
+                Class<?> componentClass = (Class<?>) componentType;
+                return getArrayClass(componentClass);
+            }
+        }
+        else if (type instanceof ParameterizedType) {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
+            Type rawType = parameterizedType.getRawType();
+            if (rawType instanceof Class) {
+                Class<?> clazz = (Class<?>) rawType;
+                return clazz;
+            }
+        }
+
         return null;
     }
 
-    /**
-     * Get Array class of component class.
-     *
-     * @param c the component class of the array
-     * @return the array class.
-     */
-    public static Class<?> getArrayClass(Class<?> c) {
+    public static Class<?> getArrayClass(Class<?> componentType) {
         try {
-            Object o = Array.newInstance(c, 0);
-            return o.getClass();
+            return Array.newInstance(componentType, 0).getClass();
         } catch (Exception e) {
             throw new IllegalArgumentException(e);
         }
     }
 
-    // -- ClassTypePair
+    // -- Generic Type / Type Variable
 
     /**
      * A tuple consisting of a class and type of the class.
@@ -151,8 +158,10 @@ public class ReflectionHelper {
      * @return the resolved Java class and type, otherwise null if the type variable
      *         could not be resolved
      */
-    public static ClassTypePair resolveTypeVariable(Class<?> c, Class<?> dc, TypeVariable<?> tv) {
-        return resolveTypeVariable(c, dc, tv, new HashMap<TypeVariable<?>, Type>());
+    public static TypeClassPair resolveTypeVariable(Class<?> c, Class<?> dc, TypeVariable<?> tv) {
+        ClassTypePair ctp = resolveTypeVariable(c, dc, tv, new HashMap<TypeVariable<?>, Type>());
+        TypeClassPair tcp = new TypeClassPair(ctp.t, ctp.c);
+        return tcp;
     }
 
     private static ClassTypePair resolveTypeVariable(Class<?> c, Class<?> dc, TypeVariable<?> tv, Map<TypeVariable<?>, Type> map) {
@@ -236,30 +245,29 @@ public class ReflectionHelper {
         }
     }
 
-    public static ClassTypePair getGenericType(
-            final Class<?> concreteClass,
-            final Class<?> declaringClass,
-            final Class<?> c,
-            final Type t) {
+    public static TypeClassPair resolveGenericType(final Class<?> concreteClass, final Class<?> declaringClass, final Class<?> c, final Type t) {
         if (t instanceof TypeVariable) {
-            TypeVariable<?> tv = (TypeVariable<?>)t;
-            ClassTypePair ct = resolveTypeVariable(concreteClass, declaringClass, tv);
+            TypeVariable<?> tv = (TypeVariable<?>) t;
+            TypeClassPair tcp = resolveTypeVariable(concreteClass, declaringClass, tv);
 
-            if (ct != null) {
-                return ct;
+            if (tcp != null) {
+                return tcp;
             }
-        } else if (t instanceof ParameterizedType) {
-            final ParameterizedType pt = (ParameterizedType)t;
-            final Class<?> rt = (Class<?>)pt.getRawType();
+        }
+        else if (t instanceof ParameterizedType) {
+            final ParameterizedType pt = (ParameterizedType) t;
+            final Class<?> rt = (Class<?>) pt.getRawType();
             final Type[] ptts = pt.getActualTypeArguments();
-            boolean modified =  false;
+
+            boolean modified = false;
             for (int i = 0; i < ptts.length; i++) {
-                ClassTypePair ct = getGenericType(concreteClass, declaringClass, rt, ptts[i]);
-                if (ct.t != ptts[i]) {
-                    ptts[i] = ct.t;
+                TypeClassPair tcp = resolveGenericType(concreteClass, declaringClass, rt, ptts[i]);
+                if (tcp.t != ptts[i]) {
+                    ptts[i] = tcp.t;
                     modified = true;
                 }
             }
+
             if (modified) {
                 ParameterizedType rpt = new ParameterizedType() {
                     @Override
@@ -277,31 +285,24 @@ public class ReflectionHelper {
                         return pt.getOwnerType();
                     }
                 };
-                return new ClassTypePair(rt, rpt);
+                return new TypeClassPair(rpt, rt);
             }
-        } else if (t instanceof GenericArrayType) {
-            GenericArrayType gat = (GenericArrayType)t;
-            final ClassTypePair ct = getGenericType(concreteClass, declaringClass, null, gat.getGenericComponentType());
-            if (gat.getGenericComponentType() != ct.t) {
+        }
+        else if (t instanceof GenericArrayType) {
+            GenericArrayType gat = (GenericArrayType) t;
+            Type ct = gat.getGenericComponentType();
+            TypeClassPair tcp = resolveGenericType(concreteClass, declaringClass, null, ct);
+            if (tcp.t != ct) {
                 try {
-                    Class<?> ac = getArrayClass(ct.c);
-                    return new ClassTypePair(ac, ac);
-                } catch (Exception e) {
+                    Class<?> ac = getArrayClass(tcp.c);
+                    return new TypeClassPair(ac, ac);
+                }
+                catch (Exception e) {
                 }
             }
         }
 
-        return new ClassTypePair(c, t);
-    }
-
-    private static final Class<?>[] NO_ARG = new Class<?>[0];
-
-    public static Constructor<?> getNoargConstructor(Class<?> c) {
-        try {
-            return c.getConstructor(NO_ARG);
-        } catch (Exception e) {
-            return null;
-        }
+        return new TypeClassPair(t, c);
     }
 
 }

@@ -4,12 +4,10 @@ public interface ElementAccessor {
 
     public static final ElementAccessor NULL_ACCESSOR = new ElementAccessor() {
 
-        @Override
-        public void set(Object value) {
+        @Override public void set(Object value) {
         }
 
-        @Override
-        public Object get() {
+        @Override public Object get() {
             return null;
         }
     };
@@ -17,4 +15,5 @@ public interface ElementAccessor {
     Object get();
 
     void set(Object value);
+
 }

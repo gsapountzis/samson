@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
-import samson.metadata.ListItem;
+import samson.metadata.ListMetadata;
 import samson.metadata.TypeClassPair;
 
 class ListBinder extends Binder {
@@ -34,7 +34,7 @@ class ListBinder extends Binder {
      */
     @Override
     public void read(BinderNode<?> node) {
-        ListItem listItem = ListItem.fromList(ref.element);
+        ListMetadata metadata = new ListMetadata(ref.element.tcp);
         List<?> list = (List<?>) ref.accessor.get();
         if (list == null) {
             list = createInstance(ref.element.tcp);
@@ -43,7 +43,7 @@ class ListBinder extends Binder {
 
         for (BinderNode<?> child : node.getChildren()) {
             String stringIndex = child.getName();
-            ElementRef childRef = getChildRef(listItem, list, stringIndex);
+            ElementRef childRef = getChildRef(metadata, list, stringIndex);
             child.setRef(childRef);
 
             Binder binder = factory.getBinder(childRef, child.hasChildren());
@@ -53,18 +53,18 @@ class ListBinder extends Binder {
 
     @Override
     public ElementRef getChildRef(String name) {
-        ListItem listItem = ListItem.fromList(ref.element);
+        ListMetadata metadata = new ListMetadata(ref.element.tcp);
         List<?> list = (List<?>) ref.accessor.get();
 
-        ElementRef childRef = getChildRef(listItem, list, name);
+        ElementRef childRef = getChildRef(metadata, list, name);
         return childRef;
     }
 
-    private ElementRef getChildRef(ListItem listItem, List<?> list, String stringIndex) {
+    private ElementRef getChildRef(ListMetadata metadata, List<?> list, String stringIndex) {
         int index = getIndex(stringIndex);
         if (index >= 0 && index < MAX_LIST_SIZE) {
-            Element itemElement = ListItem.fromItem(listItem, index);
-            ElementAccessor itemAccessor = ListItem.createAccessor(list, index);
+            Element itemElement = metadata.getItem();
+            ElementAccessor itemAccessor = ListMetadata.createAccessor(list, index);
             return new ElementRef(itemElement, itemAccessor);
         }
         else {

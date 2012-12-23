@@ -76,7 +76,7 @@ class MetadataCache {
                     throw new IllegalArgumentException("Parameter names must be unique for each method.");
                 }
 
-                MethodParameter methodParameter = metadata.findParameter(annotation);
+                MethodParameter methodParameter = findParameter(metadata, annotation);
                 if (methodParameter != null) {
                     // new instance with jaxrs annotations set
                     return element;
@@ -94,6 +94,40 @@ class MetadataCache {
         else {
             throw new IllegalStateException("Unknown type of accessible object");
         }
+    }
+
+    /**
+     * Find the method parameter annotated with a specific annotation.
+     * <p>
+     * This method is used for finding method parameters by their JAX-RS
+     * parameter annotation and assumes that the parameters names as specified
+     * in the JAX-RS parameter annotations are <em>unique</em> in each method.
+     */
+    private static MethodParameter findParameter(MethodMetadata metadata, Annotation annotation) {
+        MethodParameter result = null;
+        for (MethodParameter parameter : metadata.getParameters()) {
+            if (hasAnnotation(parameter, annotation)) {
+                if (result == null) {
+                    result = parameter;
+                }
+                else {
+                    throw new IllegalStateException("Multiple method parameters with the same annotation");
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Check if the method parameter is annotated with a specific annotation.
+     */
+    private static boolean hasAnnotation(MethodParameter parameter, Annotation annotation) {
+        for (Annotation a : parameter.annotations) {
+            if (a.equals(annotation)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private final ConcurrentMap<Method, Boolean> isUniqueParametersCache = new ConcurrentHashMap<Method, Boolean>();

@@ -1,7 +1,6 @@
 package samson.bind;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +17,6 @@ import samson.metadata.BeanMetadata;
 import samson.metadata.BeanMetadataCache;
 import samson.metadata.Element;
 import samson.metadata.ElementRef;
-import samson.metadata.ReflectionHelper;
 import samson.metadata.TypeClassPair;
 
 public class BinderFactory {
@@ -128,8 +126,10 @@ public class BinderFactory {
 
             if (Modifier.isPublic(modifiers) && !Modifier.isAbstract(modifiers)) {
                 // we require no-arg constructor for non-abstract beans
-                Constructor<?> constructor = ReflectionHelper.getNoargConstructor(clazz);
-                if (constructor == null) {
+                try {
+                    clazz.getDeclaredConstructor();
+                }
+                catch (Exception e) {
                     LOGGER.warn("{} does not have a no-arg constructor and cannot be instantiated", clazz);
                     type = BinderType.NULL;
                 }

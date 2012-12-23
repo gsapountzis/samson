@@ -4,8 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,57 +22,34 @@ public abstract class BeanProperty extends Element {
 
         Annotation[] annotations = field.getAnnotations();
 
-        TypeClassPair tcp = createTcp(
+        TypeClassPair tcp = ReflectionHelper.resolveGenericType(
                 beanTcp.c,
                 field.getDeclaringClass(),
                 field.getType(),
                 field.getGenericType());
-
-        final int modifiers = field.getModifiers();
-        if (!Modifier.isPublic(modifiers) || Modifier.isStatic(modifiers)) {
-            throw new IllegalArgumentException("Non-public or static field " + field);
-        }
 
         return new FieldBeanProperty(annotations, tcp, beanTcp, propertyName, field);
     }
 
     public static BeanProperty fromProperty(TypeClassPair beanTcp, String propertyName, Method getter, Method setter, Field field) {
 
-        List<Annotation> list = asList(getter.getAnnotations());
+        List<Annotation> list = new ArrayList<Annotation>();
+        if (getter != null) {
+            mergeAnnotations(list, getter.getAnnotations());
+        }
         if (field != null) {
             mergeAnnotations(list, field.getAnnotations());
         }
 
-        Annotation[] annotations = list.toArray(new Annotation[0]);
+        Annotation[] annotations = list.toArray(new Annotation[list.size()]);
 
-        TypeClassPair tcp = createTcp(
+        TypeClassPair tcp = ReflectionHelper.resolveGenericType(
                 beanTcp.c,
                 setter.getDeclaringClass(),
                 setter.getParameterTypes()[0],
                 setter.getGenericParameterTypes()[0]);
 
         return new MethodBeanProperty(annotations, tcp, beanTcp, propertyName, getter, setter);
-    }
-
-    public ElementAccessor createAccessor(final Object bean) {
-        if (bean == null) {
-            return ElementAccessor.NULL_ACCESSOR;
-        }
-
-        final BeanProperty property = this;
-
-        return new ElementAccessor() {
-
-            @Override
-            public void set(Object value) {
-                property.set(bean, value);
-            }
-
-            @Override
-            public Object get() {
-                return property.get(bean);
-            }
-        };
     }
 
     abstract Object get(Object bean);
@@ -143,17 +118,6 @@ public abstract class BeanProperty extends Element {
         }
     }
 
-    private static TypeClassPair createTcp(
-            Class<?> concreteClass,
-            Class<?> declaringClass,
-            Class<?> paramClass,
-            Type paramType)
-    {
-        ReflectionHelper.ClassTypePair ct = ReflectionHelper.getGenericType(concreteClass, declaringClass, paramClass, paramType);
-        TypeClassPair tcp = new TypeClassPair(ct.t, ct.c);
-        return tcp;
-    }
-
     private static void mergeAnnotations(List<Annotation> list, Annotation[] annotations) {
         for (Annotation a : annotations) {
             if (!isAnnotationPresent(list, a))
@@ -167,12 +131,6 @@ public abstract class BeanProperty extends Element {
                 return true;
         }
         return false;
-    }
-
-    private static <T> List<T> asList(T... ts) {
-        List<T> l = new ArrayList<T>();
-        for (T t : ts) l.add(t);
-        return l;
     }
 
 }

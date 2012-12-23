@@ -11,7 +11,7 @@ import samson.convert.ConverterException;
 import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
-import samson.metadata.MapEntry;
+import samson.metadata.MapMetadata;
 import samson.metadata.TypeClassPair;
 
 class MapBinder extends Binder {
@@ -27,7 +27,7 @@ class MapBinder extends Binder {
      */
     @Override
     public void read(BinderNode<?> node) {
-        MapEntry mapEntry = MapEntry.fromMap(ref.element);
+        MapMetadata metadata = new MapMetadata(ref.element.tcp);
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
         if (map == null) {
             map = createInstance(ref.element.tcp);
@@ -36,7 +36,7 @@ class MapBinder extends Binder {
 
         for (BinderNode<?> child : node.getChildren()) {
             String stringKey = child.getName();
-            ElementRef childRef = getChildRef(mapEntry, map, stringKey);
+            ElementRef childRef = getChildRef(metadata, map, stringKey);
             child.setRef(childRef);
 
             Binder binder = factory.getBinder(childRef, child.hasChildren());
@@ -46,18 +46,18 @@ class MapBinder extends Binder {
 
     @Override
     public ElementRef getChildRef(String name) {
-        MapEntry mapEntry = MapEntry.fromMap(ref.element);
+        MapMetadata metadata = new MapMetadata(ref.element.tcp);
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
 
-        ElementRef childRef = getChildRef(mapEntry, map, name);
+        ElementRef childRef = getChildRef(metadata, map, name);
         return childRef;
     }
 
-    private ElementRef getChildRef(MapEntry mapEntry, Map<?,?> map, String stringKey) {
-        Object key = getKey(mapEntry.keyTcp, stringKey);
+    private ElementRef getChildRef(MapMetadata metadata, Map<?,?> map, String stringKey) {
+        Object key = getKey(metadata.getKeyTcp(), stringKey);
         if (key != null) {
-            Element valueElement = MapEntry.fromEntry(mapEntry, stringKey);
-            ElementAccessor valueAccessor = MapEntry.createAccessor(map, key);
+            Element valueElement = metadata.getValue();
+            ElementAccessor valueAccessor = MapMetadata.createAccessor(map, key);
             return new ElementRef(valueElement, valueAccessor);
         }
         else {

@@ -14,4 +14,5 @@ public final class TypeClassPair {
         this.t = t;
         this.c = c;
     }
+
 }
