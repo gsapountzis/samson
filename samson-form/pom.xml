@@ -8,9 +8,9 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>samson-core</artifactId>
+    <artifactId>samson-form</artifactId>
     <packaging>jar</packaging>
-    <name>Samson :: Core</name>
+    <name>Samson :: Form</name>
 
     <dependencies>
         <dependency>

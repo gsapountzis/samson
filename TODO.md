@@ -4,8 +4,8 @@
 ## Locale-aware conversion
 
 This is actually container-level stuff, container must provide current locale.
-Pass through samson-core from HttpContext as converter method parameter or
-bypass samson-core and let converter "components" inject current locale.
+Pass through samson-form from HttpContext as converter method parameter or
+bypass samson-form and let converter "components" inject current locale.
 
 ## Resource bean/method validation
 

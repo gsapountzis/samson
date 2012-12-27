@@ -12,7 +12,7 @@
         <module>samson-convert</module>
         <module>samson-convert-jersey</module>
         <module>samson-bind</module>
-        <module>samson-core</module>
+        <module>samson-form</module>
         <module>samson-jersey</module>
         <module>samson-jersey-test</module>
         <module>examples</module>
@@ -59,7 +59,7 @@
             </dependency>
             <dependency>
                 <groupId>com.github.gsapountzis.samson</groupId>
-                <artifactId>samson-core</artifactId>
+                <artifactId>samson-form</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

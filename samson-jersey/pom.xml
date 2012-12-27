@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>com.github.gsapountzis.samson</groupId>
-            <artifactId>samson-core</artifactId>
+            <artifactId>samson-form</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.gsapountzis.samson</groupId>
