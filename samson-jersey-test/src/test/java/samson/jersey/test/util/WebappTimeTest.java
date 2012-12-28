@@ -15,6 +15,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import samson.form.SamsonForm;
@@ -80,6 +81,7 @@ public class WebappTimeTest {
     }
 
     @Test
+    @Ignore
     public void testGet() {
         t[2] = System.currentTimeMillis();
 
@@ -101,6 +103,7 @@ public class WebappTimeTest {
     }
 
     @Test
+    @Ignore
     public void testPost() {
         t[4] = System.currentTimeMillis();
 

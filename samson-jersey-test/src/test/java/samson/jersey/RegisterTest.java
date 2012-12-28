@@ -9,6 +9,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import samson.form.SamsonForm;
@@ -71,6 +72,7 @@ public class RegisterTest {
     }
 
     @Test
+    @Ignore
     public void testBeanParam() {
         WebApplication w = WebappTestUtils.createWepapp(RegisterResource.class);
         WebResource r = WebappTestUtils.resource(w);
@@ -95,6 +97,7 @@ public class RegisterTest {
     }
 
     @Test
+    @Ignore
     public void testBeanBody() {
         WebApplication w = WebappTestUtils.createWepapp(RegisterResource.class);
         WebResource r = WebappTestUtils.resource(w);
