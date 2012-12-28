@@ -20,8 +20,8 @@ import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
 import samson.metadata.TypeClassPair;
-import samson.parse.Property.Node;
-import samson.parse.Property.Path;
+import samson.parse.ParseNode;
+import samson.parse.ParsePath;
 
 public class FormBuilder {
 
@@ -81,10 +81,10 @@ public class FormBuilder {
     // -- Instance
 
     private static FormNode getNode(FormNode root, String param, boolean setRef) throws ParseException {
-        Path path = Path.createPath(param);
+        ParsePath path = ParsePath.of(param);
 
         FormNode child = root;
-        for (Node node : path) {
+        for (ParseNode node : path) {
             child = child.path(node.getName(), setRef);
         }
         return child;
