@@ -19,8 +19,8 @@ class Utils {
         }
 
         if (clazz == String.class ||
-            clazz == Boolean.class ||
             clazz == Character.class ||
+            clazz == Boolean.class ||
             clazz == Byte.class ||
             clazz == Short.class ||
             clazz == Integer.class ||

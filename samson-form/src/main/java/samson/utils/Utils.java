@@ -14,10 +14,10 @@ public class Utils {
     }
 
     public static <T> T getFirst(List<T> values) {
-        if (!(values == null || values.isEmpty())) {
-            return values.get(0);
-        } else {
+        if (values == null || values.isEmpty()) {
             return null;
+        } else {
+            return values.get(0);
         }
     }
 
@@ -28,8 +28,8 @@ public class Utils {
         }
 
         if (clazz == String.class ||
-            clazz == Boolean.class ||
             clazz == Character.class ||
+            clazz == Boolean.class ||
             clazz == Byte.class ||
             clazz == Short.class ||
             clazz == Integer.class ||
