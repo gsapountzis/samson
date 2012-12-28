@@ -11,7 +11,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.UriBuilder;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import samson.form.SamsonForm;
@@ -75,7 +74,6 @@ public class BeanTest {
     }
 
     @Test
-    @Ignore
     public void testQuery() {
         // ok
         WebApplication w = WebappTestUtils.createWepapp(BeanResource.class);
@@ -123,7 +121,6 @@ public class BeanTest {
     }
 
     @Test
-    @Ignore
     public void testForm() {
         // ok
         WebApplication w = WebappTestUtils.createWepapp(BeanResource.class);
@@ -167,7 +164,6 @@ public class BeanTest {
     }
 
     @Test
-    @Ignore
     public void testBodyBean() {
         // ok
         WebApplication w = WebappTestUtils.createWepapp(BeanResource.class);

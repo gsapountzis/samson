@@ -22,6 +22,7 @@ import samson.metadata.ElementRef;
 import samson.metadata.TypeClassPair;
 import samson.parse.ParseNode;
 import samson.parse.ParsePath;
+import samson.utils.Utils;
 
 public class FormBuilder {
 
@@ -81,7 +82,7 @@ public class FormBuilder {
     // -- Instance
 
     private static FormNode getNode(FormNode root, String param, boolean setRef) throws ParseException {
-        ParsePath path = ParsePath.of(param);
+        ParsePath path = Utils.isNullOrEmpty(param) ? ParsePath.of() : ParsePath.of(param);
 
         FormNode child = root;
         for (ParseNode node : path) {
