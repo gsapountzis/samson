@@ -27,8 +27,6 @@ import com.sun.jersey.spi.StringReaderWorkers;
 
 public class JerseyConverterProvider implements ConverterProvider {
 
-    public static final String PARAMETER_NAME = "name";
-
     private final JerseyConverterPredicate stringTypePredicate;
     private StringReaderWorkers srw;
     private MultivaluedParameterExtractorProvider mpep;
@@ -92,7 +90,7 @@ public class JerseyConverterProvider implements ConverterProvider {
 
         Parameter parameter = new Parameter(
                 annotations, null,
-                null, PARAMETER_NAME,
+                null, JerseyMultivaluedConverters.PARAMETER_NAME,
                 type, rawType,
                 encoded, defaultValue);
 

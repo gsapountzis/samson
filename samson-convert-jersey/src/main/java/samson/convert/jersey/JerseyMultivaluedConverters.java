@@ -14,9 +14,11 @@ import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParamet
 
 class JerseyMultivaluedConverters {
 
+    public static final String PARAMETER_NAME = "name";
+
     private static Form form(List<String> stringList) {
         Form form = new Form();
-        form.put(JerseyConverterProvider.PARAMETER_NAME, stringList);
+        form.put(PARAMETER_NAME, stringList);
         return form;
     }
 
