@@ -11,7 +11,7 @@ import samson.convert.ConverterException;
 import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
-import samson.metadata.MapMetadata;
+import samson.metadata.ResolvedMapType;
 import samson.metadata.TypeClassPair;
 
 class MapBinder extends Binder {
@@ -27,7 +27,7 @@ class MapBinder extends Binder {
      */
     @Override
     public void read(BinderNode<?> node) {
-        MapMetadata metadata = new MapMetadata(ref.element.tcp);
+        ResolvedMapType type = new ResolvedMapType(ref.element.tcp);
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
         if (map == null) {
             map = createInstance(ref.element.tcp);
@@ -36,7 +36,7 @@ class MapBinder extends Binder {
 
         for (BinderNode<?> child : node.getChildren()) {
             String stringKey = child.getName();
-            ElementRef childRef = getChildRef(metadata, map, stringKey);
+            ElementRef childRef = getChildRef(type, map, stringKey);
             child.setRef(childRef);
 
             Binder binder = factory.getBinder(childRef, child.hasChildren());
@@ -46,18 +46,18 @@ class MapBinder extends Binder {
 
     @Override
     public ElementRef getChildRef(String name) {
-        MapMetadata metadata = new MapMetadata(ref.element.tcp);
+        ResolvedMapType type = new ResolvedMapType(ref.element.tcp);
         Map<?,?> map = (Map<?,?>) ref.accessor.get();
 
-        ElementRef childRef = getChildRef(metadata, map, name);
+        ElementRef childRef = getChildRef(type, map, name);
         return childRef;
     }
 
-    private ElementRef getChildRef(MapMetadata metadata, Map<?,?> map, String stringKey) {
-        Object key = getKey(metadata.getKeyTcp(), stringKey);
+    private ElementRef getChildRef(ResolvedMapType type, Map<?,?> map, String stringKey) {
+        Object key = getKey(type.getKeyTcp(), stringKey);
         if (key != null) {
-            Element valueElement = metadata.getValue();
-            ElementAccessor valueAccessor = MapMetadata.createAccessor(map, key);
+            Element valueElement = type.getValue();
+            ElementAccessor valueAccessor = createAccessor(map, key);
             return new ElementRef(valueElement, valueAccessor);
         }
         else {
@@ -105,6 +105,26 @@ class MapBinder extends Binder {
         } catch (IllegalAccessException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    public static ElementAccessor createAccessor(final Map<?, ?> map, final Object key) {
+        if (map == null) {
+            return ElementAccessor.NULL_ACCESSOR;
+        }
+
+        return new ElementAccessor() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public void set(Object value) {
+                ((Map<Object, Object>) map).put(key, value);
+            }
+
+            @Override
+            public Object get() {
+                return map.get(key);
+            }
+        };
     }
 
 }

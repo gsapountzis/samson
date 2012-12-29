@@ -1,9 +1,8 @@
 package samson.metadata;
 
 import java.lang.annotation.Annotation;
-import java.util.Map;
 
-public class MapMetadata {
+public class ResolvedMapType {
 
     private static final Annotation[] NO_ANNOTATIONS = new Annotation[0];
 
@@ -12,7 +11,7 @@ public class MapMetadata {
     private final TypeClassPair valueTcp;
     private final Element valueElement;
 
-    public MapMetadata(TypeClassPair tcp) {
+    public ResolvedMapType(TypeClassPair tcp) {
         this.tcp = tcp;
 
         TypeClassPair keyTcp = ReflectionHelper.getTypeArgumentAndClass(tcp.t, 0);
@@ -41,26 +40,6 @@ public class MapMetadata {
 
     public Element getValue() {
         return valueElement;
-    }
-
-    public static ElementAccessor createAccessor(final Map<?, ?> map, final Object key) {
-        if (map == null) {
-            return ElementAccessor.NULL_ACCESSOR;
-        }
-
-        return new ElementAccessor() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public void set(Object value) {
-                ((Map<Object, Object>) map).put(key, value);
-            }
-
-            @Override
-            public Object get() {
-                return map.get(key);
-            }
-        };
     }
 
 }

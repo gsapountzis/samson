@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import samson.metadata.BeanMetadata;
-import samson.metadata.Element;
+import samson.metadata.BeanProperty;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
 import samson.metadata.TypeClassPair;
@@ -47,8 +47,8 @@ class BeanBinder extends Binder {
 
     private ElementRef getChildRef(BeanMetadata metadata, Object bean, String propertyName) {
         if (metadata.hasProperty(propertyName)) {
-            Element property = metadata.getProperty(propertyName);
-            ElementAccessor accessor = metadata.createAccessor(bean, propertyName);
+            BeanProperty property = metadata.getProperty(propertyName);
+            ElementAccessor accessor = createAccessor(bean, property);
             return new ElementRef(property, accessor);
         }
         else {
@@ -67,6 +67,25 @@ class BeanBinder extends Binder {
         } catch (IllegalAccessException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    public static ElementAccessor createAccessor(final Object bean, final BeanProperty property) {
+        if (bean == null) {
+            return ElementAccessor.NULL_ACCESSOR;
+        }
+
+        return new ElementAccessor() {
+
+            @Override
+            public void set(Object value) {
+                property.set(bean, value);
+            }
+
+            @Override
+            public Object get() {
+                return property.get(bean);
+            }
+        };
     }
 
 }

@@ -52,9 +52,9 @@ public abstract class BeanProperty extends Element {
         return new MethodBeanProperty(annotations, tcp, beanTcp, propertyName, getter, setter);
     }
 
-    abstract Object get(Object bean);
+    public abstract Object get(Object bean);
 
-    abstract void set(Object bean, Object value);
+    public abstract void set(Object bean, Object value);
 
     private static class FieldBeanProperty extends BeanProperty {
 

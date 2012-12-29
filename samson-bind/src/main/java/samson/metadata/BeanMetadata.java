@@ -28,33 +28,4 @@ public class BeanMetadata {
         return properties;
     }
 
-    public ElementAccessor createAccessor(final Object bean, final String propertyName) {
-        if (bean == null) {
-            return ElementAccessor.NULL_ACCESSOR;
-        }
-
-        Class<?> clazz = tcp.c;
-        if (!clazz.isInstance(bean)) {
-            throw new IllegalArgumentException();
-        }
-        if (!this.hasProperty(propertyName)) {
-            throw new IllegalArgumentException();
-        }
-
-        final BeanProperty property = this.getProperty(propertyName);
-
-        return new ElementAccessor() {
-
-            @Override
-            public void set(Object value) {
-                property.set(bean, value);
-            }
-
-            @Override
-            public Object get() {
-                return property.get(bean);
-            }
-        };
-    }
-
 }
