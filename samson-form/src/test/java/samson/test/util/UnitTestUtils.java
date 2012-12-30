@@ -5,8 +5,9 @@ import java.lang.reflect.Type;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import samson.convert.jersey.JerseyConverterProvider;
 import samson.form.FormProvider;
+import samson.jersey.convert.JerseyConverterProvider;
+import samson.jersey.convert.multivalued.JerseyMultivaluedConverterProvider;
 
 import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParameterExtractorFactory;
 import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParameterExtractorProvider;
@@ -57,9 +58,10 @@ public class UnitTestUtils {
         MultivaluedParameterExtractorProvider mpep = new MultivaluedParameterExtractorFactory(srw);
 
         JerseyConverterProvider converterProvider = new JerseyConverterProvider();
+        JerseyMultivaluedConverterProvider multivaluedConverterProvider = new JerseyMultivaluedConverterProvider(converterProvider);
         converterProvider.setStringReaderProvider(srw);
-        converterProvider.setExtractorProvider(mpep);
+        multivaluedConverterProvider.setExtractorProvider(mpep);
 
-        return new FormProvider(null, null, converterProvider);
+        return new FormProvider(null, null, converterProvider, multivaluedConverterProvider);
     }
 }

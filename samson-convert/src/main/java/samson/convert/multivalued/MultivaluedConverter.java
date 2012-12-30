@@ -1,4 +1,4 @@
-package samson.convert;
+package samson.convert.multivalued;
 
 import java.util.List;
 

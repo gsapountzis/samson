@@ -1,81 +1,39 @@
-package samson.convert.jersey;
+package samson.jersey.convert.multivalued;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
 import samson.convert.Converter;
 import samson.convert.ConverterProvider;
-import samson.convert.MultivaluedConverter;
-import samson.convert.jersey.JerseyConverters.DateConverter;
-import samson.convert.jersey.JerseyConverters.JerseyConverter;
-import samson.convert.jersey.JerseyConverters.StringConverter;
-import samson.convert.jersey.JerseyMultivaluedConverters.CollectionMultivaluedConverter;
-import samson.convert.jersey.JerseyMultivaluedConverters.PrimitiveMultivaluedConverter;
-import samson.convert.jersey.JerseyMultivaluedConverters.SingularMultivaluedConverter;
+import samson.convert.multivalued.MultivaluedConverter;
+import samson.convert.multivalued.MultivaluedConverterProvider;
+import samson.jersey.convert.multivalued.JerseyMultivaluedConverters.CollectionMultivaluedConverter;
+import samson.jersey.convert.multivalued.JerseyMultivaluedConverters.PrimitiveMultivaluedConverter;
+import samson.jersey.convert.multivalued.JerseyMultivaluedConverters.SingularMultivaluedConverter;
 
 import com.sun.jersey.api.model.Parameter;
 import com.sun.jersey.core.reflection.ReflectionHelper;
 import com.sun.jersey.core.reflection.ReflectionHelper.TypeClassPair;
 import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParameterExtractor;
 import com.sun.jersey.server.impl.model.parameter.multivalued.MultivaluedParameterExtractorProvider;
-import com.sun.jersey.spi.StringReader;
-import com.sun.jersey.spi.StringReaderWorkers;
 
-public class JerseyConverterProvider implements ConverterProvider {
+public class JerseyMultivaluedConverterProvider implements MultivaluedConverterProvider {
 
-    private final JerseyConverterPredicate stringTypePredicate;
-    private StringReaderWorkers srw;
+    private final ConverterProvider converterProvider;
+
     private MultivaluedParameterExtractorProvider mpep;
 
-    public JerseyConverterProvider() {
-        this.stringTypePredicate = new JerseyConverterPredicate();
+    public JerseyMultivaluedConverterProvider(ConverterProvider converterProvider) {
+        this.converterProvider = converterProvider;
     }
 
     // -- Setter injection for Jersey's custom DI
 
-    public void setStringReaderProvider(StringReaderWorkers srw) {
-        this.srw = srw;
-        this.stringTypePredicate.setStringReaderProvider(srw);
-    }
-
     public void setExtractorProvider(MultivaluedParameterExtractorProvider mpep) {
         this.mpep = mpep;
-        this.stringTypePredicate.setExtractorProvider(mpep);
-    }
-
-    // -- Conversion Predicate
-
-    @Override
-    public boolean isConvertible(Class<?> rawType, Type type) {
-        return stringTypePredicate.isStringType(type, rawType);
-    }
-
-    // -- Converter
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> Converter<T> get(Class<T> rawType, Type type, Annotation annotations[]) {
-
-        if (rawType == String.class) {
-            return (Converter<T>) new StringConverter();
-        }
-        else if (rawType == Date.class) {
-            StringReader<Date> stringReader = srw.getStringReader(Date.class, type, annotations);
-            return (Converter<T>) new DateConverter(stringReader);
-        }
-        else {
-            StringReader<T> stringReader = srw.getStringReader(rawType, type, annotations);
-            if (stringReader != null) {
-                return new JerseyConverter<T>(stringReader);
-            }
-            else {
-                return null;
-            }
-        }
     }
 
     // -- Multivalued Converter
@@ -110,14 +68,14 @@ public class JerseyConverterProvider implements ConverterProvider {
                 }
 
                 @SuppressWarnings("unchecked")
-                Converter<Object> converter = this.get(tcp.c, tcp.t, annotations);
+                Converter<Object> converter = converterProvider.get(tcp.c, tcp.t, annotations);
                 if (converter == null) {
                     return null;
                 }
                 return new CollectionMultivaluedConverter<T>(extractor, converter);
             }
             else {
-                Converter<T> converter = this.get(rawType, type, annotations);
+                Converter<T> converter = converterProvider.get(rawType, type, annotations);
                 if (converter == null) {
                     return null;
                 }

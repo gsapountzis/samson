@@ -1,4 +1,4 @@
-package samson.convert.jersey;
+package samson.jersey.convert;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -8,7 +8,7 @@ import java.util.Locale;
 import samson.convert.Converter;
 import samson.convert.ConverterException;
 
-import com.sun.jersey.server.impl.model.parameter.multivalued.ExtractorContainerException;
+import com.sun.jersey.api.container.ContainerException;
 import com.sun.jersey.spi.StringReader;
 
 class JerseyConverters {
@@ -39,9 +39,9 @@ class JerseyConverters {
             try {
                 return delegate.fromString(string);
             }
-            catch(ExtractorContainerException ex) {
+            catch(ContainerException ex) {
                 // handle empty as null, return default value
-                if (Utils.isNullOrEmpty(string)) {
+                if (string != null && string.isEmpty()) {
                     return delegate.fromString(null);
                 }
                 else {

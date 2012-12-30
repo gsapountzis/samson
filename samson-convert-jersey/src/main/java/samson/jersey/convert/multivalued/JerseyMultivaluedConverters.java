@@ -1,4 +1,4 @@
-package samson.convert.jersey;
+package samson.jersey.convert.multivalued;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import samson.convert.Converter;
 import samson.convert.ConverterException;
-import samson.convert.MultivaluedConverter;
+import samson.convert.multivalued.MultivaluedConverter;
 
 import com.sun.jersey.api.representation.Form;
 import com.sun.jersey.server.impl.model.parameter.multivalued.ExtractorContainerException;
@@ -20,6 +20,15 @@ class JerseyMultivaluedConverters {
         Form form = new Form();
         form.put(PARAMETER_NAME, stringList);
         return form;
+    }
+
+    private static boolean isAllEmpty(List<String> stringList) {
+        for (String s : stringList) {
+            if (s != null && !s.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static abstract class JerseyMultivaluedConverter<T> implements MultivaluedConverter<T> {
@@ -38,18 +47,16 @@ class JerseyMultivaluedConverters {
             }
             catch(ExtractorContainerException ex) {
                 // handle empty as null, return default value
-                List<String> nullStringList = new ArrayList<String>(stringList.size());
-                for (String s : stringList) {
-                    nullStringList.add(Utils.isNullOrEmpty(s) ? null : s);
-                }
-                try {
+                if (isAllEmpty(stringList)) {
+                    int size = stringList.size();
+                    List<String> nullStringList = new ArrayList<String>(size);
+                    for (int i = 0; i < size; i++) { nullStringList.add(null); }
+
                     return (T) delegate.extract(form(nullStringList));
                 }
-                catch(ExtractorContainerException nullEx) {
-                    // do nothing
+                else {
+                    throw new ConverterException(ex.getMessage(), ex.getCause());
                 }
-
-                throw new ConverterException(ex.getMessage(), ex.getCause());
             }
         }
 

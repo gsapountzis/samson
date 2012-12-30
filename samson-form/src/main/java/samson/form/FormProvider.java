@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import samson.bind.BinderFactory;
 import samson.convert.ConverterProvider;
+import samson.convert.multivalued.MultivaluedConverterProvider;
 
 public class FormProvider {
 
@@ -23,11 +24,11 @@ public class FormProvider {
     private final BinderFactory binderFactory;
     private final ValidatorFactory validatorFactory;
 
-    public FormProvider(ParamsProvider formParams, ParamsProvider queryParams, ConverterProvider converterProvider) {
+    public FormProvider(ParamsProvider formParams, ParamsProvider queryParams, ConverterProvider converterProvider, MultivaluedConverterProvider multivaluedConverterProvider) {
         this.formParams = formParams;
         this.queryParams = queryParams;
 
-        this.binderFactory = new BinderFactory(converterProvider);
+        this.binderFactory = new BinderFactory(converterProvider, multivaluedConverterProvider);
 
         ValidatorFactory validatorFactory = null;
         try {

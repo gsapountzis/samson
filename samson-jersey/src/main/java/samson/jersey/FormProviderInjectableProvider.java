@@ -5,9 +5,10 @@ import java.lang.reflect.Type;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 
-import samson.convert.jersey.JerseyConverterProvider;
 import samson.form.FormProvider;
 import samson.form.ParamsProvider;
+import samson.jersey.convert.JerseyConverterProvider;
+import samson.jersey.convert.multivalued.JerseyMultivaluedConverterProvider;
 
 import com.sun.jersey.api.core.HttpContext;
 import com.sun.jersey.core.spi.component.ComponentContext;
@@ -42,11 +43,13 @@ public class FormProviderInjectableProvider implements InjectableProvider<Contex
 
     private final FormProvider provider;
     private final JerseyConverterProvider converterProvider;
+    private final JerseyMultivaluedConverterProvider multivaluedConverterProvider;
 
     public FormProviderInjectableProvider(@Context HttpContext context) {
         this.context = context;
         this.converterProvider = new JerseyConverterProvider();
-        this.provider = new FormProvider(formParams, queryParams, converterProvider);
+        this.multivaluedConverterProvider = new JerseyMultivaluedConverterProvider(converterProvider);
+        this.provider = new FormProvider(formParams, queryParams, converterProvider, multivaluedConverterProvider);
     }
 
     @Context
@@ -56,7 +59,7 @@ public class FormProviderInjectableProvider implements InjectableProvider<Contex
 
     @Context
     public void setExtractorProvider(MultivaluedParameterExtractorProvider mpep) {
-        converterProvider.setExtractorProvider(mpep);
+        multivaluedConverterProvider.setExtractorProvider(mpep);
     }
 
     @Override

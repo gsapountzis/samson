@@ -12,7 +12,8 @@ import org.slf4j.LoggerFactory;
 import samson.convert.Converter;
 import samson.convert.ConverterException;
 import samson.convert.ConverterProvider;
-import samson.convert.MultivaluedConverter;
+import samson.convert.multivalued.MultivaluedConverter;
+import samson.convert.multivalued.MultivaluedConverterProvider;
 import samson.metadata.BeanMetadata;
 import samson.metadata.BeanMetadataCache;
 import samson.metadata.Element;
@@ -25,10 +26,12 @@ public class BinderFactory {
 
     private final BeanMetadataCache beanCache;
     private final ConverterProvider converterProvider;
+    private final MultivaluedConverterProvider multivaluedConverterProvider;
 
-    public BinderFactory(ConverterProvider converterProvider) {
+    public BinderFactory(ConverterProvider converterProvider, MultivaluedConverterProvider multivaluedConverterProvider) {
         this.beanCache = new BeanMetadataCache();
         this.converterProvider = converterProvider;
+        this.multivaluedConverterProvider = multivaluedConverterProvider;
     }
 
     public BeanMetadata getBeanMetadata(TypeClassPair tcp) {
@@ -52,8 +55,8 @@ public class BinderFactory {
 
         BinderType type = getBinderType(ref.element.tcp, composite);
 
-        if (validate) {
-            type = validateBinderType(type, ref.element.tcp, ref.accessor.get(), composite);
+        if (validate && !binderTypeIsValid(type, ref.element.tcp, ref.accessor.get())) {
+            type = BinderType.NULL;
         }
 
         if (type == BinderType.STRING) {
@@ -77,50 +80,39 @@ public class BinderFactory {
         final Class<?> clazz = tcp.c;
 
         if (composite) {
-            return getCompositeBinderType(clazz);
-        }
-        else {
-            boolean isConvertibleFromString = converterProvider.isConvertible(tcp.c, tcp.t);
-            if (isConvertibleFromString) {
-                return BinderType.STRING;
+            if (List.class.isAssignableFrom(clazz)) {
+                return BinderType.LIST;
+            }
+            else if (Map.class.isAssignableFrom(clazz)) {
+                return BinderType.MAP;
             }
             else {
-                LOGGER.warn("{} is not convertible from string values, assuming composite type (bean/list/map)", clazz);
-                return getCompositeBinderType(clazz);
+                return BinderType.BEAN;
             }
         }
-    }
-
-    private BinderType getCompositeBinderType(Class<?> clazz) {
-
-        if (List.class.isAssignableFrom(clazz)) {
-            return BinderType.LIST;
-        }
-        else if (Map.class.isAssignableFrom(clazz)) {
-            return BinderType.MAP;
-        }
         else {
-            return BinderType.BEAN;
+            return BinderType.STRING;
         }
     }
 
-    private BinderType validateBinderType(BinderType type, TypeClassPair tcp, Object instance, boolean composite) {
+    public boolean binderTypeIsValid(BinderType type, TypeClassPair tcp, Object instance) {
         final Class<?> clazz = tcp.c;
 
+        boolean valid = true;
         if (type == BinderType.BEAN) {
             final int modifiers = clazz.getModifiers();
 
             if (!Modifier.isPublic(modifiers)) {
                 if (instance == null) {
                     LOGGER.warn("{} is not a public class and cannot be instantiated", clazz);
-                    type = BinderType.NULL;
+                    valid = false;
                 }
             }
 
             if (Modifier.isAbstract(modifiers)) {
                 if (instance == null) {
                     LOGGER.warn("{} is an abstract class or interface and cannot be instantiated", clazz);
-                    type = BinderType.NULL;
+                    valid = false;
                 }
             }
 
@@ -131,12 +123,12 @@ public class BinderFactory {
                 }
                 catch (Exception e) {
                     LOGGER.warn("{} does not have a no-arg constructor and cannot be instantiated", clazz);
-                    type = BinderType.NULL;
+                    valid = false;
                 }
             }
         }
 
-        return type;
+        return valid;
     }
 
     public static Object createInstanceIfComposite(Binder binder) {
@@ -165,7 +157,7 @@ public class BinderFactory {
             return null;
         }
 
-        MultivaluedConverter<?> extractor = converterProvider.getMultivalued(
+        MultivaluedConverter<?> extractor = multivaluedConverterProvider.getMultivalued(
                 element.tcp.c,
                 element.tcp.t,
                 element.annotations,
@@ -194,7 +186,7 @@ public class BinderFactory {
         }
 
         @SuppressWarnings("unchecked")
-        MultivaluedConverter<Object> extractor = (MultivaluedConverter<Object>) converterProvider.getMultivalued(
+        MultivaluedConverter<Object> extractor = (MultivaluedConverter<Object>) multivaluedConverterProvider.getMultivalued(
                 element.tcp.c,
                 element.tcp.t,
                 element.annotations);
