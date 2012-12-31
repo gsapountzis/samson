@@ -1,7 +1,11 @@
 package samson.bind;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +82,34 @@ class ListBinder extends Binder {
             return Integer.parseInt(stringIndex);
         } catch (NumberFormatException ex) {
             return -1;
+        }
+    }
+
+    public static Set<?> createSet(TypeClassPair tcp) {
+        Class<?> setClass = tcp.c;
+
+        if (!Set.class.isAssignableFrom(setClass)) {
+            throw new IllegalArgumentException();
+        }
+
+        if (setClass.isInterface()) {
+            if (setClass == Set.class) {
+                setClass = LinkedHashSet.class;
+            }
+            else if (setClass == SortedSet.class) {
+                setClass = TreeSet.class;
+            }
+            else {
+                throw new RuntimeException("Unknown set interface");
+            }
+        }
+
+        try {
+            return (Set<?>) setClass.newInstance();
+        } catch (InstantiationException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
         }
     }
 

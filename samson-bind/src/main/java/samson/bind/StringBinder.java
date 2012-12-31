@@ -2,6 +2,7 @@ package samson.bind;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,10 @@ class StringBinder extends Binder {
     private Object createDefault(TypeClassPair tcp) {
         Class<?> clazz = tcp.c;
         try {
-            if (List.class.isAssignableFrom(clazz)) {
+            if (Set.class.isAssignableFrom(clazz)) {
+                return ListBinder.createSet(tcp);
+            }
+            else if (List.class.isAssignableFrom(clazz)) {
                 return ListBinder.createInstance(tcp);
             }
             else if (Map.class.isAssignableFrom(clazz)) {

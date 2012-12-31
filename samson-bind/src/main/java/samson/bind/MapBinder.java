@@ -1,6 +1,6 @@
 package samson.bind;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -91,7 +91,7 @@ class MapBinder extends Binder {
 
         if (mapClass.isInterface()) {
             if (mapClass == Map.class) {
-                mapClass = HashMap.class;
+                mapClass = LinkedHashMap.class;
             }
             else {
                 throw new RuntimeException("Unknown map interface");
