@@ -1,4 +1,4 @@
-package samson.parse;
+package samson.property;
 
 import java.text.ParseException;
 import java.util.Collections;

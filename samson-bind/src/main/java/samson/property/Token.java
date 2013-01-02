@@ -1,4 +1,4 @@
-package samson.parse;
+package samson.property;
 
 class Token {
 

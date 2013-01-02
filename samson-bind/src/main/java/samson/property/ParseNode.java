@@ -1,4 +1,4 @@
-package samson.parse;
+package samson.property;
 
 import com.google.common.base.Preconditions;
 

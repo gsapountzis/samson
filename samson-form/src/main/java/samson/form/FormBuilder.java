@@ -20,8 +20,8 @@ import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
 import samson.metadata.ElementRef;
 import samson.metadata.TypeClassPair;
-import samson.parse.ParseNode;
-import samson.parse.ParsePath;
+import samson.property.ParseNode;
+import samson.property.ParsePath;
 import samson.utils.Utils;
 
 public class FormBuilder {

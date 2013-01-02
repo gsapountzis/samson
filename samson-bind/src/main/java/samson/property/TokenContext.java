@@ -1,4 +1,4 @@
-package samson.parse;
+package samson.property;
 
 enum TokenContext {
     DEFAULT,
