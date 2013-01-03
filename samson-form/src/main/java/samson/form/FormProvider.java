@@ -24,7 +24,12 @@ public class FormProvider {
     private final BinderFactory binderFactory;
     private final ValidatorFactory validatorFactory;
 
-    public FormProvider(ParamsProvider formParams, ParamsProvider queryParams, ConverterProvider converterProvider, MultivaluedConverterProvider multivaluedConverterProvider) {
+    public FormProvider(
+            ParamsProvider formParams,
+            ParamsProvider queryParams,
+            ConverterProvider converterProvider,
+            MultivaluedConverterProvider multivaluedConverterProvider)
+    {
         this.formParams = formParams;
         this.queryParams = queryParams;
 
