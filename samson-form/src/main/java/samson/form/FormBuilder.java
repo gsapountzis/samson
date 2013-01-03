@@ -1,6 +1,5 @@
 package samson.form;
 
-import java.lang.annotation.Annotation;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -49,9 +48,8 @@ public class FormBuilder {
     // -- Element
 
     private <T> Element element(Class<T> type) {
-        Annotation[] annotations = new Annotation[0];
         TypeClassPair tcp = new TypeClassPair(type, type);
-        return new Element(annotations, tcp);
+        return new Element(Element.NO_ANNOTATIONS, tcp);
     }
 
     public <T> SamsonForm<T> wrap(Class<T> type) {

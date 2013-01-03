@@ -1,10 +1,6 @@
 package samson.metadata;
 
-import java.lang.annotation.Annotation;
-
 public class ResolvedListType {
-
-    private static final Annotation[] NO_ANNOTATIONS = new Annotation[0];
 
     private final TypeClassPair tcp;
     private final TypeClassPair itemTcp;
@@ -19,7 +15,7 @@ public class ResolvedListType {
         }
         this.itemTcp = itemTcp;
 
-        this.itemElement = new Element(NO_ANNOTATIONS, itemTcp);
+        this.itemElement = new Element(Element.NO_ANNOTATIONS, itemTcp);
     }
 
     public TypeClassPair getTcp() {

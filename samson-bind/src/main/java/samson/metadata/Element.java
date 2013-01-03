@@ -7,7 +7,9 @@ import java.lang.annotation.Annotation;
  */
 public class Element {
 
-    public static final Element NULL_ELEMENT = new Element(new Annotation[0], null, JaxrsAnnotations.NULL);
+    public static final Annotation[] NO_ANNOTATIONS = new Annotation[0];
+
+    public static final Element NULL_ELEMENT = new Element(NO_ANNOTATIONS, null, JaxrsAnnotations.NULL);
 
     public final Annotation[] annotations;  // immutable
     public final TypeClassPair tcp;

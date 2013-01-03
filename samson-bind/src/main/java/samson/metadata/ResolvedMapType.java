@@ -1,10 +1,6 @@
 package samson.metadata;
 
-import java.lang.annotation.Annotation;
-
 public class ResolvedMapType {
-
-    private static final Annotation[] NO_ANNOTATIONS = new Annotation[0];
 
     private final TypeClassPair tcp;
     private final TypeClassPair keyTcp;
@@ -23,7 +19,7 @@ public class ResolvedMapType {
         this.keyTcp = keyTcp;
         this.valueTcp = valTcp;
 
-        this.valueElement = new Element(NO_ANNOTATIONS, valTcp);
+        this.valueElement = new Element(Element.NO_ANNOTATIONS, valTcp);
     }
 
     public TypeClassPair getTcp() {
