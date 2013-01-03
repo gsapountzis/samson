@@ -58,9 +58,7 @@ public class JerseyMultivaluedConverterProvider implements MultivaluedConverterP
             if (rawType.isPrimitive()) {
                 return new PrimitiveMultivaluedConverter<T>(extractor);
             }
-            else if (rawType == List.class ||
-                     rawType == Set.class ||
-                     rawType == SortedSet.class)
+            else if (rawType == List.class || rawType == Set.class || rawType == SortedSet.class)
             {
                 TypeClassPair tcp = ReflectionHelper.getTypeArgumentAndClass(type);
                 if (tcp == null) {
