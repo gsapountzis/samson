@@ -1,63 +1,76 @@
 package samson.bind;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import samson.metadata.BeanMetadata;
 import samson.metadata.BeanProperty;
+import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
-import samson.metadata.ElementRef;
 import samson.metadata.TypeClassPair;
 
 class BeanBinder extends Binder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BeanBinder.class);
 
-    BeanBinder(BinderFactory factory, ElementRef ref) {
-        super(factory, BinderType.BEAN, ref);
+    private final BeanMetadata metadata;
+
+    BeanBinder(BinderFactory factory, Element element) {
+        super(factory, element);
+        this.metadata = factory.getBeanMetadata(element.tcp);
     }
 
     @Override
-    public void read(BinderNode<?> node) {
-        BeanMetadata metadata = factory.getBeanMetadata(ref.element.tcp);
-        Object bean = ref.accessor.get();
-        if (bean == null) {
-            bean = createInstance(ref.element.tcp);
-            ref.accessor.set(bean);
-        }
-
-        for (BinderNode<?> child : node.getChildren()) {
-            String propertyName = child.getName();
-            ElementRef childRef = getChildRef(metadata, bean, propertyName);
-            child.setRef(childRef);
-
-            Binder binder = factory.getBinder(childRef, child.hasChildren());
-            binder.read(child);
-        }
-    }
-
-    @Override
-    public ElementRef getChildRef(String name) {
-        BeanMetadata metadata = factory.getBeanMetadata(ref.element.tcp);
-        Object bean = ref.accessor.get();
-
-        ElementRef childRef = getChildRef(metadata, bean, name);
-        return childRef;
-    }
-
-    private ElementRef getChildRef(BeanMetadata metadata, Object bean, String propertyName) {
-        if (metadata.hasProperty(propertyName)) {
-            BeanProperty property = metadata.getProperty(propertyName);
+    public TypedNode child(String name, Object object) {
+        Object bean = object;
+        BeanProperty property = metadata.getProperty(name);
+        if (property != null) {
             ElementAccessor accessor = createAccessor(bean, property);
-            return new ElementRef(property, accessor);
+            return new AnyNode(property, accessor.get());
         }
         else {
-            LOGGER.warn("Invalid property name: {}", propertyName);
-            return ElementRef.NULL_REF;
+            LOGGER.warn("Invalid bean property: {}", name);
+            return NullNode.INSTANCE;
         }
     }
 
-    public static Object createInstance(TypeClassPair tcp) {
+    @Override
+    public TypedNode parse(UntypedNode untypedNode, Object object) {
+        Object bean = object;
+        if (bean == null) {
+            bean = createBean(element.tcp);
+        }
+
+        Map<String,TypedNode> nodes = new LinkedHashMap<String,TypedNode>();
+
+        for (Entry<String, UntypedNode> e : untypedNode.getChildren().entrySet()) {
+            String name = e.getKey();
+            UntypedNode untypedChild = e.getValue();
+
+            BeanProperty property = metadata.getProperty(name);
+            if (property != null) {
+                ElementAccessor accessor = createAccessor(bean, property);
+                ElementAccessor childAccessor = MapBinder.createAccessor(nodes, name);
+
+                Binder binder = factory.getBinder(property, untypedChild.hasChildren());
+                TypedNode child = binder.parse(untypedChild, accessor.get());
+
+                accessor.set(child.getObject());
+                childAccessor.set(child);
+            }
+            else {
+                LOGGER.warn("Invalid bean property: {}", name);
+            }
+        }
+
+        return new BeanNode(element, bean, nodes);
+    }
+
+    public static Object createBean(TypeClassPair tcp) {
         Class<?> beanClass = tcp.c;
 
         try {

@@ -3,7 +3,6 @@ package samson.form;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -13,15 +12,13 @@ import javax.validation.ValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import samson.bind.AnyNode;
 import samson.bind.Binder;
 import samson.bind.BinderFactory;
+import samson.bind.TypedNode;
+import samson.bind.UntypedNode;
 import samson.metadata.Element;
-import samson.metadata.ElementAccessor;
-import samson.metadata.ElementRef;
 import samson.metadata.TypeClassPair;
-import samson.property.ParseNode;
-import samson.property.ParsePath;
-import samson.utils.Utils;
 
 public class FormBuilder {
 
@@ -77,115 +74,41 @@ public class FormBuilder {
         return bindForm(null);
     }
 
-    // -- Instance
-
-    private static FormNode getNode(FormNode root, String param, boolean setRef) throws ParseException {
-        ParsePath path = Utils.isNullOrEmpty(param) ? ParsePath.of() : ParsePath.of(param);
-
-        FormNode child = root;
-        for (ParseNode node : path) {
-            child = child.path(node.getName(), setRef);
-        }
-        return child;
-    }
-
-    private <T> ElementRef immutableRef(final T value) {
-        ElementAccessor accessor = new ElementAccessor() {
-
-            @Override
-            public void set(Object value) {
-                throw new IllegalStateException("Immutable reference");
-            }
-
-            @Override
-            public Object get() {
-                return value;
-            }
-        };
-        return new ElementRef(element, accessor);
-    }
+    // -- Form Instance
 
     private <T> SamsonForm<T> wrapForm(T initialValue) {
-        FormNode unnamed = new FormNode(factory, null);
+        TypedNode anyRoot = new AnyNode(element, initialValue);
 
-        try {
-            FormNode root = getNode(unnamed, path, false);
-            root.setRef(immutableRef(initialValue));
-            return new SamsonForm<T>(root, initialValue);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Cannot parse root path " + path);
-        }
-    }
+        FormNode root = new FormNode(factory, "ROOT", anyRoot);
+        LOGGER.trace(printTree(root));
 
-    private <T> SamsonForm<T> bindForm(T initialValue) {
-        FormNode unnamed = parse(params);
-
-        try {
-            FormNode root = getNode(unnamed, path, false);
-            LOGGER.trace(printTree(root));
-
-            T value = bind(root, initialValue);
-            LOGGER.trace(printTree(root));
-
-            validate(root, value);
-            LOGGER.trace(printTree(root));
-
-            root.setRef(immutableRef(value));
-            return new SamsonForm<T>(root, value);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException("Cannot parse root path " + path);
-        }
-    }
-
-    private FormNode parse(Map<String, List<String>> params) {
-        FormNode unnamed = new FormNode(factory, null);
-
-        for (Entry<String, List<String>> entry : params.entrySet()) {
-            String param = entry.getKey();
-            List<String> values = entry.getValue();
-
-            try {
-                FormNode node = getNode(unnamed, param, false);
-                node.setStringValues(values);
-            } catch (ParseException e) {
-                LOGGER.warn("Cannot parse parameter name {}", param);
-            }
-        }
-
-        return unnamed;
+        return new SamsonForm<T>(root, initialValue);
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T bind(FormNode root, T initialValue) {
-        BinderFactory binderFactory = factory.getBinderFactory();
+    private <T> SamsonForm<T> bindForm(T initialValue) {
 
-        ElementAccessor accessor = new ElementAccessor() {
-            private T value;
-
-            @Override
-            public void set(Object value) {
-                this.value = (T) value;
-            }
-
-            @Override
-            public Object get() {
-                return value;
-            }
-        };
-        accessor.set(initialValue);
-
-        ElementRef ref = new ElementRef(element, accessor);
-        root.setRef(ref);
-
-        Binder binder = binderFactory.getBinder(ref, root.hasChildren());
-        binder.read(root);
-
-        Object value = accessor.get();
-        if (value == null) {
-            value = BinderFactory.createInstanceIfComposite(binder);
-            accessor.set(value);
+        UntypedNode unnamed = UntypedNode.parse(params);
+        UntypedNode untypedRoot;
+        try {
+            untypedRoot = UntypedNode.getNode(unnamed, path);
+        } catch (ParseException e) {
+            throw new RuntimeException("Cannot parse root path " + path, e);
         }
-        return (T) value;
+
+        BinderFactory binderFactory = factory.getBinderFactory();
+        Binder binder = binderFactory.getBinder(element, untypedRoot.hasChildren());
+        TypedNode typedRoot = binder.parse(untypedRoot, initialValue);
+
+        T value = (T) typedRoot.getObject();
+
+        FormNode root = new FormNode(factory, "ROOT", typedRoot);
+        LOGGER.trace(printTree(root));
+
+        validate(root, value);
+        LOGGER.trace(printTree(root));
+
+        return new SamsonForm<T>(root, value);
     }
 
     private <T> void validate(FormNode root, T value) {
@@ -217,7 +140,7 @@ public class FormBuilder {
 
             try {
                 // parse and normalize the validation property path
-                FormNode node = getNode(root, param, true);
+                FormNode node = FormNode.getNode(root, param);
                 // annotate the form tree with violations
                 node.addConstraintViolation(violation);
             } catch (ParseException e) {

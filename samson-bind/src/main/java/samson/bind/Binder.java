@@ -1,42 +1,43 @@
 package samson.bind;
 
-import samson.metadata.ElementRef;
+import samson.metadata.Element;
 
 public abstract class Binder {
 
     final BinderFactory factory;
-    final BinderType type;
-    final ElementRef ref;
+    final Element element;
 
-    Binder(BinderFactory factory, BinderType type, ElementRef ref) {
+    Binder(BinderFactory factory, Element element) {
         this.factory = factory;
-        this.type = type;
-        this.ref = ref;
+        this.element = element;
     }
 
-    public BinderType getType() {
-        return type;
+    public Element getElement() {
+        return element;
     }
 
-    public ElementRef getRef() {
-        return ref;
-    }
+    /**
+     * Returns either an {@link AnyNode} or {@link NullNode}.
+     */
+    public abstract TypedNode child(String name, Object object);
 
-    public abstract ElementRef getChildRef(String name);
+    /**
+     * Returns either a {@link StructureNode} or a {@link ValueNode}.
+     */
+    public abstract TypedNode parse(UntypedNode untypedNode, Object object);
 
-    public abstract void read(BinderNode<?> node);
+//  public abstract UntypedNode format(TypedNode node);
 
-//  public abstract void write(BinderNode<?> node);
-
-    public static final Binder NULL_BINDER = new Binder(null, BinderType.NULL, ElementRef.NULL_REF) {
+    public static final Binder NULL_BINDER = new Binder(null, Element.NULL_ELEMENT) {
 
         @Override
-        public ElementRef getChildRef(String name) {
-            return ElementRef.NULL_REF;
+        public TypedNode child(String name, Object object) {
+            return NullNode.INSTANCE;
         }
 
         @Override
-        public void read(BinderNode<?> node) {
+        public TypedNode parse(UntypedNode node, Object object) {
+            return NullNode.INSTANCE;
         }
 
     };

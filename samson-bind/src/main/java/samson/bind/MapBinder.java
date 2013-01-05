@@ -2,6 +2,7 @@ package samson.bind;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,6 @@ import samson.convert.Converter;
 import samson.convert.ConverterException;
 import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
-import samson.metadata.ElementRef;
 import samson.metadata.ResolvedMapType;
 import samson.metadata.TypeClassPair;
 
@@ -18,71 +18,78 @@ class MapBinder extends Binder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MapBinder.class);
 
-    MapBinder(BinderFactory factory, ElementRef ref) {
-        super(factory, BinderType.MAP, ref);
+    private final ResolvedMapType type;
+
+    private final Converter<?> keyConverter;
+
+    MapBinder(BinderFactory factory, Element element) {
+        super(factory, element);
+        this.type = new ResolvedMapType(element.tcp);
+
+        this.keyConverter = factory.getConverter(type.getKeyTcp(), null);
+        if (keyConverter == null) {
+            throw new RuntimeException("Unsupported map key type");
+        }
+    }
+
+    @Override
+    public TypedNode child(String name, Object object) {
+        Map<?,?> map = (Map<?,?>) object;
+        Object key = getKey(name);
+        if (key != null) {
+            ElementAccessor accessor = createAccessor(map, key);
+            return new AnyNode(type.getValue(), accessor.get());
+        }
+        else {
+            LOGGER.warn("Invalid map key: {}", name);
+            return NullNode.INSTANCE;
+        }
     }
 
     /**
      * Bind map parameters, i.e. indexed by key.
      */
     @Override
-    public void read(BinderNode<?> node) {
-        ResolvedMapType type = new ResolvedMapType(ref.element.tcp);
-        Map<?,?> map = (Map<?,?>) ref.accessor.get();
+    public TypedNode parse(UntypedNode untypedNode, Object object) {
+        Map<?,?> map = (Map<?,?>) object;
         if (map == null) {
-            map = createInstance(ref.element.tcp);
-            ref.accessor.set(map);
+            map = createMap(element.tcp);
         }
 
-        for (BinderNode<?> child : node.getChildren()) {
-            String stringKey = child.getName();
-            ElementRef childRef = getChildRef(type, map, stringKey);
-            child.setRef(childRef);
+        Map<String,TypedNode> nodes = new LinkedHashMap<String,TypedNode>();
 
-            Binder binder = factory.getBinder(childRef, child.hasChildren());
-            binder.read(child);
-        }
-    }
+        for (Entry<String, UntypedNode> e : untypedNode.getChildren().entrySet()) {
+            String name = e.getKey();
+            UntypedNode untypedChild = e.getValue();
 
-    @Override
-    public ElementRef getChildRef(String name) {
-        ResolvedMapType type = new ResolvedMapType(ref.element.tcp);
-        Map<?,?> map = (Map<?,?>) ref.accessor.get();
+            Object key = getKey(name);
+            if (key != null) {
+                ElementAccessor accessor = createAccessor(map, key);
+                ElementAccessor childAccessor = createAccessor(nodes, name);
 
-        ElementRef childRef = getChildRef(type, map, name);
-        return childRef;
-    }
+                Binder binder = factory.getBinder(type.getValue(), untypedChild.hasChildren());
+                TypedNode child = binder.parse(untypedChild, accessor.get());
 
-    private ElementRef getChildRef(ResolvedMapType type, Map<?,?> map, String stringKey) {
-        Object key = getKey(type.getKeyTcp(), stringKey);
-        if (key != null) {
-            Element valueElement = type.getValue();
-            ElementAccessor valueAccessor = createAccessor(map, key);
-            return new ElementRef(valueElement, valueAccessor);
-        }
-        else {
-            LOGGER.warn("Invalid map key: {}", stringKey);
-            return ElementRef.NULL_REF;
-        }
-    }
-
-    private Converter<?> converter;
-
-    private Object getKey(TypeClassPair keyTcp, String stringKey) {
-        if (converter == null) {
-            converter = factory.getConverter(keyTcp, null);
-            if (converter == null) {
-                throw new RuntimeException("Unsupported map key type");
+                accessor.set(child.getObject());
+                childAccessor.set(child);
+            }
+            else {
+                LOGGER.warn("Invalid map key: {}", name);
             }
         }
+
+        return new MapNode(element, map, nodes);
+    }
+
+    private Object getKey(String stringKey) {
         try {
-            return converter.fromString(stringKey);
+            return keyConverter.fromString(stringKey);
         } catch (ConverterException ex) {
             return null;
         }
     }
 
-    public static Map<?,?> createInstance(TypeClassPair tcp) {
+    public static Map<?,?> createMap(TypeClassPair tcp) {
         Class<?> mapClass = tcp.c;
 
         if (!Map.class.isAssignableFrom(mapClass)) {

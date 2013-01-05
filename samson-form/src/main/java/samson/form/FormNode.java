@@ -1,13 +1,14 @@
 package samson.form;
 
 import java.lang.annotation.Annotation;
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -16,98 +17,119 @@ import javax.validation.ValidatorFactory;
 import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.ElementDescriptor;
 
+import samson.bind.BeanNode;
 import samson.bind.Binder;
 import samson.bind.BinderFactory;
-import samson.bind.BinderNode;
+import samson.bind.ListNode;
+import samson.bind.MapNode;
+import samson.bind.StructureNode;
+import samson.bind.TypedNode;
+import samson.bind.ValueNode;
 import samson.convert.ConverterException;
-import samson.metadata.ElementRef;
+import samson.metadata.Element;
 import samson.metadata.TypeClassPair;
+import samson.property.ParseNode;
+import samson.property.ParsePath;
 import samson.utils.Utils;
 
-public class FormNode implements BinderNode<FormNode> {
+import com.google.common.base.Preconditions;
 
-    private static final String CONVERSION_ERROR_MESSAGE_TEMPLATE = "invalid value '%s'";
+public class FormNode {
 
     private final FormProvider factory;
-
     private final String name;
+    private final TypedNode node;
+
     private final Map<String, FormNode> children = new LinkedHashMap<String, FormNode>();
 
-    private ElementRef ref = ElementRef.NULL_REF;
-    private List<String> stringValues = null;
-    private ConverterException conversionError = null;
-    private Set<ConstraintViolation<?>> constraintViolations = new LinkedHashSet<ConstraintViolation<?>>();
-    private List<String> infos = new ArrayList<String>();
-    private List<String> errors = new ArrayList<String>();
+    private final Set<ConstraintViolation<?>> constraintViolations = new LinkedHashSet<ConstraintViolation<?>>();
+    private final List<String> infos = new ArrayList<String>();
+    private final List<String> errors = new ArrayList<String>();
 
-    public FormNode(FormProvider factory, String name) {
-        this.factory = factory;
-        this.name = name;
+    public FormNode(FormProvider factory, String name, TypedNode node) {
+        this.factory = Preconditions.checkNotNull(factory);
+        this.name = Preconditions.checkNotNull(name);
+        this.node = Preconditions.checkNotNull(node);
+        addChildren();
     }
 
-    // -- Node
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public boolean hasChild(String name) {
-        return children.containsKey(name);
-    }
-
-    @Override
-    public FormNode getChild(String name) {
-        return children.get(name);
-    }
-
-    @Override
-    public boolean hasChildren() {
-        return !children.isEmpty();
-    }
-
-    @Override
-    public Collection<FormNode> getChildren() {
-        return children.values();
-    }
-
-    // -- Reference
-
-    @Override
-    public ElementRef getRef() {
-        return ref;
-    }
-
-    @Override
-    public void setRef(ElementRef ref) {
-        this.ref = ref;
+    private void addChildren() {
+        if (node instanceof StructureNode) {
+            if (node instanceof ListNode) {
+                ListNode listNode = (ListNode) node;
+                for (int i = 0; i < listNode.getValues().size(); i++) {
+                    String name = Integer.toString(i);
+                    TypedNode child = listNode.getValues().get(i);
+                    if (child != null) {
+                        children.put(name, new FormNode(factory, name, child));
+                    }
+                }
+            }
+            else if (node instanceof MapNode) {
+                MapNode mapNode = (MapNode) node;
+                for (Entry<String,TypedNode> e : mapNode.getValues().entrySet()) {
+                    String name = e.getKey();
+                    TypedNode child = e.getValue();
+                    children.put(name, new FormNode(factory, name, child));
+                }
+            }
+            else if (node instanceof BeanNode) {
+                BeanNode beanNode = (BeanNode) node;
+                for (Entry<String,TypedNode> e : beanNode.getValues().entrySet()) {
+                    String name = e.getKey();
+                    TypedNode child = e.getValue();
+                    children.put(name, new FormNode(factory, name, child));
+                }
+            }
+        }
     }
 
     // -- Value
 
-    @Override
+    public Object getObjectValue() {
+        return node.getObject();
+    }
+
+    public String getValue() {
+        return Utils.getFirst(getValues());
+    }
+
+    public List<String> getValues() {
+        if (isConversionError()) {
+            return getStringValues();
+        }
+        else {
+            BinderFactory binderFactory = factory.getBinderFactory();
+            return binderFactory.toStringList(node.getElement(), node.getObject());
+        }
+    }
+
     public List<String> getStringValues() {
-        return stringValues;
+        if (node instanceof ValueNode) {
+            ValueNode valueNode = (ValueNode) node;
+            return valueNode.getStringValues();
+        }
+        return null;
     }
 
-    @Override
-    public void setStringValues(List<String> values) {
-        this.stringValues = values;
-    }
-
-    @Override
     public ConverterException getConversionFailure() {
-        return conversionError;
-    }
-
-    @Override
-    public void setConversionFailure(ConverterException conversionError) {
-        this.conversionError = conversionError;
+        if (node instanceof ValueNode) {
+            if (node instanceof ValueNode.ErrorValueNode) {
+                ValueNode.ErrorValueNode errorNode = (ValueNode.ErrorValueNode) node;
+                ConverterException conversionError = errorNode.getCause();
+                return conversionError;
+            }
+        }
+        return null;
     }
 
     public boolean isConversionError() {
-        return (conversionError != null);
+        if (node instanceof ValueNode) {
+            if (node instanceof ValueNode.ErrorValueNode) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Set<ConstraintViolation<?>> getConstraintViolations() {
@@ -148,57 +170,42 @@ public class FormNode implements BinderNode<FormNode> {
     // -- Path
 
     public FormNode path(int index) {
-        return path(Integer.toString(index));
+        return child(Integer.toString(index));
     }
 
     public FormNode path(String name) {
-        return path(name, true);
+        return child(name);
     }
 
     public FormNode indexPath(int index) {
-        return path(index);
+        return child(Integer.toString(index));
     }
 
     public FormNode propertyPath(String name) {
-        return path(name);
+        return child(name);
     }
 
-    FormNode path(String name, boolean setRef) {
+    private FormNode child(String name) {
         FormNode child = children.get(name);
         if (child == null) {
-            child = new FormNode(factory, name);
-            children.put(name, child);
+            BinderFactory binderFactory = factory.getBinderFactory();
+            Binder binder = binderFactory.getBinder(node.getElement(), true);
+            TypedNode anyChild = binder.child(name, node.getObject());
 
-            ElementRef childRef = child.getRef();
-            if (setRef && (childRef == ElementRef.NULL_REF)) {
-                BinderFactory binderFactory = factory.getBinderFactory();
-                Binder binder = binderFactory.getBinder(ref, true, false);
-                childRef = binder.getChildRef(name);
-                child.setRef(childRef);
-            }
+            child = new FormNode(factory, name, anyChild);
+            children.put(name, child);
         }
         return child;
     }
 
-    // -- Value
+    static FormNode getNode(FormNode root, String param) throws ParseException {
+        ParsePath path = Utils.isNullOrEmpty(param) ? ParsePath.of() : ParsePath.of(param);
 
-    public Object getObjectValue() {
-        return ref.accessor.get();
-    }
-
-    public String getValue() {
-        return Utils.getFirst(getValues());
-    }
-
-    public List<String> getValues() {
-        BinderFactory binderFactory = factory.getBinderFactory();
-
-        if (isConversionError()) {
-            return getStringValues();
+        FormNode child = root;
+        for (ParseNode node : path) {
+            child = child.child(node.getName());
         }
-        else {
-            return binderFactory.toStringList(ref.element, ref.accessor.get());
-        }
+        return child;
     }
 
     // -- Messages
@@ -229,10 +236,12 @@ public class FormNode implements BinderNode<FormNode> {
 
     public String getConversionError() {
         if (isConversionError()) {
-            String stringValue = Utils.getFirst(stringValues);
-            return getConversionErrorMessage(stringValue);
+            ConverterException conversionError = getConversionFailure();
+            return conversionError.getMessage();
         }
-        return null;
+        else {
+            return null;
+        }
     }
 
     public List<String> getValidationErrors() {
@@ -253,15 +262,12 @@ public class FormNode implements BinderNode<FormNode> {
         return messages;
     }
 
-    private static String getConversionErrorMessage(String value) {
-        return String.format(CONVERSION_ERROR_MESSAGE_TEMPLATE, value);
-    }
-
     // -- Default Messages
 
     private String getDefaultConversionInfo() {
-        if (ref != ElementRef.NULL_REF) {
-            TypeClassPair tcp = ref.element.tcp;
+        Element element = node.getElement();
+        if (element != Element.NULL_ELEMENT) {
+            TypeClassPair tcp = element.tcp;
             String message = tcp.c.getSimpleName();
             return message;
         }
@@ -278,8 +284,9 @@ public class FormNode implements BinderNode<FormNode> {
 
         Validator validator = validatorFactory.getValidator();
 
-        ElementDescriptor decl = ValidatorExt.getElementDescriptorDecl(validator, ref.element);
-        ElementDescriptor type = ValidatorExt.getElementDescriptorType(validator, ref.element);
+        Element element = node.getElement();
+        ElementDescriptor decl = ValidatorExt.getElementDescriptorDecl(validator, element);
+        ElementDescriptor type = ValidatorExt.getElementDescriptorType(validator, element);
 
         List<String> messages = new ArrayList<String>();
         getDefaultValidationInfos(messages, decl);
@@ -302,8 +309,6 @@ public class FormNode implements BinderNode<FormNode> {
     // -- Tree Computations (visitor / functional)
 
     public void print(int indent, StringBuilder sb) {
-        String name = (this.name == null) ? "" : this.name;
-
         boolean error = isConversionError();
         sb.append("[").append(error ? "X" : " ").append("] ");
 
@@ -317,8 +322,6 @@ public class FormNode implements BinderNode<FormNode> {
     }
 
     public void printTree(int indent, StringBuilder sb) {
-        String name = (this.name == null) ? "" : this.name;
-
         print(indent, sb);
 
         indent += name.length();

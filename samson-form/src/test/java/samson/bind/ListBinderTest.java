@@ -2,6 +2,7 @@ package samson.bind;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -180,9 +181,13 @@ public class ListBinderTest {
         form.add("bean.set.a", "2");
         form.add("bean.set.a", "3");
 
-        Set<ItemBean> set = jForm.params("bean", form).bind(SetBeanFormBean.class).get().set;
-
-        assertNull(set); // set cannot contain compound values
+        try {
+            jForm.params("bean", form).bind(SetBeanFormBean.class).get();
+            fail();
+        }
+        catch (RuntimeException e) {
+            // expected, Set cannot contain compound values
+        }
     }
 
     public static class StringItemBean {

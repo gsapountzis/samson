@@ -2,7 +2,6 @@ package samson.bind;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +16,9 @@ import samson.convert.multivalued.MultivaluedConverterProvider;
 import samson.metadata.BeanMetadata;
 import samson.metadata.BeanMetadataCache;
 import samson.metadata.Element;
-import samson.metadata.ElementRef;
 import samson.metadata.TypeClassPair;
+
+import com.google.common.base.Preconditions;
 
 public class BinderFactory {
 
@@ -42,120 +42,115 @@ public class BinderFactory {
         return converterProvider.get(tcp.c, tcp.t, annotations);
     }
 
-    public Binder getBinder(ElementRef ref, boolean composite) {
-        return getBinder(ref, composite, true);
+    public Binder getBinder(Element element, boolean composite) {
+        NodeType type = getNodeType(element.tcp, composite);
+
+        if (type == NodeType.LIST) {
+            return new ListBinder(this, element);
+        }
+        else if (type == NodeType.MAP) {
+            return new MapBinder(this, element);
+        }
+        else if (type == NodeType.BEAN) {
+            return new BeanBinder(this, element);
+        }
+        else if (type == NodeType.VALUE) {
+            return new ValueBinder(this, element);
+        }
+        else if (type == NodeType.NULL) {
+            return Binder.NULL_BINDER;
+        }
+        else {
+            throw new IllegalStateException();
+        }
     }
 
-    public Binder getBinder(ElementRef ref, boolean composite, boolean validate) {
+    private NodeType getNodeType(TypeClassPair tcp, boolean composite) {
 
         // check for null element
-        if (ref.element.tcp == null) {
-            return Binder.NULL_BINDER;
+        if (tcp == null) {
+            return NodeType.NULL;
         }
-
-        BinderType type = getBinderType(ref.element.tcp, composite);
-
-        if (validate && !binderTypeIsValid(type, ref.element.tcp, ref.accessor.get())) {
-            type = BinderType.NULL;
-        }
-
-        if (type == BinderType.STRING) {
-            return new StringBinder(this, ref);
-        }
-        else if (type == BinderType.LIST) {
-            return new ListBinder(this, ref);
-        }
-        else if (type == BinderType.MAP) {
-            return new MapBinder(this, ref);
-        }
-        else if (type == BinderType.BEAN) {
-            return new BeanBinder(this, ref);
-        }
-        else {
-            return Binder.NULL_BINDER;
-        }
-    }
-
-    private BinderType getBinderType(TypeClassPair tcp, boolean composite) {
-        final Class<?> clazz = tcp.c;
 
         if (composite) {
-            if (List.class.isAssignableFrom(clazz)) {
-                return BinderType.LIST;
-            }
-            else if (Map.class.isAssignableFrom(clazz)) {
-                return BinderType.MAP;
+            return getCompositeType(tcp);
+        }
+        else {
+            if (isValidValueType(tcp)) {
+                return NodeType.VALUE;
             }
             else {
-                return BinderType.BEAN;
+                return getCompositeType(tcp);
             }
-        }
-        else {
-            return BinderType.STRING;
         }
     }
 
-    public boolean binderTypeIsValid(BinderType type, TypeClassPair tcp, Object instance) {
-        final Class<?> clazz = tcp.c;
+    private NodeType getCompositeType(TypeClassPair tcp) {
 
-        boolean valid = true;
-        if (type == BinderType.BEAN) {
-            final int modifiers = clazz.getModifiers();
-
-            if (!Modifier.isPublic(modifiers)) {
-                if (instance == null) {
-                    LOGGER.warn("{} is not a public class and cannot be instantiated", clazz);
-                    valid = false;
-                }
-            }
-
-            if (Modifier.isAbstract(modifiers)) {
-                if (instance == null) {
-                    LOGGER.warn("{} is an abstract class or interface and cannot be instantiated", clazz);
-                    valid = false;
-                }
-            }
-
-            if (Modifier.isPublic(modifiers) && !Modifier.isAbstract(modifiers)) {
-                // we require no-arg constructor for non-abstract beans
-                try {
-                    clazz.getDeclaredConstructor();
-                }
-                catch (Exception e) {
-                    LOGGER.warn("{} does not have a no-arg constructor and cannot be instantiated", clazz);
-                    valid = false;
-                }
-            }
+        if (List.class.isAssignableFrom(tcp.c)) {
+            return NodeType.LIST;
         }
-
-        return valid;
-    }
-
-    public static Object createInstanceIfComposite(Binder binder) {
-        BinderType type = binder.type;
-        ElementRef ref = binder.ref;
-        TypeClassPair tcp = ref.element.tcp;
-
-        if (type == BinderType.LIST) {
-            return ListBinder.createInstance(tcp);
-        }
-        else if (type == BinderType.MAP) {
-            return MapBinder.createInstance(tcp);
-        }
-        else if (type == BinderType.BEAN) {
-            return BeanBinder.createInstance(tcp);
+        else if (Map.class.isAssignableFrom(tcp.c)) {
+            return NodeType.MAP;
         }
         else {
-            return null;
+            if (isValidBeanType(tcp)) {
+                return NodeType.BEAN;
+            }
+            else {
+                throw new RuntimeException("Invalid bean type");
+            }
         }
+    }
+
+    private boolean isValidBeanType(TypeClassPair tcp) {
+        final int modifiers = tcp.c.getModifiers();
+
+        if (!Modifier.isPublic(modifiers)) {
+            LOGGER.warn("{} is not a public class and cannot be instantiated", tcp.c);
+            return false;
+        }
+
+        if (Modifier.isAbstract(modifiers)) {
+            LOGGER.warn("{} is an abstract class or interface and cannot be instantiated", tcp.c);
+            return false;
+        }
+
+        if (Modifier.isPublic(modifiers) && !Modifier.isAbstract(modifiers)) {
+            // we require no-arg constructor for non-abstract beans
+            try {
+                tcp.c.getDeclaredConstructor();
+            }
+            catch (Exception e) {
+                LOGGER.warn("{} does not have a no-arg constructor and cannot be instantiated", tcp.c);
+                return false;
+            }
+        }
+
+        BeanMetadata metadata = beanCache.get(tcp);
+        if (metadata.getProperties().isEmpty()) {
+            LOGGER.warn("{} does not have any bean properties", tcp.c);
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isValidValueType(TypeClassPair tcp) {
+        MultivaluedConverter<?> extractor = multivaluedConverterProvider.getMultivalued(tcp.c, tcp.t, Element.NO_ANNOTATIONS);
+
+        if (extractor == null) {
+            LOGGER.warn("{} is not convertible from string values", tcp.c);
+            return false;
+        }
+
+        return true;
     }
 
     public ConversionResult fromStringList(Element element, List<String> values) {
 
         // check for null element
-        if (element.tcp == null) {
-            return null;
-        }
+        Preconditions.checkNotNull(element.tcp);
 
         MultivaluedConverter<?> extractor = multivaluedConverterProvider.getMultivalued(
                 element.tcp.c,
@@ -164,26 +159,21 @@ public class BinderFactory {
                 element.jaxrs.encoded,
                 element.jaxrs.defaultValue);
 
-        if (extractor != null) {
-            try {
-                Object value = extractor.fromStringList(values);
-                return ConversionResult.fromValue(value);
-            }
-            catch (ConverterException ex) {
-                return ConversionResult.fromError(ex);
-            }
+        Preconditions.checkNotNull(extractor);
+
+        try {
+            Object value = extractor.fromStringList(values);
+            return ConversionResult.fromValue(value);
         }
-        else {
-            return null;
+        catch (ConverterException ex) {
+            return ConversionResult.fromError(ex);
         }
     }
 
     public List<String> toStringList(Element element, Object value) {
 
         // check for null element
-        if (element.tcp == null) {
-            return Collections.emptyList();
-        }
+        Preconditions.checkNotNull(element.tcp);
 
         @SuppressWarnings("unchecked")
         MultivaluedConverter<Object> extractor = (MultivaluedConverter<Object>) multivaluedConverterProvider.getMultivalued(
@@ -191,12 +181,9 @@ public class BinderFactory {
                 element.tcp.t,
                 element.annotations);
 
-        if (extractor != null) {
-            return extractor.toStringList(value);
-        }
-        else {
-            return Collections.emptyList();
-        }
+        Preconditions.checkNotNull(extractor);
+
+        return extractor.toStringList(value);
     }
 
 }

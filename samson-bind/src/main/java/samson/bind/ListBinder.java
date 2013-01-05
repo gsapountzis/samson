@@ -3,6 +3,7 @@ package samson.bind;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -12,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import samson.metadata.Element;
 import samson.metadata.ElementAccessor;
-import samson.metadata.ElementRef;
 import samson.metadata.ResolvedListType;
 import samson.metadata.TypeClassPair;
 
@@ -29,52 +29,60 @@ class ListBinder extends Binder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ListBinder.class);
 
-    ListBinder(BinderFactory factory, ElementRef ref) {
-        super(factory, BinderType.LIST, ref);
+    private final ResolvedListType type;
+
+    ListBinder(BinderFactory factory, Element element) {
+        super(factory, element);
+        this.type = new ResolvedListType(element.tcp);
+    }
+
+    @Override
+    public TypedNode child(String name, Object object) {
+        List<?> list = (List<?>) object;
+        int index = getIndex(name);
+        if (index >= 0 && index < MAX_LIST_SIZE) {
+            ElementAccessor accessor = createAccessor(list, index);
+            return new AnyNode(type.getItem(), accessor.get());
+        }
+        else {
+            LOGGER.warn("Invalid list index: {}", name);
+            return NullNode.INSTANCE;
+        }
     }
 
     /**
      * Bind list parameters, i.e. indexed parameters.
      */
     @Override
-    public void read(BinderNode<?> node) {
-        ResolvedListType type = new ResolvedListType(ref.element.tcp);
-        List<?> list = (List<?>) ref.accessor.get();
+    public TypedNode parse(UntypedNode untypedNode, Object object) {
+        List<?> list = (List<?>) object;
         if (list == null) {
-            list = createInstance(ref.element.tcp);
-            ref.accessor.set(list);
+            list = createList(element.tcp);
         }
 
-        for (BinderNode<?> child : node.getChildren()) {
-            String stringIndex = child.getName();
-            ElementRef childRef = getChildRef(type, list, stringIndex);
-            child.setRef(childRef);
+        List<TypedNode> nodes = new ArrayList<TypedNode>();
 
-            Binder binder = factory.getBinder(childRef, child.hasChildren());
-            binder.read(child);
+        for (Entry<String, UntypedNode> e : untypedNode.getChildren().entrySet()) {
+            String name = e.getKey();
+            UntypedNode untypedChild = e.getValue();
+
+            int index = getIndex(name);
+            if (index >= 0 && index < MAX_LIST_SIZE) {
+                ElementAccessor accessor = createAccessor(list, index);
+                ElementAccessor childAccessor = createAccessor(nodes, index);
+
+                Binder binder = factory.getBinder(type.getItem(), untypedChild.hasChildren());
+                TypedNode child = binder.parse(untypedChild, accessor.get());
+
+                accessor.set(child.getObject());
+                childAccessor.set(child);
+            }
+            else {
+                LOGGER.warn("Invalid list index: {}", name);
+            }
         }
-    }
 
-    @Override
-    public ElementRef getChildRef(String name) {
-        ResolvedListType type = new ResolvedListType(ref.element.tcp);
-        List<?> list = (List<?>) ref.accessor.get();
-
-        ElementRef childRef = getChildRef(type, list, name);
-        return childRef;
-    }
-
-    private ElementRef getChildRef(ResolvedListType type, List<?> list, String stringIndex) {
-        int index = getIndex(stringIndex);
-        if (index >= 0 && index < MAX_LIST_SIZE) {
-            Element itemElement = type.getItem();
-            ElementAccessor itemAccessor = createAccessor(list, index);
-            return new ElementRef(itemElement, itemAccessor);
-        }
-        else {
-            LOGGER.warn("Invalid list index: {}", stringIndex);
-            return ElementRef.NULL_REF;
-        }
+        return new ListNode(element, list, nodes);
     }
 
     private int getIndex(String stringIndex) {
@@ -113,7 +121,7 @@ class ListBinder extends Binder {
         }
     }
 
-    public static List<?> createInstance(TypeClassPair tcp) {
+    public static List<?> createList(TypeClassPair tcp) {
         Class<?> listClass = tcp.c;
 
         if (!List.class.isAssignableFrom(listClass)) {
