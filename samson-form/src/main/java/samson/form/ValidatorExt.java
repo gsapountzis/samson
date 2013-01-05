@@ -33,10 +33,10 @@ class ValidatorExt {
             }
             else if (element instanceof BeanProperty) {
                 BeanProperty property = (BeanProperty) element;
-                Class<?> beanType = property.beanTcp.c;
+                TypeClassPair beanTcp = property.beanTcp;
                 String propertyName = property.propertyName;
 
-                BeanDescriptor bean = validator.getConstraintsForClass(beanType);
+                BeanDescriptor bean = validator.getConstraintsForClass(beanTcp.c);
                 return bean.getConstraintsForProperty(propertyName);
             }
             else {
@@ -67,17 +67,17 @@ class ValidatorExt {
             return Collections.emptySet();
         }
 
-        Class<?> clazz = element.tcp.c;
-        if (Utils.isBaseType(clazz)) {
+        TypeClassPair tcp = element.tcp;
+        if (Utils.isBaseType(tcp.c)) {
             // do nothing
             return Collections.emptySet();
         }
-        else if (Collection.class.isAssignableFrom(clazz)) {
+        else if (Collection.class.isAssignableFrom(tcp.c)) {
             // cascade to each item
             LOGGER.warn("Cannot validate root-level collections");
             return Collections.emptySet();
         }
-        else if (Map.class.isAssignableFrom(clazz)) {
+        else if (Map.class.isAssignableFrom(tcp.c)) {
             // cascade to each entry
             LOGGER.warn("Cannot validate root-level maps");
             return Collections.emptySet();
