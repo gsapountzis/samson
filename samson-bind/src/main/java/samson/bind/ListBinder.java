@@ -69,13 +69,13 @@ class ListBinder extends Binder {
             int index = getIndex(name);
             if (index >= 0 && index < MAX_LIST_SIZE) {
                 ElementAccessor accessor = createAccessor(list, index);
-                ElementAccessor childAccessor = createAccessor(nodes, index);
 
                 Binder binder = factory.getBinder(type.getItem(), untypedChild.hasChildren());
                 TypedNode child = binder.parse(untypedChild, accessor.get());
 
                 accessor.set(child.getObject());
-                childAccessor.set(child);
+                for (int i = nodes.size(); i <= index; i++) { nodes.add(null); }
+                nodes.set(index, child);
             }
             else {
                 LOGGER.warn("Invalid list index: {}", name);

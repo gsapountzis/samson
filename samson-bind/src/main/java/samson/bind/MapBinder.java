@@ -65,13 +65,12 @@ class MapBinder extends Binder {
             Object key = getKey(name);
             if (key != null) {
                 ElementAccessor accessor = createAccessor(map, key);
-                ElementAccessor childAccessor = createAccessor(nodes, name);
 
                 Binder binder = factory.getBinder(type.getValue(), untypedChild.hasChildren());
                 TypedNode child = binder.parse(untypedChild, accessor.get());
 
                 accessor.set(child.getObject());
-                childAccessor.set(child);
+                nodes.put(name, child);
             }
             else {
                 LOGGER.warn("Invalid map key: {}", name);

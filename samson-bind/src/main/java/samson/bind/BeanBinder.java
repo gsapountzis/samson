@@ -54,13 +54,12 @@ class BeanBinder extends Binder {
             BeanProperty property = metadata.getProperty(name);
             if (property != null) {
                 ElementAccessor accessor = createAccessor(bean, property);
-                ElementAccessor childAccessor = MapBinder.createAccessor(nodes, name);
 
                 Binder binder = factory.getBinder(property, untypedChild.hasChildren());
                 TypedNode child = binder.parse(untypedChild, accessor.get());
 
                 accessor.set(child.getObject());
-                childAccessor.set(child);
+                nodes.put(name, child);
             }
             else {
                 LOGGER.warn("Invalid bean property: {}", name);
