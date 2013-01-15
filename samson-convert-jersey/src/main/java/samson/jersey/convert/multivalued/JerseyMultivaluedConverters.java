@@ -55,7 +55,7 @@ class JerseyMultivaluedConverters {
                     return (T) delegate.extract(form(nullStringList));
                 }
                 else {
-                    throw new ConverterException(ex.getMessage(), ex.getCause());
+                    throw new ConverterException("invalid value", ex.getCause());
                 }
             }
         }
