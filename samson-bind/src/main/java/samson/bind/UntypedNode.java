@@ -19,7 +19,8 @@ public class UntypedNode {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UntypedNode.class);
 
-    private final Map<String, UntypedNode> values = new LinkedHashMap<String, UntypedNode>();
+    private Map<String, UntypedNode> children = new LinkedHashMap<String, UntypedNode>();
+
     private List<String> stringValues = null;
 
     private UntypedNode() {
@@ -28,26 +29,26 @@ public class UntypedNode {
     // -- Composite
 
     public boolean hasChildren() {
-        return !values.isEmpty();
+        return !children.isEmpty();
     }
 
     public Map<String, UntypedNode> getChildren() {
-        return Collections.unmodifiableMap(values);
+        return Collections.unmodifiableMap(children);
     }
 
     public Set<String> getChildNames() {
-        return values.keySet();
+        return children.keySet();
     }
 
     public UntypedNode getChild(String name) {
-        return values.get(name);
+        return children.get(name);
     }
 
     private UntypedNode getOrAddChild(String name) {
         UntypedNode value = getChild(name);
         if (value == null) {
             value = new UntypedNode();
-            values.put(name, value);
+            children.put(name, value);
         }
         return value;
     }
