@@ -13,7 +13,7 @@ Utility module for handling form submissions and query parameters in JAX-RS reso
 
 * integration with [bean validation](http://beanvalidation.org).
 
-* [facade](/gsapountzis/samson/blob/master/samson-form/src/main/java/samson/form/SamsonForm.java)
+* [facade](/samson-form/src/main/java/samson/form/SamsonForm.java)
   over the binding and validation results.
 
 ## Usage
@@ -28,14 +28,14 @@ Install the module and add the following dependency to your pom.xml:
 
 ## Example
 
-There are some simple examples [here](/gsapountzis/samson/tree/master/examples/).
+There are some simple examples [here](/examples/).
 You can also check the available
-[unit](/gsapountzis/samson/tree/master/samson-form/src/test/java/samson/bind/) and
-[integration](/gsapountzis/samson/tree/master/samson-jersey-test/src/test/java/samson/jersey/) tests.
+[unit](/samson-form/src/test/java/samson/bind/) and
+[integration](/samson-jersey-test/src/test/java/samson/jersey/) tests.
 
 ## TODO
 
-Check [here](/gsapountzis/samson/blob/master/TODO.md).
+Check [here](/TODO.md).
 
 ## Credit
 
