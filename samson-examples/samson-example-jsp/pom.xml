@@ -3,7 +3,7 @@
 
     <parent>
         <groupId>com.github.gsapountzis.samson</groupId>
-        <artifactId>examples</artifactId>
+        <artifactId>samson-examples</artifactId>
         <version>0.5.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>

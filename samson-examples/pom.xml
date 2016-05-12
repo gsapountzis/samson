@@ -8,7 +8,7 @@
         <relativePath>..</relativePath>
     </parent>
 
-    <artifactId>examples</artifactId>
+    <artifactId>samson-examples</artifactId>
     <packaging>pom</packaging>
     <name>Samson :: Examples</name>
 

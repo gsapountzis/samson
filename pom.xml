@@ -15,7 +15,7 @@
         <module>samson-form</module>
         <module>samson-jersey</module>
         <module>samson-jersey-test</module>
-        <module>examples</module>
+        <module>samson-examples</module>
     </modules>
 
     <properties>
